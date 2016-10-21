@@ -13,6 +13,7 @@ import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
 import org.refactoringminer.util.GitServiceImpl;
 
+import gr.uom.java.xmi.UMLOperation;
 import gr.uom.java.xmi.decomposition.ASTInformation;
 import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
@@ -28,6 +29,7 @@ public class RefactoringMatcher {
 		GitService gitService = new GitServiceImpl();
 		GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
 		List<Refactoring> refactoringsForMatching = new ArrayList<Refactoring>();
+		List<CodeChange> codeChanges = new ArrayList<CodeChange>();
 
 		Repository repo = gitService.cloneIfNotExists("tmp/refactoring-toy-example",
 				"https://github.com/danilofes/refactoring-toy-example.git");
@@ -49,43 +51,56 @@ public class RefactoringMatcher {
 			}
 		});
 		
-		ASTInformation astInformation;
+		
 		for (Refactoring ref : refactoringsForMatching) {
-			astInformation = parseASTInformation(ref);
-			System.out.println(ref.getName());
-			System.out.println(astInformation.getFilePath() + " " + astInformation.getStartOffset() + " " + astInformation.getLength());
-//			System.out.println(astInformation.getStartOffset() + " " + astInformation.getLength());
+			codeChanges.add(parseCodeChange(ref));
+		}
+		
+		for (CodeChange codeChange: codeChanges) {
+			System.out.println("Applied refactoring: " + codeChange.getRefactoring().getName());
+			System.out.println("Original code: Line-" + codeChange.getFrom().getStartOffset() + " Length-" + codeChange.getFrom().getLength() + " Class-" + codeChange.getFrom().getFilePath() );
+			System.out.println("Refactored code: Line-" + codeChange.getTo().getStartOffset() + " Length-" + codeChange.getTo().getLength() + " Class-" + codeChange.getTo().getFilePath() );
+			System.out.println();
 		}
 		
 
 	}
 
-	private static ASTInformation parseASTInformation(Refactoring ref) {
+	private static CodeChange parseCodeChange(Refactoring ref) {
+		UMLOperation umlOperationBeforeChange = null;
+		UMLOperation umlOperationAfterChange = null;
+		
 		if(ref.getRefactoringType() == RefactoringType.RENAME_METHOD)
 		{
-			return ((RenameOperationRefactoring)ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((RenameOperationRefactoring)ref).getOriginalOperation();
+			umlOperationAfterChange = ((RenameOperationRefactoring)ref).getRenamedOperation();
 		} 
 		else if(ref.getRefactoringType() == RefactoringType.PULL_UP_OPERATION)
 		{
-			return ((PullUpOperationRefactoring)ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((PullUpOperationRefactoring)ref).getOriginalOperation();
+			umlOperationAfterChange = ((PullUpOperationRefactoring)ref).getMovedOperation();
 		}
 		else if(ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION)
 		{
-			return ((PushDownOperationRefactoring)ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((PushDownOperationRefactoring)ref).getOriginalOperation();
+			umlOperationAfterChange = ((PushDownOperationRefactoring)ref).getMovedOperation();
 		}
 		else if(ref.getRefactoringType() == RefactoringType.INLINE_OPERATION)
 		{
-			return ((InlineOperationRefactoring)ref).getInlinedToOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((InlineOperationRefactoring)ref).getInlinedOperation();
+			umlOperationAfterChange = ((InlineOperationRefactoring)ref).getInlinedToOperation();
 		}
 		else if(ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION)
 		{
-			return ((ExtractOperationRefactoring)ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((ExtractOperationRefactoring)ref).getExtractedFromOperation();
+			umlOperationAfterChange = ((ExtractOperationRefactoring)ref).getExtractedOperation();
 		}
 		else if(ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION)
 		{
-			return ((ExtractAndMoveOperationRefactoring)ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
+			umlOperationBeforeChange = ((ExtractAndMoveOperationRefactoring)ref).getExtractedFromOperation();
+			umlOperationAfterChange = ((ExtractAndMoveOperationRefactoring)ref).getExtractedOperation();
 		}
-		return null;
+		
+		return new CodeChange(ref, umlOperationBeforeChange.getBody().getCompositeStatement().getAstInformation(), umlOperationAfterChange.getBody().getCompositeStatement().getAstInformation());
 	}
-
 }
