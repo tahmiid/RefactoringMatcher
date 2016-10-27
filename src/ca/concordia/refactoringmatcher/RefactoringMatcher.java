@@ -1,15 +1,19 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.refactoringminer.api.GitHistoryRefactoringMiner;
@@ -39,28 +43,27 @@ public class RefactoringMatcher {
 
 		for (RefactoringData refactoringData : allRefactoringData) {
 			System.out.println(refactoringData);
-
+	
 //			String parentCommit = refactoringData.getCommitData().getParent(0).getName();
 //			gitService.checkout(repo, refactoringData.getCommitData().getId().getName());
-//			printFile(refactoringData.getTo().getFilePath());
-//			
-//			gitService.checkout(repo, refactoringData.getCommitData().getId().getName());
-//			printFile(refactoringData.getFrom().getFilePath());		
+//			String code = getFileText(refactoringData.getTo().getFilePath());
+//			code = code.subSequence(refactoringData.getFrom().getStartOffset(), refactoringData.getFrom().getStartOffset() + refactoringData.getFrom().getLength()).toString();
+//			System.out.println(code);
 		}
 	}
 
-	private static void printFile(String path) throws IOException, FileNotFoundException {
-		try(BufferedReader br = new BufferedReader(new FileReader("tmp/refactoring-toy-example/" + path))) {
-		    StringBuilder sb = new StringBuilder();
-		    String line = br.readLine();
+	private static String getFileText(String path) throws IOException, FileNotFoundException {
+		try (BufferedReader br = new BufferedReader(new FileReader("tmp/refactoring-toy-example/" + path))) {
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
 
-		    while (line != null) {
-		        sb.append(line);
-		        sb.append(System.lineSeparator());
-		        line = br.readLine();
-		    }
-		    String everything = sb.toString();
-		    System.out.println(everything);
+			while (line != null) {
+				sb.append(line);
+				sb.append(System.lineSeparator());
+				line = br.readLine();
+			}
+			String everything = sb.toString();
+			return everything;
 		}
 	}
 
