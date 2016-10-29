@@ -1,41 +1,32 @@
 package ca.concordia.refactoringmatcher;
 
-import gr.uom.java.xmi.decomposition.ASTInformation;
-
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.refactoringminer.api.Refactoring;
 
-public class RefactoringData {
-	
+public class RefactoringData {	
 	private Refactoring refactoring;
-	private RevCommit commitData;
-	private ASTInformation from;
-	private ASTInformation to;
+	private Code parentCode;
+	private Code refactoredCode;
 	
-	
-	public RefactoringData(RevCommit commitData, Refactoring ref, ASTInformation from, ASTInformation to) {
+	public RefactoringData(Refactoring ref, Code parentCode, Code refactoredCode) {
 		this.refactoring = ref;
-		this.commitData = commitData;
-		this.from = from;
-		this.to = to;
+		this.parentCode = parentCode;
+		this.refactoredCode = refactoredCode;
 	}
-	
+
 	public Refactoring getRefactoring() {
 		return refactoring;
 	}
-	public RevCommit getCommitData() {
-		return commitData;
+
+	public Code getParentCode() {
+		return parentCode;
 	}
-	public ASTInformation getFrom() {
-		return from;
-	}
-	public ASTInformation getTo() {
-		return to;
+	public Code getRefactoredCode() {
+		return refactoredCode;
 	}
 	public String toString()
 	{
-		return "\nApplied refactoring: " + refactoring.getName() + " at Commit " + commitData.getId().getName() +
-				"\nOriginal code: Line-" + from.getStartOffset() + " Length-" + from.getLength() + " Class-" + from.getFilePath() +
-				"\nRefactored code: Line-" + to.getStartOffset() + " Length-" + to.getLength() + " Class-" + to.getFilePath();
+		return "\nApplied refactoring: " + refactoring.getName() +
+				"\nOriginal code: Line-" + parentCode.getStartOffset() + " Length-" + parentCode.getLength() + " Class-" + parentCode.getFilePath() + " at Commit " + parentCode.getCommit() +
+				"\nRefactored code: Line-" + refactoredCode.getStartOffset() + " Length-" + refactoredCode.getLength() + " Class-" + refactoredCode.getFilePath()  + " at Commit " + refactoredCode.getCommit();
 	}
 }
