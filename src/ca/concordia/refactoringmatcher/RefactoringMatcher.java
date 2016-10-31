@@ -1,5 +1,13 @@
 package ca.concordia.refactoringmatcher;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,18 +37,45 @@ public class RefactoringMatcher {
 		
 		List<RefactoringData> allRefactoringData = getAllRefactoringData(clonePath, repo);
 
+		String outputParent = "parent/";
+		String outputRefactored = "refactored/";
+		
 		for (RefactoringData refactoringData : allRefactoringData) {
 			System.out.println(refactoringData);
 			
 			String code = refactoringData.getParentCode().extractSourceCode(gitService,repo);
 			
-			System.out.println(code);
+			Path p = Paths.get(outputParent + refactoringData.getParentCode().getFilePath());
+			Path dir = Paths.get(p.toString().substring(0, p.toString().lastIndexOf('\\')));
+			try {
+				File yourFile = new File(p.toString());
+				Files.createDirectories(dir);
+				yourFile.createNewFile(); // if file already exists will do nothing 
+//				FileOutputStream oFile = new FileOutputStream(yourFile, false);
+			    Files.write(p, code.getBytes(), StandardOpenOption.APPEND);
+			}catch (IOException e) {
+				System.out.println(e);
+			}
+//			System.out.println(code);
 			
 			code = refactoringData.getRefactoredCode().extractSourceCode(gitService,repo);
 			
-			System.out.println(code);
+
+			p = Paths.get(outputRefactored + refactoringData.getRefactoredCode().getFilePath());
+			dir = Paths.get(p.toString().substring(0, p.toString().lastIndexOf('\\')));
+			try {
+				File yourFile = new File(p.toString());
+				Files.createDirectories(dir);
+				yourFile.createNewFile(); // if file already exists will do nothing 
+//				FileOutputStream oFile = new FileOutputStream(yourFile, false);
+			    Files.write(p, code.getBytes(), StandardOpenOption.APPEND);
+			}catch (IOException e) {
+				System.out.println(e);
+			}
 			
-			System.out.println();
+//			System.out.println(code);
+			
+//			System.out.println();
 		}
 	}
 
