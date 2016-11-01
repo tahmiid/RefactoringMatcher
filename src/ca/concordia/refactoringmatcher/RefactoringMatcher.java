@@ -1,13 +1,17 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,66 +34,85 @@ import gr.uom.java.xmi.diff.PushDownOperationRefactoring;
 
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
+//		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
 		String projectLink = "https://github.com/junit-team/junit5.git";
-		GitService gitService = new GitServiceImpl();
-		String clonePath = getClonePath(projectLink);
-		Repository repo = gitService.cloneIfNotExists(clonePath, projectLink);
 		
-		List<RefactoringData> allRefactoringData = getAllRefactoringData(clonePath, repo);
+		String projectName = getProjectName(projectLink);
+		String clonePath = "tmp/" + projectName;
+		String parentCodeDir = "output/parentCode";
+		String refactoredCodeDir = "output/refactoredCode";
+		String refactoringDataDir = "output/refactoringData";
+		String parentCodePath = parentCodeDir + "/" + projectName + ".java";
+		String refactoredCodePath = refactoredCodeDir + "/" + projectName + ".java";
 
-		String outputParent = "parent/";
-		String outputRefactored = "refactored/";
+		Files.createDirectories(Paths.get(parentCodeDir)); 
+		Files.createDirectories(Paths.get(refactoredCodeDir)); 
+		Files.createDirectories(Paths.get(refactoringDataDir)); 
 		
+		new File(parentCodePath).createNewFile();
+		new File(refactoredCodePath).createNewFile();
+		
+		GitService gitService = new GitServiceImpl();
+		Repository repo = gitService.cloneIfNotExists(clonePath, projectLink);		
+		List<RefactoringData> allRefactoringData = getAllRefactoringData(clonePath, repo);	//		allRefactoringData = loadRefactoringDataFromFile(projectName, clonePath, refactoringDataDir, repo);
+		
+		Code code;
+		String text;
 		for (RefactoringData refactoringData : allRefactoringData) {
 			System.out.println(refactoringData);
 			
-			String code = refactoringData.getParentCode().extractSourceCode(gitService,repo);
+			code =  refactoringData.getParentCode();
+			text = code.extractSourceCode(gitService,repo) + "\n";
+			addToCodeDatabase(parentCodePath, text);
 			
-			Path p = Paths.get(outputParent + refactoringData.getParentCode().getFilePath());
-			Path dir = Paths.get(p.toString().substring(0, p.toString().lastIndexOf('\\')));
-			try {
-				File yourFile = new File(p.toString());
-				Files.createDirectories(dir);
-				yourFile.createNewFile(); // if file already exists will do nothing 
-//				FileOutputStream oFile = new FileOutputStream(yourFile, false);
-			    Files.write(p, code.getBytes(), StandardOpenOption.APPEND);
-			}catch (IOException e) {
-				System.out.println(e);
-			}
-//			System.out.println(code);
-			
-			code = refactoringData.getRefactoredCode().extractSourceCode(gitService,repo);
-			
-
-			p = Paths.get(outputRefactored + refactoringData.getRefactoredCode().getFilePath());
-			dir = Paths.get(p.toString().substring(0, p.toString().lastIndexOf('\\')));
-			try {
-				File yourFile = new File(p.toString());
-				Files.createDirectories(dir);
-				yourFile.createNewFile(); // if file already exists will do nothing 
-//				FileOutputStream oFile = new FileOutputStream(yourFile, false);
-			    Files.write(p, code.getBytes(), StandardOpenOption.APPEND);
-			}catch (IOException e) {
-				System.out.println(e);
-			}
-			
-//			System.out.println(code);
-			
-//			System.out.println();
+			code = refactoringData.getRefactoredCode();
+			text = code.extractSourceCode(gitService,repo)+ "\n";
+			addToCodeDatabase(refactoredCodePath, text);
 		}
 	}
 
-	private static String getClonePath(String projectLink) {
+	private static void addToCodeDatabase(String parentCodePath, String text) {
+	
+		try {				 
+		    Files.write(Paths.get(parentCodePath), text.getBytes(), StandardOpenOption.APPEND);
+		}catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+
+	private static List<RefactoringData> loadRefactoringDataFromFile(String projectName, String clonePath,
+			String refactoringDataDir, Repository repo)
+			throws FileNotFoundException, IOException, ClassNotFoundException, Exception {
+		List<RefactoringData> allRefactoringData;
+		if(Files.exists(Paths.get(refactoringDataDir + "/" + projectName)))
+		{
+			FileInputStream fis = new FileInputStream(refactoringDataDir + "/" + projectName);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			allRefactoringData = (List<RefactoringData>) ois.readObject();
+			ois.close();
+		}
+		else
+		{
+			allRefactoringData = getAllRefactoringData(clonePath, repo);
+			
+			FileOutputStream fos = new FileOutputStream(refactoringDataDir + "/" + projectName);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(allRefactoringData);
+			oos.close();
+		}
+		return allRefactoringData;
+	}
+
+	private static String getProjectName(String projectLink) {
 		int splitIndex1 = projectLink.lastIndexOf('/');
-		projectLink = projectLink.substring(splitIndex1);
+		projectLink = projectLink.substring(splitIndex1+1);
 		int splitIndex2 = projectLink.lastIndexOf('.');
 		if (splitIndex2 != -1) {
 			projectLink = projectLink.substring(0, splitIndex2);
 		}
 
-		return "tmp" + projectLink;
+		return projectLink;
 	}
-
 	
 	private static List<RefactoringData> getAllRefactoringData(String clonePath, Repository repo) throws Exception {
 		List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();

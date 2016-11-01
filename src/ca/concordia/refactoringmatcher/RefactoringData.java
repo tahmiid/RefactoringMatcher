@@ -1,8 +1,10 @@
 package ca.concordia.refactoringmatcher;
 
+import java.io.Serializable;
+
 import org.refactoringminer.api.Refactoring;
 
-public class RefactoringData {	
+public class RefactoringData implements Serializable{	
 	private Refactoring refactoring;
 	private Code parentCode;
 	private Code refactoredCode;
