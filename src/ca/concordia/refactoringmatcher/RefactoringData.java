@@ -5,6 +5,10 @@ import java.io.Serializable;
 import org.refactoringminer.api.Refactoring;
 
 public class RefactoringData implements Serializable{	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Refactoring refactoring;
 	private Code parentCode;
 	private Code refactoredCode;

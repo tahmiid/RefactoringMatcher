@@ -16,8 +16,8 @@ public class Code implements Serializable{
 	private int startOffset;
 	private int length;
 	private String text;
-	private int locationInCodeDatabase;
-	private int lengthInCodeDatabase;
+	private int startLocationInCodeDatabase;
+	private int endLocationInCodeDatabase;
 
 	public Code(String commit, String filePath, int startOffset, int length) {
 		this.commit = commit;
@@ -26,26 +26,21 @@ public class Code implements Serializable{
 		this.length = length;
 	}
 
-	
-	public int getLocationInCodeDatabase() {
-		return locationInCodeDatabase;
+	public int getStartLocationInCodeDatabase() {
+		return startLocationInCodeDatabase;
 	}
 
-
-	public void setLocationInCodeDatabase(int locationInCodeDatabase) {
-		this.locationInCodeDatabase = locationInCodeDatabase;
+	public void setStartLocationInCodeDatabase(int startLocationInCodeDatabase) {
+		this.startLocationInCodeDatabase = startLocationInCodeDatabase;
 	}
 
-
-	public int getLengthInCodeDatabase() {
-		return lengthInCodeDatabase;
+	public int getEndLocationInCodeDatabase() {
+		return endLocationInCodeDatabase;
 	}
 
-
-	public void setLengthInCodeDatabase(int lengthInCodeDatabase) {
-		this.lengthInCodeDatabase = lengthInCodeDatabase;
+	public void setEndLocationInCodeDatabase(int endLocationInCodeDatabase) {
+		this.endLocationInCodeDatabase = endLocationInCodeDatabase;
 	}
-
 
 	public String getCommit() {
 		return commit;

@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -34,8 +35,8 @@ import gr.uom.java.xmi.diff.PushDownOperationRefactoring;
 
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
-//		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
-		String projectLink = "https://github.com/junit-team/junit5.git";
+		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
+//		String projectLink = "https://github.com/jfree/jfreechart.git";
 		
 		String projectName = getProjectName(projectLink);
 		String clonePath = "tmp/" + projectName;
@@ -47,7 +48,7 @@ public class RefactoringMatcher {
 
 		Files.createDirectories(Paths.get(parentCodeDir)); 
 		Files.createDirectories(Paths.get(refactoredCodeDir)); 
-		Files.createDirectories(Paths.get(refactoringDataDir)); 
+		//Files.createDirectories(Paths.get(refactoringDataDir)); 
 		
 		new File(parentCodePath).createNewFile();
 		new File(refactoredCodePath).createNewFile();
@@ -58,6 +59,8 @@ public class RefactoringMatcher {
 		
 		Code code;
 		String text;
+		
+		int parentLineCount = 1, refactoredLineCount = 1;
 		for (RefactoringData refactoringData : allRefactoringData) {
 			System.out.println(refactoringData);
 			
@@ -65,12 +68,28 @@ public class RefactoringMatcher {
 			text = code.extractSourceCode(gitService,repo) + "\n";
 			addToCodeDatabase(parentCodePath, text);
 			
+			code.setStartLocationInCodeDatabase(parentLineCount); 
+			parentLineCount += countLines(text);
+			code.setEndLocationInCodeDatabase(parentLineCount - 1);
+			
 			code = refactoringData.getRefactoredCode();
 			text = code.extractSourceCode(gitService,repo)+ "\n";
 			addToCodeDatabase(refactoredCodePath, text);
+			
+			code.setStartLocationInCodeDatabase(refactoredLineCount); 
+			refactoredLineCount += countLines(text);
+			code.setEndLocationInCodeDatabase(refactoredLineCount - 1);
 		}
+		
+//		SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
 	}
 
+	private static int countLines(String str){
+		   String[] lines = str.split("\r\n|\r|\n");
+		   return  lines.length;
+	}
+	
+	
 	private static void addToCodeDatabase(String parentCodePath, String text) {
 	
 		try {				 
