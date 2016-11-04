@@ -4,17 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -27,22 +25,20 @@ import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
 import org.refactoringminer.util.GitServiceImpl;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
-import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
-import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
-import gr.uom.java.xmi.diff.InlineOperationRefactoring;
-import gr.uom.java.xmi.diff.PullUpOperationRefactoring;
 import gr.uom.java.xmi.diff.PushDownOperationRefactoring;
 
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
-		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
+//		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
+		String projectLink = "https://github.com/junit-team/junit5";
 //		String projectLink = "https://github.com/jfree/jfreechart.git";
+		
 		
 		String projectName = getProjectName(projectLink);
 		String clonePath = "tmp/" + projectName;
 		String parentCodeDir = "output/parentCode";
 		String refactoredCodeDir = "output/refactoredCode";
-		String refactoringDataDir = "output/refactoringData";
+//		String refactoringDataDir = "output/refactoringData";
 		String parentCodePath = parentCodeDir + "/" + projectName + ".java";
 		String refactoredCodePath = refactoredCodeDir + "/" + projectName + ".java";
 
@@ -52,6 +48,13 @@ public class RefactoringMatcher {
 		
 		new File(parentCodePath).createNewFile();
 		new File(refactoredCodePath).createNewFile();
+		PrintWriter writer = new PrintWriter(parentCodePath);
+		writer.print("");
+		writer.close();
+		writer = new PrintWriter(refactoredCodePath);
+		writer.print("");
+		writer.close();
+		
 		
 		GitService gitService = new GitServiceImpl();
 		Repository repo = gitService.cloneIfNotExists(clonePath, projectLink);		
@@ -62,7 +65,6 @@ public class RefactoringMatcher {
 		
 		int parentLineCount = 1, refactoredLineCount = 1;
 		for (RefactoringData refactoringData : allRefactoringData) {
-			System.out.println(refactoringData);
 			
 			code =  refactoringData.getParentCode();
 			text = code.extractSourceCode(gitService,repo) + "\n";
@@ -79,6 +81,8 @@ public class RefactoringMatcher {
 			code.setStartLocationInCodeDatabase(refactoredLineCount); 
 			refactoredLineCount += countLines(text);
 			code.setEndLocationInCodeDatabase(refactoredLineCount - 1);
+			
+			System.out.println(refactoringData);
 		}
 		
 //		SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
@@ -145,22 +149,22 @@ public class RefactoringMatcher {
 					ASTInformation astBeforeChange; 
 					ASTInformation astAfterChange;
 
-					if (ref.getRefactoringType() == RefactoringType.PULL_UP_OPERATION) {
+					/*if (ref.getRefactoringType() == RefactoringType.PULL_UP_OPERATION) {
 						astBeforeChange = ((PullUpOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PullUpOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else if (ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION) {
+					} else*/ if (ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION) {
 						astBeforeChange = ((PushDownOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PushDownOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
+					} /*else  if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
 						astBeforeChange = ((InlineOperationRefactoring) ref).getInlinedOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((InlineOperationRefactoring) ref).getInlinedToOperation().getBody().getCompositeStatement().getAstInformation();
-					} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
 						astBeforeChange = ((ExtractOperationRefactoring) ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
+					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
 						astBeforeChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else {
+					} */else {
 						continue;
 					}
 

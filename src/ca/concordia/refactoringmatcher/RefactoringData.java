@@ -31,8 +31,9 @@ public class RefactoringData implements Serializable{
 	}
 	public String toString()
 	{
-		return "\nApplied refactoring: " + refactoring.getName() +
-				"\nOriginal code: Line-" + parentCode.getStartOffset() + " Length-" + parentCode.getLength() + " Class-" + parentCode.getFilePath() + " at Commit " + parentCode.getCommit() +
-				"\nRefactored code: Line-" + refactoredCode.getStartOffset() + " Length-" + refactoredCode.getLength() + " Class-" + refactoredCode.getFilePath()  + " at Commit " + refactoredCode.getCommit();
+		return "\n" + refactoring.getName() +
+				"\nOriginal code: Starting Point-" + parentCode.getStartOffset() + " Length-" + parentCode.getLength() + " Class-" + parentCode.getFilePath() + " at Commit " + parentCode.getCommit() +
+				"\nRefactored code: Starting Point-" + refactoredCode.getStartOffset() + " Length-" + refactoredCode.getLength() + " Class-" + refactoredCode.getFilePath()  + " at Commit " + refactoredCode.getCommit() +
+				"\nMaping: Parent Code File (" + parentCode.getStartLocationInCodeDatabase() + "-" + parentCode.getEndLocationInCodeDatabase() + ") Refactored Code File (" + refactoredCode.getStartLocationInCodeDatabase() + "-" + refactoredCode.getEndLocationInCodeDatabase() + ")";
 	}
 }
