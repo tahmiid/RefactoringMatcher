@@ -25,6 +25,10 @@ import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
 import org.refactoringminer.util.GitServiceImpl;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
+import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
+import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
+import gr.uom.java.xmi.diff.InlineOperationRefactoring;
+import gr.uom.java.xmi.diff.PullUpOperationRefactoring;
 import gr.uom.java.xmi.diff.PushDownOperationRefactoring;
 
 public class RefactoringMatcher {
@@ -152,13 +156,13 @@ public class RefactoringMatcher {
 					/*if (ref.getRefactoringType() == RefactoringType.PULL_UP_OPERATION) {
 						astBeforeChange = ((PullUpOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PullUpOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else*/ if (ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION) {
+					} else if (ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION) {
 						astBeforeChange = ((PushDownOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PushDownOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
-					} /*else  if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
+					} else */ if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
 						astBeforeChange = ((InlineOperationRefactoring) ref).getInlinedOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((InlineOperationRefactoring) ref).getInlinedToOperation().getBody().getCompositeStatement().getAstInformation();
-					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+					} /*else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
 						astBeforeChange = ((ExtractOperationRefactoring) ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
 					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {

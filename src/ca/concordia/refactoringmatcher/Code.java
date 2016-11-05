@@ -7,6 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jgit.lib.Repository;
 import org.refactoringminer.api.GitService;
 
@@ -62,6 +67,14 @@ public class Code implements Serializable{
 		if (text == null) {
 			gitService.checkout(repo, commit);
 			text = readFile(filePath, StandardCharsets.UTF_8);
+			ASTParser parser = ASTParser.newParser(AST.JLS3);
+		    parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		    parser.setSource(text.toCharArray());
+		    parser.setResolveBindings(true);
+		    CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		    ASTNode block = NodeFinder.perform(cu, startOffset, length);
+		    startOffset = block.getParent().getStartPosition();
+		    length = block.getParent().getLength();
 			text = text.subSequence(startOffset, startOffset + length).toString();
 		}
 		return text;
