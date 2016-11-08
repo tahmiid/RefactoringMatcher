@@ -32,8 +32,6 @@ public class Code implements Serializable{
 		this.startOffset = startOffset;
 		this.length = length;
 	}
-
-	
 	
 	public int getStartLocationInCodeDatabase() {
 		return startLocationInCodeDatabase;
@@ -80,7 +78,7 @@ public class Code implements Serializable{
 		    MethodDeclaration parent = (MethodDeclaration) block.getParent();
 		    startOffset = parent.getName().getStartPosition();
 		    length = parent.getLength() + (parent.getStartPosition() - startOffset);
-			text = text.subSequence(startOffset, startOffset + length).toString();
+			text = text.subSequence(startOffset, startOffset + length).toString()  + "\n";
 		}
 		return text;
 	}

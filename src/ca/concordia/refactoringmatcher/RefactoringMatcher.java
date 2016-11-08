@@ -35,23 +35,54 @@ public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
 //		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
 //		String projectLink = "https://github.com/junit-team/junit5.git";
-//		String projectLink = "https://github.com/jfree/jfreechart.git";
+		String projectLink = "https://github.com/jfree/jfreechart.git";
 //		String projectLink = "https://github.com/romuloceccon/jedit.git";
-		String projectLink = "https://github.com/apache/commons-lang";
-		
-		
+//		String projectLink = "https://github.com/apache/commons-lang";	
 		
 		String projectName = getProjectName(projectLink);
 		String clonePath = "tmp/" + projectName;
 		String parentCodeDir = "output/parentCode";
 		String refactoredCodeDir = "output/refactoredCode";
-//		String refactoringDataDir = "output/refactoringData";
 		String parentCodePath = parentCodeDir + "/" + projectName + ".java";
 		String refactoredCodePath = refactoredCodeDir + "/" + projectName + ".java";
+		createFilesAndDirectories(parentCodeDir, refactoredCodeDir, parentCodePath, refactoredCodePath);		
+		
+		GitService gitService = new GitServiceImpl();
+		Repository repo = gitService.cloneIfNotExists(clonePath, projectLink);		
+		List<RefactoringData> allRefactoringData = getAllRefactoringData(clonePath, repo);	//		allRefactoringData = loadRefactoringDataFromFile(projectName, clonePath, refactoringDataDir, repo);
+		
+		Code code;
+		String text;		
+		int parentLineCount = 1, refactoredLineCount = 1;
+		for (RefactoringData refactoringData : allRefactoringData) {
+			
+			code =  refactoringData.getParentCode();
+			text = code.extractSourceCode(gitService,repo);
+			addToCodeDatabase(parentCodePath, text);
+			
+			code.setStartLocationInCodeDatabase(parentLineCount); 
+			parentLineCount += countLines(text);
+			code.setEndLocationInCodeDatabase(parentLineCount - 1);
+			
+			code = refactoringData.getRefactoredCode();
+			text = code.extractSourceCode(gitService,repo);
+			addToCodeDatabase(refactoredCodePath, text);
+			
+			code.setStartLocationInCodeDatabase(refactoredLineCount); 
+			refactoredLineCount += countLines(text);
+			code.setEndLocationInCodeDatabase(refactoredLineCount - 1);
+		}
+		
+		printReport(allRefactoringData, projectLink, projectName, gitService.countCommits(repo, "master"));
+		
+		//Generate SourcererCC output first
+		//SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
+	}
 
+	private static void createFilesAndDirectories(String parentCodeDir, String refactoredCodeDir, String parentCodePath,
+			String refactoredCodePath) throws IOException, FileNotFoundException {
 		Files.createDirectories(Paths.get(parentCodeDir)); 
 		Files.createDirectories(Paths.get(refactoredCodeDir)); 
-		//Files.createDirectories(Paths.get(refactoringDataDir)); 
 		
 		new File(parentCodePath).createNewFile();
 		new File(refactoredCodePath).createNewFile();
@@ -61,39 +92,6 @@ public class RefactoringMatcher {
 		writer = new PrintWriter(refactoredCodePath);
 		writer.print("");
 		writer.close();
-		
-		
-		GitService gitService = new GitServiceImpl();
-		Repository repo = gitService.cloneIfNotExists(clonePath, projectLink);		
-		List<RefactoringData> allRefactoringData = getAllRefactoringData(clonePath, repo);	//		allRefactoringData = loadRefactoringDataFromFile(projectName, clonePath, refactoringDataDir, repo);
-		
-		Code code;
-		String text;
-		
-		int parentLineCount = 1, refactoredLineCount = 1;
-		for (RefactoringData refactoringData : allRefactoringData) {
-			
-			code =  refactoringData.getParentCode();
-			text = code.extractSourceCode(gitService,repo) + "\n";
-			addToCodeDatabase(parentCodePath, text);
-			
-			code.setStartLocationInCodeDatabase(parentLineCount); 
-			parentLineCount += countLines(text);
-			code.setEndLocationInCodeDatabase(parentLineCount - 1);
-			
-			code = refactoringData.getRefactoredCode();
-			text = code.extractSourceCode(gitService,repo)+ "\n";
-			addToCodeDatabase(refactoredCodePath, text);
-			
-			code.setStartLocationInCodeDatabase(refactoredLineCount); 
-			refactoredLineCount += countLines(text);
-			code.setEndLocationInCodeDatabase(refactoredLineCount - 1);
-			
-//			System.out.println(refactoringData);
-		}
-		
-		printReport(allRefactoringData, projectLink, projectName, gitService.countCommits(repo, "master"));
-		SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
 	}
 
 	private static void printReport(List<RefactoringData> allRefactoringData, String projectLink, String projectName, int i) {
@@ -125,7 +123,6 @@ public class RefactoringMatcher {
 		   String[] lines = str.split("\r\n|\r|\n");
 		   return  lines.length;
 	}
-	
 	
 	private static void addToCodeDatabase(String parentCodePath, String text) {
 	
@@ -182,6 +179,8 @@ public class RefactoringMatcher {
 					ASTInformation astBeforeChange; 
 					ASTInformation astAfterChange;
 
+					// Refactor Refactoring Miner
+					
 					/*if (ref.getRefactoringType() == RefactoringType.PULL_UP_OPERATION) {
 						astBeforeChange = ((PullUpOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PullUpOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
