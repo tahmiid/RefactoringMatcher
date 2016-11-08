@@ -34,8 +34,11 @@ import gr.uom.java.xmi.diff.PushDownOperationRefactoring;
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
 //		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git"; 
-		String projectLink = "https://github.com/junit-team/junit5";
+//		String projectLink = "https://github.com/junit-team/junit5.git";
 //		String projectLink = "https://github.com/jfree/jfreechart.git";
+//		String projectLink = "https://github.com/romuloceccon/jedit.git";
+		String projectLink = "https://github.com/apache/commons-lang";
+		
 		
 		
 		String projectName = getProjectName(projectLink);
@@ -86,10 +89,36 @@ public class RefactoringMatcher {
 			refactoredLineCount += countLines(text);
 			code.setEndLocationInCodeDatabase(refactoredLineCount - 1);
 			
-			System.out.println(refactoringData);
+//			System.out.println(refactoringData);
 		}
 		
-//		SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
+		printReport(allRefactoringData, projectLink, projectName, gitService.countCommits(repo, "master"));
+		SourceCCParser sccParser = new SourceCCParser (allRefactoringData, parentCodeDir, refactoredCodeDir);
+	}
+
+	private static void printReport(List<RefactoringData> allRefactoringData, String projectLink, String projectName, int i) {
+		int inlineMethod = 0;
+		int extractMethod = 0;
+		int extractAndMoveMethod = 0;
+		for (RefactoringData refactoringData : allRefactoringData) {
+			Refactoring ref = refactoringData.getRefactoring();
+			if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
+				inlineMethod++;
+			} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+				extractMethod++;
+			} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
+				extractAndMoveMethod++;
+			}
+		}
+		
+		System.out.println();
+		System.out.println("Project: " + projectName);
+		System.out.println(projectLink);
+		System.out.println("Analyzed Commits: " + i);
+		System.out.println("Refactorings Found: " + allRefactoringData.size());
+		System.out.println("Inlined Method: " + inlineMethod);
+		System.out.println("Extract Method: " + extractMethod);
+		System.out.println("Extract and Move Method: " + extractAndMoveMethod);
 	}
 
 	private static int countLines(String str){
@@ -143,7 +172,7 @@ public class RefactoringMatcher {
 	
 	private static List<RefactoringData> getAllRefactoringData(String clonePath, Repository repo) throws Exception {
 		List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();
-
+		
 		GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
 		miner.detectAll(repo, "master", new RefactoringHandler() {
 			@Override
@@ -159,16 +188,16 @@ public class RefactoringMatcher {
 					} else if (ref.getRefactoringType() == RefactoringType.PUSH_DOWN_OPERATION) {
 						astBeforeChange = ((PushDownOperationRefactoring) ref).getOriginalOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((PushDownOperationRefactoring) ref).getMovedOperation().getBody().getCompositeStatement().getAstInformation();
-					} else */ if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
+					} else*/ if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
 						astBeforeChange = ((InlineOperationRefactoring) ref).getInlinedOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((InlineOperationRefactoring) ref).getInlinedToOperation().getBody().getCompositeStatement().getAstInformation();
-					} /*else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
 						astBeforeChange = ((ExtractOperationRefactoring) ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
 					} else  if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
 						astBeforeChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedFromOperation().getBody().getCompositeStatement().getAstInformation();
 						astAfterChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation().getBody().getCompositeStatement().getAstInformation();
-					} */else {
+					} else {
 						continue;
 					}
 

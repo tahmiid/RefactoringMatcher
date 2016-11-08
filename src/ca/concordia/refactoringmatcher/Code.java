@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jgit.lib.Repository;
 import org.refactoringminer.api.GitService;
@@ -23,6 +24,7 @@ public class Code implements Serializable{
 	private String text;
 	private int startLocationInCodeDatabase;
 	private int endLocationInCodeDatabase;
+	public int headerNumber;
 
 	public Code(String commit, String filePath, int startOffset, int length) {
 		this.commit = commit;
@@ -31,6 +33,8 @@ public class Code implements Serializable{
 		this.length = length;
 	}
 
+	
+	
 	public int getStartLocationInCodeDatabase() {
 		return startLocationInCodeDatabase;
 	}
@@ -73,8 +77,9 @@ public class Code implements Serializable{
 		    parser.setResolveBindings(true);
 		    CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		    ASTNode block = NodeFinder.perform(cu, startOffset, length);
-		    startOffset = block.getParent().getStartPosition();
-		    length = block.getParent().getLength();
+		    MethodDeclaration parent = (MethodDeclaration) block.getParent();
+		    startOffset = parent.getName().getStartPosition();
+		    length = parent.getLength() + (parent.getStartPosition() - startOffset);
 			text = text.subSequence(startOffset, startOffset + length).toString();
 		}
 		return text;
