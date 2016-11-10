@@ -1,39 +1,40 @@
+
 package ca.concordia.refactoringmatcher;
 
-import java.io.Serializable;
-
 import org.refactoringminer.api.Refactoring;
+import org.refactoringminer.api.RefactoringType;
 
-public class RefactoringData implements Serializable{	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class RefactoringData {	
 	private Refactoring refactoring;
-	private Code parentCode;
-	private Code refactoredCode;
+	private Code beforeCode;
+	private Code afterCode;
 	
-	public RefactoringData(Refactoring ref, Code parentCode, Code refactoredCode) {
+	public RefactoringData(Refactoring ref, Code beforeCode, Code afterCode) {
 		this.refactoring = ref;
-		this.parentCode = parentCode;
-		this.refactoredCode = refactoredCode;
+		this.beforeCode = beforeCode;
+		this.afterCode = afterCode;
 	}
 
-	public Refactoring getRefactoring() {
-		return refactoring;
+	public Code getBeforeCode() {
+		return beforeCode;
 	}
-
-	public Code getParentCode() {
-		return parentCode;
-	}
-	public Code getRefactoredCode() {
-		return refactoredCode;
+	public Code getAfterCode() {
+		return afterCode;
 	}
 	public String toString()
 	{
 		return "\n" + refactoring.getName() +
-				"\nOriginal code: Starting Point-" + parentCode.getStartOffset() + " Length-" + parentCode.getLength() + " Class-" + parentCode.getFilePath() + " at Commit " + parentCode.getCommit() +
-				"\nRefactored code: Starting Point-" + refactoredCode.getStartOffset() + " Length-" + refactoredCode.getLength() + " Class-" + refactoredCode.getFilePath()  + " at Commit " + refactoredCode.getCommit();
-//		+		"\nMaping: Parent Code File (" + parentCode.getStartLocationInCodeDatabase() + "-" + parentCode.getEndLocationInCodeDatabase() + ") Refactored Code File (" + refactoredCode.getStartLocationInCodeDatabase() + "-" + refactoredCode.getEndLocationInCodeDatabase() + ")";
+				"\nOriginal code: Starting Point-" + beforeCode.getStartOffset() + " Length-" + beforeCode.getLength() + " Class-" + beforeCode.getFilePath() + " at Commit " + beforeCode.getCommit() +
+				"\nRefactored code: Starting Point-" + afterCode.getStartOffset() + " Length-" + afterCode.getLength() + " Class-" + afterCode.getFilePath()  + " at Commit " + afterCode.getCommit();
+	}
+	
+	public RefactoringType getType()
+	{
+		return refactoring.getRefactoringType();
+	}
+	
+	public String getName()
+	{
+		return refactoring.getName();
 	}
 }

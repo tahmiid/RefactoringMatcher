@@ -1,19 +1,19 @@
 package ca.concordia.refactoringmatcher;
 
 public class HeaderClonePair {
-	private Header headerOne;
-	private Header headerTwo;
+	private CodeBlock headerOne;
+	private CodeBlock headerTwo;
 	
-	public Header getHeaderOne() {
+	public CodeBlock getHeaderOne() {
 		return headerOne;
 	}
-	public void setHeaderOne(Header headerOne) {
+	public void setHeaderOne(CodeBlock headerOne) {
 		this.headerOne = headerOne;
 	}
-	public Header getHeaderTwo() {
+	public CodeBlock getHeaderTwo() {
 		return headerTwo;
 	}
-	public void setHeaderTwo(Header headerTwo) {
+	public void setHeaderTwo(CodeBlock headerTwo) {
 		this.headerTwo = headerTwo;
 	}
 	
