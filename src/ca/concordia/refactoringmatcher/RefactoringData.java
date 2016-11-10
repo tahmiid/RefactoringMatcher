@@ -15,12 +15,22 @@ public class RefactoringData {
 		this.afterCode = afterCode;
 	}
 
+	public String getBeforeCodeText() {
+		return beforeCode.getText();
+	}
+	
 	public Code getBeforeCode() {
 		return beforeCode;
 	}
+	
+	public String getAfterCodeText() {
+		return afterCode.getText();
+	}
+	
 	public Code getAfterCode() {
 		return afterCode;
 	}
+	
 	public String toString()
 	{
 		return "\n" + refactoring.getName() +

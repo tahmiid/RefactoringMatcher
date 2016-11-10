@@ -1,7 +1,6 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,7 +18,7 @@ import org.refactoringminer.api.GitService;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
 
-public class Code implements Serializable {
+public class Code {
 	private String commit;
 	private String filePath;
 	private int startOffset;

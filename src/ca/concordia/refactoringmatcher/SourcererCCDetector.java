@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,7 +16,7 @@ import input.logic.InputBuilderClassic;
 public class SourcererCCDetector implements CloneDetector {
 	
 	@Override
-	public List<Pair<CodeBlock, CodeBlock>> detectClonePairs(Path path) throws IOException, InterruptedException, ParseException {
+	public List<Pair<CodeLocation, CodeLocation>> detectClonePairs(Path path) throws IOException, InterruptedException, ParseException {
 		Path sourcererCCOutputPath = Paths.get("output8.0/tokensclones_index_WITH_FILTER.txt");
 		
 		Path detectionDirectory = Paths.get("cloneDetectionTmp");

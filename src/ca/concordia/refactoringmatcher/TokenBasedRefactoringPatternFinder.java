@@ -8,44 +8,58 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFinder{
-
+public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFinder{ 
+	
 	public TokenBasedRefactoringPatternFinder(List<RefactoringData> refactorings, Path outputDirectory) throws IOException, InterruptedException, ParseException {
+		HashMap <Integer, Code> CodeLocationMapingBefore = new HashMap<Integer, Code> ();
+		HashMap <Integer, Code> CodeLocationMapingAfter = new HashMap<Integer, Code> ();
+		List<Pair<Code, Code>> cloneCodePairs  = new ArrayList<Pair<Code, Code>>();
 		Path beforeCodePath = createEmptyFile( Paths.get(outputDirectory + "/beforeCode.java") );
 		Path afterCodePath = createEmptyFile( Paths.get(outputDirectory + "/afterCode.java") );	
 		
-		Code code;
 		String text;
+		int start;
+//		int end;
 		int beforeLineCount = 1, afterLineCount = 1;
+//		CodeLocation codeLocation;
 		for (RefactoringData refactoringData : refactorings) {
 
-			code = refactoringData.getBeforeCode();
-			text = code.getText();
-			addToCodeDatabase(beforeCodePath, text);
-
-			code.setStartLocationInCodeDatabase(beforeLineCount);
+			text = refactoringData.getBeforeCodeText();
+			addToFile(beforeCodePath, text);
+			start = beforeLineCount;
 			beforeLineCount += countLines(text);
-			code.setEndLocationInCodeDatabase(beforeLineCount - 1);
-
-			code = refactoringData.getAfterCode();
-			text = code.getText();
-			addToCodeDatabase(afterCodePath, text);
-
-			code.setStartLocationInCodeDatabase(afterLineCount);
+//			end = beforeLineCount - 1;
+//			codeLocation = new CodeLocation(0, beforeCodePath, start, end);
+			CodeLocationMapingBefore.put(start, refactoringData.getBeforeCode());
+			
+			text = refactoringData.getAfterCodeText();
+			addToFile(afterCodePath, text);
+			start = afterLineCount;
 			afterLineCount += countLines(text);
-			code.setEndLocationInCodeDatabase(afterLineCount - 1);
+//			end = afterLineCount - 1;
+//			codeLocation = new CodeLocation(0, afterCodePath, start, end);
+			CodeLocationMapingAfter.put(start, refactoringData.getAfterCode());
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
-		List<Pair<CodeBlock, CodeBlock>> clones = detector.detectClonePairs(beforeCodePath);
+		List<Pair<CodeLocation, CodeLocation>> clonesPairs = detector.detectClonePairs(beforeCodePath);
 		
-		for (Pair<CodeBlock, CodeBlock> pair : clones) {
-			System.out.println(pair.getLeft() + " - " + pair.getRight());
+		for (Pair<CodeLocation, CodeLocation> pair : clonesPairs) {
+			Code left = CodeLocationMapingBefore.get(pair.getLeft().getStartLocation());
+			Code right = CodeLocationMapingBefore.get(pair.getRight().getStartLocation());
+			Pair<Code, Code> codePair = Pair.of(left, right);
+			cloneCodePairs.add(codePair);
+		}
+		
+		for (Pair<Code, Code> pair : cloneCodePairs) {
+			System.out.println(pair.getLeft().getFilePath() +" --- "+pair.getRight().getFilePath());
 		}
 	}
 
@@ -70,8 +84,7 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		return lines.length;
 	}
 
-	private void addToCodeDatabase(Path codePath, String text) {
-
+	private void addToFile(Path codePath, String text) {
 		try {
 			Files.write(codePath, text.getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {

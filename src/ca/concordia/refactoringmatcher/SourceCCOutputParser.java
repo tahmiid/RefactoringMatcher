@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 
 public class SourceCCOutputParser {
-	List<CodeBlock> codeBlocks;
+	List<CodeLocation> codeBlocks;
 	List<Pair<Integer, Integer>> rawClonePairs;
 
 	File beforeHeader;
@@ -31,46 +32,51 @@ public class SourceCCOutputParser {
 	List<RefactoringData> allRefactoringData;
 	List<HashSet<RefactoringData>> clones;
 
-	public SourceCCOutputParser(List<RefactoringData> allRefactoringData, String parentCodeDir,
-			String refactoredCodeDir) {
-		clones = new ArrayList<HashSet<RefactoringData>>();
-		beforeHeader = new File(parentCodeDir + "/headers.file");
-		afterHeader = new File(refactoredCodeDir + "/headers.file");
-		beforeClones = new File(parentCodeDir + "/tokensclones_index_WITH_FILTER.txt");
-		afterClones = new File(refactoredCodeDir + "/tokensclones_index_WITH_FILTER.txt");
-		this.allRefactoringData = allRefactoringData;
-
-		parseBeforeHeader();
-		parseAfterHeader();
-		parseBeforeClones();
-
-		printReport();
-	}
+//	public SourceCCOutputParser(List<RefactoringData> allRefactoringData, String parentCodeDir,
+//			String refactoredCodeDir) {
+//		clones = new ArrayList<HashSet<RefactoringData>>();
+//		beforeHeader = new File(parentCodeDir + "/headers.file");
+//		afterHeader = new File(refactoredCodeDir + "/headers.file");
+//		beforeClones = new File(parentCodeDir + "/tokensclones_index_WITH_FILTER.txt");
+//		afterClones = new File(refactoredCodeDir + "/tokensclones_index_WITH_FILTER.txt");
+//		this.allRefactoringData = allRefactoringData;
+//
+//		parseBeforeHeader();
+//		parseAfterHeader();
+//		parseBeforeClones();
+//
+//		printReport();
+//	}
 
 	public SourceCCOutputParser(Path headersPath, Path sourcererCCOutputPath) throws IOException {
 		ParseHeaderFile(headersPath);
 		ParseOutputFile(sourcererCCOutputPath);
 	}
 
-	public List<Pair<CodeBlock, CodeBlock>> parseClonePairs() {
-		List<Pair<CodeBlock, CodeBlock>> clonePairs = new ArrayList<Pair<CodeBlock, CodeBlock>>();
+	public List<Pair<CodeLocation, CodeLocation>> parseClonePairs() {
+		List<Pair<CodeLocation, CodeLocation>> clonePairs = new ArrayList<Pair<CodeLocation, CodeLocation>>();
 		for (Pair<Integer, Integer> rawClonePair : rawClonePairs) {
-			CodeBlock left = codeBlocks.stream().filter(block->block.getId()==rawClonePair.getLeft()).findFirst().get();
-			CodeBlock right = codeBlocks.stream().filter(block->block.getId()==rawClonePair.getRight()).findFirst().get();
-			Pair<CodeBlock, CodeBlock> clonePair = Pair.of(left, right);
+			CodeLocation left = codeBlocks.stream().filter(block->block.getId()==rawClonePair.getLeft()).findFirst().get();
+			CodeLocation right = codeBlocks.stream().filter(block->block.getId()==rawClonePair.getRight()).findFirst().get();
+			Pair<CodeLocation, CodeLocation> clonePair = Pair.of(left, right);
 			clonePairs.add(clonePair);
 		}
 		return clonePairs;
 	}
 	
 	private void ParseHeaderFile(Path headersPath) throws IOException {
-		codeBlocks = new ArrayList<CodeBlock>();
+		codeBlocks = new ArrayList<CodeLocation>();
 		String line;
 		try (InputStream fis = new FileInputStream(headersPath.toString());
 				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 				BufferedReader br = new BufferedReader(isr);) {
 			while ((line = br.readLine()) != null) {
-				CodeBlock header = new CodeBlock(line);
+				String[] headerParts = line.split(",");
+				int id = Integer.parseInt(headerParts[0]);
+				Path file = Paths.get(headerParts[1]);
+				int start = Integer.parseInt(headerParts[2]);
+				int end = Integer.parseInt(headerParts[3]);
+				CodeLocation header = new CodeLocation(id, file, start, end);
 				codeBlocks.add(header);
 			}
 		} catch (FileNotFoundException e) {
@@ -163,31 +169,6 @@ public class SourceCCOutputParser {
 			System.out.println();
 			System.out.println();
 		}
-	}
-
-	private void parseAfterHeader() {
-		String line;
-		try (InputStream fis = new FileInputStream(afterHeader.getPath());
-				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				BufferedReader br = new BufferedReader(isr);) {
-			while ((line = br.readLine()) != null) {
-				int s = Integer.parseInt(line.substring(line.lastIndexOf(',') + 1));
-				for (RefactoringData refactoringData : allRefactoringData) {
-					if (refactoringData.getAfterCode().getEndLocationInCodeDatabase() == s) {
-						refactoringData.getAfterCode().headerNumber = Integer
-								.parseInt(line.substring(0, line.indexOf(',')));
-						// System.out.println(refactoringData.getRefactoredCode().headerNumber);
-					}
-				}
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	private void parseBeforeHeader() {

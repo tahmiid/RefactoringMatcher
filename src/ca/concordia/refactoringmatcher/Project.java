@@ -1,13 +1,5 @@
 package ca.concordia.refactoringmatcher;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +14,6 @@ import org.refactoringminer.api.Refactoring;
 import org.refactoringminer.api.RefactoringHandler;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
-import org.refactoringminer.util.GitServiceImpl;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
 import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
@@ -46,16 +37,6 @@ public class Project {
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
 		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
 		//List<RefactoringData> allRefactoringData = loadRefactoringDataFromFile(projectName,clonePath,refactoringDataDir, repo);
-	}
-
-	private Path createEmptyFile(Path path) throws IOException {
-		Files.createDirectories(path.getParent());
-		PrintWriter writer;	
-		new File(path.toString()).createNewFile();
-		writer = new PrintWriter(path.toString());
-		writer.print("");
-		writer.close();
-		return path;
 	}
 
 	private String getName(String projectLink) {
