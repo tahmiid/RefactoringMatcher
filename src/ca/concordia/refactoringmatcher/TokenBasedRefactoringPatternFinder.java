@@ -15,70 +15,118 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFinder{ 
-	
-	public TokenBasedRefactoringPatternFinder(List<RefactoringData> refactorings, Path outputDirectory) throws IOException, InterruptedException, ParseException {
-		HashMap <Integer, Code> CodeLocationMapingBefore = new HashMap<Integer, Code> ();
-		HashMap <Integer, Code> CodeLocationMapingAfter = new HashMap<Integer, Code> ();
-		List<Pair<Code, Code>> cloneCodePairs  = new ArrayList<Pair<Code, Code>>();
-		Path beforeCodePath = createEmptyFile( Paths.get(outputDirectory + "/beforeCode.java") );
-		Path afterCodePath = createEmptyFile( Paths.get(outputDirectory + "/afterCode.java") );	
-		
+public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFinder {
+
+	List<HashSet<RefactoringData>> similarRefactorings;
+	List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs;
+
+	public TokenBasedRefactoringPatternFinder(List<RefactoringData> refactorings, Path outputDirectory)
+			throws IOException, InterruptedException, ParseException {
+		similarRefactoringPairs = new ArrayList<Pair<RefactoringData, RefactoringData>>();
+		similarRefactorings = new ArrayList<HashSet<RefactoringData>>();
+
+		Path beforeCodePath = createEmptyFile(Paths.get(outputDirectory + "/beforeCode.java"));
+		Path afterCodePath = createEmptyFile(Paths.get(outputDirectory + "/afterCode.java"));
+		HashMap<Integer, RefactoringData> codeMapingBefore = new HashMap<Integer, RefactoringData>();
+		HashMap<Integer, RefactoringData> codeMapingAfter = new HashMap<Integer, RefactoringData>();
 		String text;
 		int start;
-//		int end;
 		int beforeLineCount = 1, afterLineCount = 1;
-//		CodeLocation codeLocation;
 		for (RefactoringData refactoringData : refactorings) {
 
 			text = refactoringData.getBeforeCodeText();
 			addToFile(beforeCodePath, text);
 			start = beforeLineCount;
 			beforeLineCount += countLines(text);
-//			end = beforeLineCount - 1;
-//			codeLocation = new CodeLocation(0, beforeCodePath, start, end);
-			CodeLocationMapingBefore.put(start, refactoringData.getBeforeCode());
-			
+			codeMapingBefore.put(start, refactoringData);
+
 			text = refactoringData.getAfterCodeText();
 			addToFile(afterCodePath, text);
 			start = afterLineCount;
 			afterLineCount += countLines(text);
-//			end = afterLineCount - 1;
-//			codeLocation = new CodeLocation(0, afterCodePath, start, end);
-			CodeLocationMapingAfter.put(start, refactoringData.getAfterCode());
+			codeMapingAfter.put(start, refactoringData);
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
-		List<Pair<CodeLocation, CodeLocation>> clonesPairs = detector.detectClonePairs(beforeCodePath);
-		
-		for (Pair<CodeLocation, CodeLocation> pair : clonesPairs) {
-			Code left = CodeLocationMapingBefore.get(pair.getLeft().getStartLocation());
-			Code right = CodeLocationMapingBefore.get(pair.getRight().getStartLocation());
-			Pair<Code, Code> codePair = Pair.of(left, right);
-			cloneCodePairs.add(codePair);
+		List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(beforeCodePath);
+
+		findSimilarRefactorings(clonePairs, codeMapingBefore, codeMapingAfter);
+	}
+
+	private void findSimilarRefactorings(List<Pair<CodeLocation, CodeLocation>> clonePairs,
+			HashMap<Integer, RefactoringData> codeMapingBefore, HashMap<Integer, RefactoringData> codeMapingAfter) {
+		for (Pair<CodeLocation, CodeLocation> pair : clonePairs) {
+			RefactoringData left = codeMapingBefore.get(pair.getLeft().getStartLocation());
+			RefactoringData right = codeMapingBefore.get(pair.getRight().getStartLocation());
+
+			if (left.getType() != right.getType()) {
+				continue;
+			}
+
+			if (left.getAfterCode().equals(right.getAfterCode())) {
+				continue;
+			}
+
+			// if
+			// (left.getCommit().toString().equals(right.getCommit().toString()))
+			// {
+			// if(left.getAfterCode().getFilePath().equals(right.getAfterCode().getFilePath()))
+			// if(left.getAfterCode().getMethodName().equals(right.getAfterCode().getMethodName()))
+			// continue;
+			// }
+
+			Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
+			similarRefactoringPairs.add(refactoringPair);
+
 		}
-		
-		for (Pair<Code, Code> pair : cloneCodePairs) {
-			System.out.println(pair.getLeft().getFilePath() +" --- "+pair.getRight().getFilePath());
+
+		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
+			addToRefactoringSets(pair.getLeft(), pair.getRight());
 		}
+	}
+
+	private void addToRefactoringSets(RefactoringData left, RefactoringData right) {
+		for (HashSet<RefactoringData> set : similarRefactorings) {
+
+			if (set.contains(left) && set.contains(right)) {
+				return;
+			}
+
+			if (set.contains(left) && !set.contains(right)) {
+				set.add(right);
+				return;
+			} else if (set.contains(right) && !set.contains(left)) {
+				set.add(left);
+				return;
+			}
+		}
+
+		HashSet<RefactoringData> group = new HashSet<RefactoringData>();
+		group.add(left);
+		group.add(right);
+		similarRefactorings.add(group);
 	}
 
 	@Override
-	public List<HashSet<RefactoringData>> findSimilarRefactorings(List<RefactoringData> refactorings) {
-		return null;
-
+	public List<Pair<RefactoringData, RefactoringData>> getSimilarRefactoringPairs() {
+		return similarRefactoringPairs;
 	}
-	
+
+	@Override
+	public List<HashSet<RefactoringData>> getSimilarRefactorings() {
+		return similarRefactorings;
+	}
+
 	private Path createEmptyFile(Path path) throws IOException {
 		Files.createDirectories(path.getParent());
-		PrintWriter writer;	
+		PrintWriter writer;
 		new File(path.toString()).createNewFile();
 		writer = new PrintWriter(path.toString());
 		writer.print("");
 		writer.close();
 		return path;
 	}
-	
+
 	private int countLines(String str) {
 		String[] lines = str.split("\r\n|\r|\n");
 		return lines.length;

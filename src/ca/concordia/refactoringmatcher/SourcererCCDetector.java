@@ -53,7 +53,15 @@ public class SourcererCCDetector implements CloneDetector {
 		indexbased.SearchManager.main(arg);
 		
 		SourceCCOutputParser sccParser = new SourceCCOutputParser(headersPath, sourcererCCOutputPath);
-		return sccParser.parseClonePairs();
+		List<Pair<CodeLocation, CodeLocation>> sccResults = sccParser.parseClonePairs();
+		
+		deleteDir(detectionDirectory);
+		deleteDir(Paths.get("fwdindex"));
+		deleteDir(Paths.get("gtpm"));
+		deleteDir(Paths.get("index"));
+		deleteDir(Paths.get("output8.0"));
+		deleteDir(Paths.get("output/sortedFiles"));
+		return sccResults;
 
 	}
 	
@@ -67,5 +75,6 @@ public class SourcererCCDetector implements CloneDetector {
 	        myFile.delete();
 
 	    }
+	    dir.toFile().delete();
 	}
 }

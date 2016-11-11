@@ -1,16 +1,23 @@
 
 package ca.concordia.refactoringmatcher;
 
-import org.refactoringminer.api.Refactoring;
+import java.io.Serializable;
+
 import org.refactoringminer.api.RefactoringType;
 
-public class RefactoringData {	
-	private Refactoring refactoring;
+public class RefactoringData implements Serializable {	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String name;
+	private RefactoringType type;
 	private Code beforeCode;
 	private Code afterCode;
 	
-	public RefactoringData(Refactoring ref, Code beforeCode, Code afterCode) {
-		this.refactoring = ref;
+	public RefactoringData(String name, RefactoringType type, Code beforeCode, Code afterCode) {
+		this.name = name;
+		this.type = type;
 		this.beforeCode = beforeCode;
 		this.afterCode = afterCode;
 	}
@@ -33,18 +40,23 @@ public class RefactoringData {
 	
 	public String toString()
 	{
-		return "\n" + refactoring.getName() +
-				"\nOriginal code: Starting Point-" + beforeCode.getStartOffset() + " Length-" + beforeCode.getLength() + " Class-" + beforeCode.getFilePath() + " at Commit " + beforeCode.getCommit() +
-				"\nRefactored code: Starting Point-" + afterCode.getStartOffset() + " Length-" + afterCode.getLength() + " Class-" + afterCode.getFilePath()  + " at Commit " + afterCode.getCommit();
+		return name + "\n" +
+				"Ori code: " + beforeCode.getMethodName() + "() Start-" + beforeCode.getStartOffset() + "(" + beforeCode.getLength() + ") in " + beforeCode.getFilePath() + " at " + beforeCode.getCommit() + "\n" +
+				"Ref code: " + afterCode.getMethodName() + "() Start-" + afterCode.getStartOffset() + "(" + afterCode.getLength() + ") in " + afterCode.getFilePath()  + " at " + afterCode.getCommit();
 	}
 	
 	public RefactoringType getType()
 	{
-		return refactoring.getRefactoringType();
+		return type;
 	}
 	
 	public String getName()
 	{
-		return refactoring.getName();
+		return name;
+	}
+	
+	public String getCommit()
+	{
+		return afterCode.getCommit();
 	}
 }

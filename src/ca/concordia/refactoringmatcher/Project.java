@@ -1,5 +1,11 @@
 package ca.concordia.refactoringmatcher;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,17 +32,16 @@ public class Project {
 	String name;
 	Path directory;
 	Path outputDirectory;
-	Path beforeCodePath;
-	Path afterCodePath;
 	Repository repository;
+	int commintCount;
 	
 	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, GitService gitService) throws Exception {
 		this.link = projectLink;
 		this.name = getName(link);
-		this.directory = Files.createDirectories( Paths.get(projectsDirectory + "/" + name));
+		this.directory = Paths.get(projectsDirectory + "/" + name);
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
 		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
-		//List<RefactoringData> allRefactoringData = loadRefactoringDataFromFile(projectName,clonePath,refactoringDataDir, repo);
+		this.commintCount = gitService.countCommits(repository, "master");
 	}
 
 	private String getName(String projectLink) {
@@ -109,12 +114,45 @@ public class Project {
 						e.printStackTrace();
 					}
 				
-					RefactoringData refactoringData = new RefactoringData(ref, beforeCode, afterCode);
+					RefactoringData refactoringData = new RefactoringData(ref.getName(), ref.getRefactoringType(), beforeCode, afterCode);
 					allRefactoringData.add(refactoringData);
 				}
 			}
 		});
 		return allRefactoringData;
+	}
+	
+	public List<RefactoringData> loadRefactoringsFromFile(GitService gitService) throws Exception {
+		List<RefactoringData> refactorings;
+		if (Files.exists(Paths.get(outputDirectory + "/" + name))) {
+			FileInputStream fis = new FileInputStream(outputDirectory + "/" + name);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			try {
+				refactorings = (List<RefactoringData>) ois.readObject();
+			} catch (ClassNotFoundException e) {
+				refactorings = getAllRefactorings(gitService);
+				writeToFile(refactorings);
+			}
+			ois.close();
+		} else {
+			refactorings = getAllRefactorings(gitService);
+			writeToFile(refactorings);
+		}
+		return refactorings;
+	}
+
+	private void writeToFile(List<RefactoringData> refactorings) throws IOException {
+		Files.deleteIfExists(Paths.get(outputDirectory + "/" + name));
+		FileOutputStream fos = new FileOutputStream(outputDirectory + "/" + name);
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(refactorings);
+			oos.close();
+		} catch (IOException e) {
+			System.out.println("Failed to serialize");
+		}
+
 	}
 }
 
