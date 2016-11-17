@@ -28,12 +28,12 @@ import gr.uom.java.xmi.diff.InlineOperationRefactoring;
 
 public class Project {
 	
-	String link;
-	String name;
-	Path directory;
-	Path outputDirectory;
-	Repository repository;
-	int commintCount;
+	private String link;
+	private String name;
+	private Path directory;
+	private Path outputDirectory;
+	private Repository repository;
+	private int commitCount;
 	
 	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, GitService gitService) throws Exception {
 		this.link = projectLink;
@@ -41,7 +41,7 @@ public class Project {
 		this.directory = Paths.get(projectsDirectory + "/" + name);
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
 		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
-		this.commintCount = gitService.countCommits(repository, "master");
+		this.commitCount = gitService.countCommits(repository, "master");
 	}
 
 	private String getName(String projectLink) {
@@ -154,5 +154,30 @@ public class Project {
 		}
 
 	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Path getDirectory() {
+		return directory;
+	}
+
+	public Path getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public int getCommitCount() {
+		return commitCount;
+	}
+	
 }
 

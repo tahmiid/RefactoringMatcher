@@ -14,10 +14,10 @@ import org.refactoringminer.util.GitServiceImpl;
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
 //		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
-		// String projectLink = "https://github.com/junit-team/junit5.git";
-		 String projectLink = "https://github.com/jfree/jfreechart.git";
-//		String projectLink = "https://github.com/romuloceccon/jedit";
-		// String projectLink = "https://github.com/apache/commons-lang";
+//		 String projectLink = "https://github.com/junit-team/junit5.git";
+//		 String projectLink = "https://github.com/jfree/jfreechart.git";
+		String projectLink = "https://github.com/romuloceccon/jedit";
+//		 String projectLink = "https://github.com/apache/commons-lang";
 
 		Path outputDirectory = Files.createDirectories(Paths.get("output"));
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
@@ -29,7 +29,7 @@ public class RefactoringMatcher {
 
 		printReport(refactorings, project);
 
-		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.outputDirectory);
+		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
 
 //		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
 		
@@ -79,9 +79,9 @@ public class RefactoringMatcher {
 		}
 
 		System.out.println();
-		System.out.println("Project: " + project.name);
-		System.out.println(project.link);
-		System.out.println("Analyzed Commits: " + project.commintCount);
+		System.out.println("Project: " + project.getName());
+		System.out.println(project.getLink());
+		System.out.println("Analyzed Commits: " + project.getCommitCount());
 		System.out.println("Refactorings Found: " + allRefactoringData.size());
 		System.out.println("Inlined Method: " + inlineMethod);
 		System.out.println("Extract Method: " + extractMethod);

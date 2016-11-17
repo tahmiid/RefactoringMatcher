@@ -38,11 +38,15 @@ public class RefactoringData implements Serializable {
 		return afterCode;
 	}
 	
+	public String toDetailString()
+	{
+		return beforeCode.getMethodName() + " in " + beforeCode.getFileName() + "\t(Refactoring:" + name + ")" + " (" + afterCode.getCommit() + ")\n"+
+			   afterCode.getMethodName() + " in " + afterCode.getFileName();
+	}
+	
 	public String toString()
 	{
-		return name + "\n" +
-				"Ori code: " + beforeCode.getMethodName() + "() Start-" + beforeCode.getStartOffset() + "(" + beforeCode.getLength() + ") in " + beforeCode.getFilePath() + " at " + beforeCode.getCommit() + "\n" +
-				"Ref code: " + afterCode.getMethodName() + "() Start-" + afterCode.getStartOffset() + "(" + afterCode.getLength() + ") in " + afterCode.getFilePath()  + " at " + afterCode.getCommit();
+		return getName() + " at " + getCommit();
 	}
 	
 	public RefactoringType getType()
@@ -58,5 +62,10 @@ public class RefactoringData implements Serializable {
 	public String getCommit()
 	{
 		return afterCode.getCommit();
+	}
+	
+	public String getCommitShort()
+	{
+		return afterCode.getCommitShort();
 	}
 }

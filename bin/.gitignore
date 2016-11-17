@@ -1,9 +1,4 @@
 /lib/RefactoringMiner.jar
 tmp
 output
-/.classpath
-/.gitignore
-/.project
-/.settings/
 /ca/
-/sourcerer-cc.properties

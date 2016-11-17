@@ -48,36 +48,57 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
-		List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(beforeCodePath);
+		List<Pair<CodeLocation, CodeLocation>> beforeClonePairs = detector.detectClonePairs(beforeCodePath);
 
-		findSimilarRefactorings(clonePairs, codeMapingBefore, codeMapingAfter);
+		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodePath);
+
+		findSimilarRefactorings(beforeClonePairs, codeMapingBefore, afterClonePairs, codeMapingAfter);
 	}
 
-	private void findSimilarRefactorings(List<Pair<CodeLocation, CodeLocation>> clonePairs,
-			HashMap<Integer, RefactoringData> codeMapingBefore, HashMap<Integer, RefactoringData> codeMapingAfter) {
-		for (Pair<CodeLocation, CodeLocation> pair : clonePairs) {
+	private void findSimilarRefactorings(List<Pair<CodeLocation, CodeLocation>> beforeClonePairs,
+			HashMap<Integer, RefactoringData> codeMapingBefore, List<Pair<CodeLocation, CodeLocation>> afterClonePairs, HashMap<Integer, RefactoringData> codeMapingAfter) {
+
+		List<Pair<RefactoringData, RefactoringData>> afterRefactoringPairs = new ArrayList<Pair<RefactoringData, RefactoringData>>();
+		for (Pair<CodeLocation, CodeLocation> pair : afterClonePairs) {
+			RefactoringData left = codeMapingAfter.get(pair.getLeft().getStartLocation());
+			RefactoringData right = codeMapingAfter.get(pair.getRight().getStartLocation());
+			
+			if(left == null || right == null)
+			{
+				//TODO handle methods inside innerclasses
+				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
+				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
+				continue;
+			}		
+
+			Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
+			afterRefactoringPairs.add(refactoringPair);
+		}
+		
+		for (Pair<CodeLocation, CodeLocation> pair : beforeClonePairs) {
 			RefactoringData left = codeMapingBefore.get(pair.getLeft().getStartLocation());
 			RefactoringData right = codeMapingBefore.get(pair.getRight().getStartLocation());
-
-			if (left.getType() != right.getType()) {
+			
+			if(left == null || right == null)
+			{
+				//TODO handle methods inside innerclasses
+				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
+				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
 				continue;
 			}
-
+			
 			if (left.getAfterCode().equals(right.getAfterCode())) {
 				continue;
 			}
-
-			// if
-			// (left.getCommit().toString().equals(right.getCommit().toString()))
-			// {
-			// if(left.getAfterCode().getFilePath().equals(right.getAfterCode().getFilePath()))
-			// if(left.getAfterCode().getMethodName().equals(right.getAfterCode().getMethodName()))
-			// continue;
-			// }
-
-			Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
-			similarRefactoringPairs.add(refactoringPair);
-
+			
+			for (Pair<RefactoringData, RefactoringData> afterPair : afterRefactoringPairs) {
+				if( (afterPair.getLeft()==left && afterPair.getRight()==right) || (afterPair.getLeft()==right && afterPair.getRight()==left) )
+				{
+					Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
+					similarRefactoringPairs.add(refactoringPair);
+					break;
+				}
+			}			
 		}
 
 		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
