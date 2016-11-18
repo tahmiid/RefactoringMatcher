@@ -48,6 +48,7 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
+		
 		List<Pair<CodeLocation, CodeLocation>> beforeClonePairs = detector.detectClonePairs(beforeCodePath);
 
 		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodePath);
@@ -100,32 +101,42 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 				}
 			}			
 		}
-
-		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
-			addToRefactoringSets(pair.getLeft(), pair.getRight());
-		}
+		
+		createSimilarRefactoringSets();
 	}
 
-	private void addToRefactoringSets(RefactoringData left, RefactoringData right) {
-		for (HashSet<RefactoringData> set : similarRefactorings) {
-
-			if (set.contains(left) && set.contains(right)) {
-				return;
-			}
-
-			if (set.contains(left) && !set.contains(right)) {
-				set.add(right);
-				return;
-			} else if (set.contains(right) && !set.contains(left)) {
-				set.add(left);
-				return;
+	private void createSimilarRefactoringSets() {
+		List<HashSet<RefactoringData>> sets = new ArrayList<HashSet<RefactoringData>>();
+		
+		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
+			HashSet<RefactoringData> set = new HashSet<>();
+			set.add(pair.getLeft());
+			set.add(pair.getRight());
+			sets.add(set);
+		}		
+		
+		for (int i = 0; i < sets.size() - 1; i++) {
+			if(sets.get(i).size() == 0)
+				continue;
+			
+			for (int j = i+1; j < sets.size(); j++) {
+				HashSet<RefactoringData> intersection = new HashSet<>(sets.get(i));
+				intersection.retainAll(sets.get(j));
+				
+				if(intersection.size()>0)
+				{
+					sets.get(i).addAll(sets.get(j));
+					sets.get(j).clear();
+				}
 			}
 		}
-
-		HashSet<RefactoringData> group = new HashSet<RefactoringData>();
-		group.add(left);
-		group.add(right);
-		similarRefactorings.add(group);
+		
+		for (HashSet<RefactoringData> hashSet : sets) {
+			if(hashSet.size()>0)
+			{
+				similarRefactorings.add(hashSet);
+			}
+		}
 	}
 
 	@Override

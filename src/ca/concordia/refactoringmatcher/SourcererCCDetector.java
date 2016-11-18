@@ -19,7 +19,7 @@ public class SourcererCCDetector implements CloneDetector {
 	@Override
 	public List<Pair<CodeLocation, CodeLocation>> detectClonePairs(Path path)
 			throws ParseException, InterruptedException, IOException {
-		int matchingThreshold = 5;
+		int matchingThreshold = 8;
 		Path sourcererCCOutputPath = Paths.get("output" + matchingThreshold + ".0/tokensclones_index_WITH_FILTER.txt");
 
 		Path detectionDirectory = Paths.get("cloneDetectionTmp");
