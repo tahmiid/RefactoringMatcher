@@ -22,6 +22,11 @@ public class RefactoringData implements Serializable {
 		this.beforeCode = beforeCode;
 		this.afterCode = afterCode;
 	}
+	
+	public String getBeforeCodeBody() {
+		return beforeCode.getMethodBody();
+	}
+	
 
 	public String getBeforeCodeText() {
 		return beforeCode.getText();
@@ -33,6 +38,10 @@ public class RefactoringData implements Serializable {
 	
 	public String getAfterCodeText() {
 		return afterCode.getText();
+	}
+	
+	public String getAfterCodeBody() {
+		return afterCode.getMethodBody();
 	}
 	
 	public Code getAfterCode() {

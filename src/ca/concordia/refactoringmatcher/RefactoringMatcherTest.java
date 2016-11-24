@@ -61,10 +61,10 @@ public class RefactoringMatcherTest {
 	private JLabel lblRefactoring_1;
 
 //	 String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
-	 String projectLink = "https://github.com/romuloceccon/jedit.git";
+//	 String projectLink = "https://github.com/romuloceccon/jedit.git";
 //	 String projectLink = "https://github.com/qos-ch/slf4j.git";
 //	 String projectLink = "https://github.com/jfree/jfreechart.git";
-//	 String projectLink = "https://github.com/apache/commons-lang.git";
+	 String projectLink = "https://github.com/apache/commons-lang.git";
 //	 String projectLink = "https://`github.com/elastic/elasticsearch.git";
 //	String projectLink = "https://github.com/spring-projects/spring-framework.git";
 	 

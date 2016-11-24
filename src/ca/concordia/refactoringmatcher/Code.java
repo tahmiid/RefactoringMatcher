@@ -31,6 +31,7 @@ public class Code implements Serializable {
 	private int startOffset;
 	private int length;
 	private String text;
+	private String methodBody;
 	private String methodName;
 
 	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
@@ -45,18 +46,19 @@ public class Code implements Serializable {
 	private String extractText(GitService gitService, Repository repository) throws Exception {
 		String text;
 		gitService.checkout(repository, commit.getId());
-		text = readFile(filePath, StandardCharsets.UTF_8);
+		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(text.toCharArray());
+		parser.setSource(wholeText.toCharArray());
 		parser.setResolveBindings(true);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(cu, startOffset, length);
+//		methodBody = wholeText.subSequence(block.getStartPosition(), block.getLength()) + "\n";
 		MethodDeclaration parent = (MethodDeclaration) block.getParent();
 		this.methodName = extractMethodSignature(parent);
 		startOffset = parent.getName().getStartPosition();
 		length = parent.getLength() + (parent.getStartPosition() - startOffset);
-		text = text.subSequence(startOffset, startOffset + length).toString() + "\n";
+		text = wholeText.subSequence(startOffset, startOffset + length).toString() + "\n";
 		return text;
 	}
 
@@ -125,6 +127,10 @@ public class Code implements Serializable {
 			return false;
 	}
 	
+	public String getMethodBody() {
+		return methodBody;
+	}
+
 	public String toString(){
 		return methodName + " in " + getFileName();
 	}
