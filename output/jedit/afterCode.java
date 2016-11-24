@@ -92,26 +92,6 @@ prepareGapForInsertion(int start, int len)
 			moveGapEnd(start + gapSize);
 		}
 	}
-prepareGapForInsertion(int start, int len)
-	{
-		moveGapStart(start);
-		if(gapEnd - gapStart < len)
-		{
-			int gapSize = len + 1024;
-			ensureCapacity(length + gapSize);
-			moveGapEnd(start + gapSize);
-		}
-	}
-prepareGapForInsertion(int start, int len)
-	{
-		moveGapStart(start);
-		if(gapEnd - gapStart < len)
-		{
-			int gapSize = len + 1024;
-			ensureCapacity(length + gapSize);
-			moveGapEnd(start + gapSize);
-		}
-	}
 indexOf(String str)
 	{
 		int length = (wrap ? ring.length : count);
@@ -282,49 +262,6 @@ layoutGlyphVector(Font font,
 		font.layoutGlyphVector(frc, EMPTY_TEXT, 0, 0, flags);
 
 		return result;
-	}
-insert(int offset, CharSequence seq)
-	{
-		if(seq == null)
-			return;
-
-		int len = seq.length();
-
-		if(len == 0)
-			return;
-
-		if(isReadOnly())
-			throw new RuntimeException("buffer read-only");
-
-		try
-		{
-			writeLock();
-
-			if(offset < 0 || offset > contentMgr.getLength())
-				throw new ArrayIndexOutOfBoundsException(offset);
-
-			contentMgr.insert(offset,seq);
-
-			integerArray.clear();
-
-			for(int i = 0; i < len; i++)
-			{
-				if(seq.charAt(i) == '\n')
-					integerArray.add(i + 1);
-			}
-
-			if(!undoInProgress)
-			{
-				undoMgr.contentInserted(offset,len,
-							seq.toString(),!dirty);
-			}
-
-			contentInserted(offset,len,integerArray);
-		}
-		finally
-		{
-			writeUnlock();
-		}
 	}
 insert(int offset, CharSequence seq)
 	{
@@ -747,57 +684,6 @@ _paste(TextArea textArea, boolean vertical, String selection, JEditBuffer buffer
 
 		HistoryModel.getModel("clipboard").addItem(selection);
 	}
-_paste(TextArea textArea, boolean vertical, String selection, JEditBuffer buffer)
-	{
-		try
-		{
-			buffer.beginCompoundEdit();
-
-			/* vertical paste */
-			if(vertical && textArea.getSelectionCount() == 0)
-			{
-				int caret = textArea.getCaretPosition();
-				int caretLine = textArea.getCaretLine();
-				Selection.Rect rect = new Selection.Rect(
-					caretLine,caret,caretLine,caret);
-				textArea.setSelectedText(rect,selection);
-				caretLine = textArea.getCaretLine();
-
-				if(caretLine != textArea.getLineCount() - 1)
-				{
-
-					int startColumn = rect.getStartColumn(
-						buffer);
-					int offset = buffer
-						.getOffsetOfVirtualColumn(
-						caretLine + 1,startColumn,null);
-					if(offset == -1)
-					{
-						buffer.insertAtColumn(caretLine + 1,startColumn,"");
-						textArea.setCaretPosition(
-							buffer.getLineEndOffset(
-							caretLine + 1) - 1);
-					}
-					else
-					{
-						textArea.setCaretPosition(
-							buffer.getLineStartOffset(
-							caretLine + 1) + offset);
-					}
-				}
-			}
-			else /* Regular paste */
-			{
-				textArea.replaceSelection(selection);
-			}
-		}
-		finally
-		{
-			buffer.endCompoundEdit();
-		}
-
-		HistoryModel.getModel("clipboard").addItem(selection);
-	}
 parseModifiers(String modifierString)
 	{
 		int modifiers = 0;
@@ -961,14 +847,6 @@ reloadModels()
 		}
 		filteredModel.setDelegated(delegated);
 		filteredModel.fireTableDataChanged();
-	}
-cleanup()
-	{
-		// Remove the reference to the JList from the history model so that the
-		// list doesn't keep getting updated after the dialog is gone
-		Object[] nothing = {};
-		clips.setListData(nothing);
-		dispose();
 	}
 cleanup()
 	{

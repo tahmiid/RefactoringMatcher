@@ -2,6 +2,7 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.refactoringminer.api.RefactoringType;
 
@@ -59,7 +60,7 @@ public class RefactoringData implements Serializable {
 		return name;
 	}
 	
-	public String getCommit()
+	public Commit getCommit()
 	{
 		return afterCode.getCommit();
 	}
@@ -67,5 +68,10 @@ public class RefactoringData implements Serializable {
 	public String getCommitShort()
 	{
 		return afterCode.getCommitShort();
+	}
+	
+	public Date getCommitTime()
+	{
+		return afterCode.getCommit().getTime();
 	}
 }

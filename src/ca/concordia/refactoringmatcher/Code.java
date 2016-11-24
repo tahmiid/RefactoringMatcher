@@ -26,16 +26,16 @@ public class Code implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String commit;
+	private Commit commit;
 	private String filePath;
 	private int startOffset;
 	private int length;
 	private String text;
 	private String methodName;
 
-	public Code(String commit, Path directory, ASTInformation astInformation, GitService gitService,
+	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
 			Repository repository) throws Exception {
-		this.commit = new String(commit.toCharArray());
+		this.commit = commit;
 		this.filePath = new String(directory + "/" + astInformation.getFilePath());
 		this.startOffset = new Integer(astInformation.getStartOffset());
 		this.length = new Integer(astInformation.getLength());
@@ -44,7 +44,7 @@ public class Code implements Serializable {
 
 	private String extractText(GitService gitService, Repository repository) throws Exception {
 		String text;
-		gitService.checkout(repository, commit);
+		gitService.checkout(repository, commit.getId());
 		text = readFile(filePath, StandardCharsets.UTF_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -76,13 +76,13 @@ public class Code implements Serializable {
 		return methodName = methodName + ")";
 	}
 
-	public String getCommit() {
+	public Commit getCommit() {
 		return commit;
 	}
 	
 	public String getCommitShort()
 	{
-		return commit.substring(0, 5);
+		return commit.getId().substring(0, 5);
 	}
 
 	public String getFileName() {
@@ -119,7 +119,7 @@ public class Code implements Serializable {
 	}
 
 	public boolean equals(Code code) {
-		if (code.methodName.equals(methodName) && code.filePath.equals(filePath) && code.commit.equals(commit))
+		if (code.methodName.equals(methodName) && code.filePath.equals(filePath) && code.commit.getId().equals(commit.getId()))
 			return true;
 		else
 			return false;

@@ -1,5 +1,6 @@
 package ca.concordia.refactoringmatcher;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
@@ -7,13 +8,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
@@ -29,10 +31,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.util.GitServiceImpl;
-import java.awt.Color;
 
 public class RefactoringMatcherTest {
 
@@ -59,10 +61,13 @@ public class RefactoringMatcherTest {
 	private JLabel lblRefactoring_1;
 
 //	 String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
-//	 String projectLink = "https://github.com/romuloceccon/jedit.git";
+	 String projectLink = "https://github.com/romuloceccon/jedit.git";
 //	 String projectLink = "https://github.com/qos-ch/slf4j.git";
-	// String projectLink = "https://github.com/jfree/jfreechart.git";
-	 String projectLink = "https://github.com/apache/commons-lang.git";
+//	 String projectLink = "https://github.com/jfree/jfreechart.git";
+//	 String projectLink = "https://github.com/apache/commons-lang.git";
+//	 String projectLink = "https://`github.com/elastic/elasticsearch.git";
+//	String projectLink = "https://github.com/spring-projects/spring-framework.git";
+	 
 
 	protected void runTest() throws Exception {
 
@@ -74,22 +79,70 @@ public class RefactoringMatcherTest {
 
 		List<RefactoringData> refactorings = project.loadRefactoringsFromFile(gitService);
 
-		printReport(refactorings, project);
+		
 
 		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings,
 				project.getOutputDirectory());
 
 		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
 
-		List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs = patternFinder
-				.getSimilarRefactoringPairs();
+//		List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
 
 //		printpairs(similarRefactoringPairs);
 
-		printGroups(similarRefactorings);
+		printReport(refactorings, project);
+		
+		
+		System.out.println();
+		System.out.println("Similar Refactorings: " + similarRefactorings.size());
+		
+		int i = 0;
+		for (HashSet<RefactoringData> hashSet : similarRefactorings) {
+			i++;
+			String name = "Set " + i;
+			int size = hashSet.size();
+			long timeDifferenceInDays, highestTime = 0, lowestTime = 0;
+			Date now = new Date();
+			lowestTime = now.getTime();
+			boolean sameAuthor = true;
+			ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(hashSet);
+			PersonIdent author = list.get(0).getCommit().getCommiter();
+
+			for (RefactoringData refactoringData : hashSet) {
+				if(sameAuthor)
+				{
+					if(!author.equals(refactoringData.getCommit().getCommiter()))
+					{
+						sameAuthor = false;
+					}
+				}
+				long time = refactoringData.getCommitTime().getTime();
+				if(time >= highestTime)
+					highestTime = time;
+				if(time <= lowestTime)
+					lowestTime = time;
+			}
+			
+			timeDifferenceInDays = (highestTime - lowestTime) ;
+			timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
+			
+//			timeDifferenceInDays = list.get(0).getCommitTime().compareTo(list.get(size-1).getCommitTime());
+
+//			timeDifferenceInDays = getDateDiff(list.get(0).getCommitTime(),list.get(size-1).getCommitTime(),TimeUnit.DAYS);
+//			timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
+			
+			System.out.println(name + "\t" + size + "\t" + timeDifferenceInDays + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + sameAuthor);
+		}
+		
+		createTreeView(similarRefactorings);
+	}
+	
+	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+	    long diffInMillies = date2.getTime() - date1.getTime();
+	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 
-	private void printGroups(List<HashSet<RefactoringData>> similarRefactorings) {
+	private void createTreeView(List<HashSet<RefactoringData>> similarRefactorings) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
 		for (HashSet<RefactoringData> set : similarRefactorings) {
 			DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode("Set " + (similarRefactorings.indexOf(set) + 1));
@@ -120,8 +173,8 @@ public class RefactoringMatcherTest {
 					
 					TitledBorder border;
 
-					lblCommit.setToolTipText("Commit: " + list.get(0).getCommit());
-					lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit());
+					lblCommit.setToolTipText("Commit: " + list.get(0).getCommit().getId());
+					lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit().getId());
 
 					border = new TitledBorder(list.get(0).getBeforeCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
@@ -159,7 +212,7 @@ public class RefactoringMatcherTest {
 					
 					TitledBorder border;
 
-					lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit());
+					lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit().getId());
 
 					border = new TitledBorder(refactoring.getBeforeCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
@@ -177,8 +230,6 @@ public class RefactoringMatcherTest {
 				}
 			}
 		});
-		System.out.println();
-		System.out.println("Similar Refactorings: " + similarRefactorings.size());
 	}
 
 	private void printpairs(List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs) {
@@ -210,8 +261,8 @@ public class RefactoringMatcherTest {
 
 					TitledBorder border;
 
-					lblCommit.setToolTipText("Commit: " + pair.getLeft().getCommit());
-					lblCommit_1.setToolTipText("Commit: " + pair.getRight().getCommit());
+					lblCommit.setToolTipText("Commit: " + pair.getLeft().getCommit().getId());
+					lblCommit_1.setToolTipText("Commit: " + pair.getRight().getCommit().getId());
 
 					border = new TitledBorder(pair.getLeft().getBeforeCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);

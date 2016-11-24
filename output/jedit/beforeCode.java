@@ -402,36 +402,6 @@ insert(int start, String str)
 		gapStart += len;
 		length += len;
 	}
-insert(int start, CharSequence str)
-	{
-		int len = str.length();
-		moveGapStart(start);
-		if(gapEnd - gapStart < len)
-		{
-			ensureCapacity(length + len + 1024);
-			moveGapEnd(start + len + 1024);
-		}
-
-		for (int i = 0; i < len; i++)
-		{
-			text[start+i] = str.charAt(i);
-		}
-		gapStart += len;
-		length += len;
-	}
-insert(int start, Segment seg)
-	{
-		moveGapStart(start);
-		if(gapEnd - gapStart < seg.count)
-		{
-			ensureCapacity(length + seg.count + 1024);
-			moveGapEnd(start + seg.count + 1024);
-		}
-
-		System.arraycopy(seg.array,seg.offset,text,start,seg.count);
-		gapStart += seg.count;
-		length += seg.count;
-	}
 add(UndoManager.RemovedContent rem)
 	{
 		// compare existing entries with this
@@ -780,44 +750,6 @@ insert(int offset, String str)
 			}
 
 			contentInserted(offset,len,integerArray);
-		}
-		finally
-		{
-			writeUnlock();
-		}
-	}
-insert(int offset, Segment seg)
-	{
-		if(seg.count == 0)
-			return;
-
-		if(isReadOnly())
-			throw new RuntimeException("buffer read-only");
-
-		try
-		{
-			writeLock();
-
-			if(offset < 0 || offset > contentMgr.getLength())
-				throw new ArrayIndexOutOfBoundsException(offset);
-
-			contentMgr.insert(offset,seg);
-
-			integerArray.clear();
-
-			for(int i = 0; i < seg.count; i++)
-			{
-				if(seg.array[seg.offset + i] == '\n')
-					integerArray.add(i + 1);
-			}
-
-			if(!undoInProgress)
-			{
-				undoMgr.contentInserted(offset,seg.count,
-					seg.toString(),!dirty);
-			}
-
-			contentInserted(offset,seg.count,integerArray);
 		}
 		finally
 		{
@@ -1228,110 +1160,6 @@ paste(TextArea textArea, char register,
 
 		HistoryModel.getModel("clipboard").addItem(selection);
 	}
-paste(TextArea textArea, char register,
-		boolean vertical, DataFlavor preferredDataFlavor)
-	{
-		if (JEditDataFlavor.jEditRichTextDataFlavor.equals(preferredDataFlavor))
-		{
-			paste(textArea,register,vertical);
-			return;
-		}
-		if(!textArea.isEditable())
-		{
-			textArea.getToolkit().beep();
-			return;
-		}
-
-		Register reg = getRegister(register);
-
-		if(reg == null)
-		{
-			textArea.getToolkit().beep();
-			return;
-		}
-		Transferable transferable = reg.getTransferable();
-		String selection = null;
-		if (transferable.isDataFlavorSupported(preferredDataFlavor))
-		{
-			selection = getTextFromTransferable(transferable, preferredDataFlavor);
-		}
-		else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
-		{
-			selection = getTextFromTransferable(transferable, DataFlavor.stringFlavor);
-		}
-		if(selection == null)
-		{
-			textArea.getToolkit().beep();
-			return;
-		}
-		JEditBuffer buffer = textArea.getBuffer();
-		 /*
-		 Commented because it must not use jEdit class.
-		 Need to rewrite a property manager that is independant
-		String mime = preferredDataFlavor.getMimeType();
-		int i = mime.indexOf(';');
-		if (i != -1)
-		{
-			mime = mime.substring(0,i);
-		}
-		String mode = jEdit.getProperty("mime2mode."+mime);
-		if (mode != null)
-		{
-			Mode _mode = ModeProvider.instance.getMode(mode);
-			if (_mode != null)
-			{
-				applyMode(_mode, buffer);
-			}
-		}     */
-		try
-		{
-			buffer.beginCompoundEdit();
-
-			/* vertical paste */
-			if(vertical && textArea.getSelectionCount() == 0)
-			{
-				int caret = textArea.getCaretPosition();
-				int caretLine = textArea.getCaretLine();
-				Selection.Rect rect = new Selection.Rect(
-					caretLine,caret,caretLine,caret);
-				textArea.setSelectedText(rect,selection);
-				caretLine = textArea.getCaretLine();
-
-				if(caretLine != textArea.getLineCount() - 1)
-				{
-
-					int startColumn = rect.getStartColumn(
-						buffer);
-					int offset = buffer
-						.getOffsetOfVirtualColumn(
-						caretLine + 1,startColumn,null);
-					if(offset == -1)
-					{
-						buffer.insertAtColumn(caretLine + 1,startColumn,"");
-						textArea.setCaretPosition(
-							buffer.getLineEndOffset(
-							caretLine + 1) - 1);
-					}
-					else
-					{
-						textArea.setCaretPosition(
-							buffer.getLineStartOffset(
-							caretLine + 1) + offset);
-					}
-				}
-			}
-			else /* Regular paste */
-			{
-				textArea.replaceSelection(selection);
-			}
-		}
-		finally
-		{
-			buffer.endCompoundEdit();
-		}
-
-		HistoryModel.getModel("clipboard").addItem(selection);
-	}
 parseKey(String keyStroke)
 	{
 		if(keyStroke == null)
@@ -1587,10 +1415,6 @@ ok()
 
 		view.getTextArea().setSelectedText(text);
 
-		dispose();
-	}
-cancel()
-	{
 		dispose();
 	}
 expandFold(int line, boolean fully)

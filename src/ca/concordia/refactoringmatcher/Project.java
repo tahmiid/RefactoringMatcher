@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.refactoringminer.api.GitHistoryRefactoringMiner;
@@ -108,14 +109,26 @@ public class Project {
 					Code beforeCode = null;
 					Code afterCode = null;
 					try {
-						beforeCode = new Code(commitData.getParent(0).getName(), directory, astBeforeChange, gitService, repository);
-						afterCode = new Code(commitData.getName(), directory, astAfterChange, gitService, repository);
+						Commit commit = new Commit(commitData.getParent(0).getName(), commitData.getParent(0).getFullMessage(), commitData.getParent(0).getCommitTime(), commitData.getParent(0).getCommitterIdent());
+						beforeCode = new Code(commit, directory, astBeforeChange, gitService, repository);
+						commit = new Commit(commitData.getName(), commitData.getFullMessage(), commitData.getCommitTime(), commitData.getCommitterIdent());
+						afterCode = new Code(commit, directory, astAfterChange, gitService, repository);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				
 					RefactoringData refactoringData = new RefactoringData(ref.getName(), ref.getRefactoringType(), beforeCode, afterCode);
-					allRefactoringData.add(refactoringData);
+					
+					boolean exists = false;
+					for (RefactoringData existingRefactoring : allRefactoringData) {
+						if (existingRefactoring.getAfterCode().equals(refactoringData.getAfterCode())) {
+							exists = true;
+							break;
+						}
+					}
+					
+					if(!exists)
+						allRefactoringData.add(refactoringData);
 				}
 			}
 		});

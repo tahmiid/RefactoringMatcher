@@ -741,66 +741,6 @@ mapDatasetToRangeAxes(int index, List axisIndices) {
 fireChangeEvent() {
         notifyListeners(new AxisChangeEvent(this));
     }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
-    }
 createStandardDateTickUnits(TimeZone zone,
     		Locale locale) {
 
@@ -1074,59 +1014,6 @@ lookupBoxPaint(int series, int item) {
     		// compatibility, it might require a useFillPaint flag.
     		return getItemPaint(series, item);
     	}
-    }
-lookupBoxPaint(int series, int item) {
-    	Paint p = getBoxPaint();
-    	if (p != null) {
-    		return p;
-    	}
-    	else {
-    		// TODO: could change this to itemFillPaint().  For backwards
-    		// compatibility, it might require a useFillPaint flag.
-    		return getItemPaint(series, item);
-    	}
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
-    }
-fireChangeEvent() {
-        notifyListeners(new PlotChangeEvent(this));
     }
 fireChangeEvent() {
         notifyListeners(new PlotChangeEvent(this));

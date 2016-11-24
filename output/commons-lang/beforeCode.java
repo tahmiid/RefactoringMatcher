@@ -1,3 +1,55 @@
+reflectionEquals(final Object lhs, final Object rhs, final boolean testTransients, final Class<?> reflectUpToClass,
+            final String... excludeFields) {
+        if (lhs == rhs) {
+            return true;
+        }
+        if (lhs == null || rhs == null) {
+            return false;
+        }
+        // Find the leaf class since there may be transients in the leaf
+        // class or in classes between the leaf and root.
+        // If we are not testing transients or a subclass has no ivars,
+        // then a subclass can test equals to a superclass.
+        final Class<?> lhsClass = lhs.getClass();
+        final Class<?> rhsClass = rhs.getClass();
+        Class<?> testClass;
+        if (lhsClass.isInstance(rhs)) {
+            testClass = lhsClass;
+            if (!rhsClass.isInstance(lhs)) {
+                // rhsClass is a subclass of lhsClass
+                testClass = rhsClass;
+            }
+        } else if (rhsClass.isInstance(lhs)) {
+            testClass = rhsClass;
+            if (!lhsClass.isInstance(rhs)) {
+                // lhsClass is a subclass of rhsClass
+                testClass = lhsClass;
+            }
+        } else {
+            // The two classes are not related.
+            return false;
+        }
+        final EqualsBuilder equalsBuilder = new EqualsBuilder();
+        try {
+            if (testClass.isArray()) {
+                equalsBuilder.append(lhs, rhs);
+            } else {
+                reflectionAppend(lhs, rhs, testClass, equalsBuilder, testTransients, excludeFields);
+                while (testClass.getSuperclass() != null && testClass != reflectUpToClass) {
+                    testClass = testClass.getSuperclass();
+                    reflectionAppend(lhs, rhs, testClass, equalsBuilder, testTransients, excludeFields);
+                }
+            }
+        } catch (final IllegalArgumentException e) {
+            // In this case, we tried to test a subclass vs. a superclass and
+            // the subclass has ivars or the ivars are transient and
+            // we are testing transients.
+            // If a subclass has ivars that we are trying to test them, we get an
+            // exception and we know that the objects are not equal.
+            return false;
+        }
+        return equalsBuilder.isEquals();
+    }
 abbreviate(final String str, int offset, final int maxWidth) {
         if (str == null) {
             return null;
@@ -478,72 +530,6 @@ testDateTimeISO() throws Exception {
         Date date = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.parse(text);
         assertEquals(utcCal.getTime(), date);
     }
-testDateISO(){
-        final TimeZone timeZone = TimeZone.getTimeZone("GMT-3");
-        final Calendar cal = Calendar.getInstance(timeZone);
-        cal.set(2002, Calendar.FEBRUARY, 23, 10, 11, 12);
-        String text = DateFormatUtils.format(cal.getTime(), 
-                        DateFormatUtils.ISO_DATE_FORMAT.getPattern(), timeZone);
-        assertEquals("2002-02-23", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                        DateFormatUtils.ISO_DATE_FORMAT.getPattern(), timeZone);
-        assertEquals("2002-02-23", text);
-        text = DateFormatUtils.ISO_DATE_FORMAT.format(cal);
-        assertEquals("2002-02-23", text);
-        
-        text = DateFormatUtils.format(cal.getTime(), 
-                      DateFormatUtils.ISO_DATE_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("2002-02-23-03:00", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                      DateFormatUtils.ISO_DATE_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("2002-02-23-03:00", text);
-        text = DateFormatUtils.ISO_DATE_TIME_ZONE_FORMAT.format(cal);
-        assertEquals("2002-02-23-03:00", text);
-    }
-testTimeISO(){
-        final TimeZone timeZone = TimeZone.getTimeZone("GMT-3");
-        final Calendar cal = Calendar.getInstance(timeZone);
-        cal.set(2002, Calendar.FEBRUARY, 23, 10, 11, 12);
-        String text = DateFormatUtils.format(cal.getTime(), 
-                        DateFormatUtils.ISO_TIME_FORMAT.getPattern(), timeZone);
-        assertEquals("T10:11:12", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                        DateFormatUtils.ISO_TIME_FORMAT.getPattern(), timeZone);
-        assertEquals("T10:11:12", text);
-        text = DateFormatUtils.ISO_TIME_FORMAT.format(cal);
-        assertEquals("T10:11:12", text);
-        
-        text = DateFormatUtils.format(cal.getTime(), 
-                      DateFormatUtils.ISO_TIME_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("T10:11:12-03:00", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                      DateFormatUtils.ISO_TIME_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("T10:11:12-03:00", text);
-        text = DateFormatUtils.ISO_TIME_TIME_ZONE_FORMAT.format(cal);
-        assertEquals("T10:11:12-03:00", text);
-    }
-testTimeNoTISO(){
-        final TimeZone timeZone = TimeZone.getTimeZone("GMT-3");
-        final Calendar cal = Calendar.getInstance(timeZone);
-        cal.set(2002, Calendar.FEBRUARY, 23, 10, 11, 12);
-        String text = DateFormatUtils.format(cal.getTime(), 
-                        DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern(), timeZone);
-        assertEquals("10:11:12", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                        DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern(), timeZone);
-        assertEquals("10:11:12", text);
-        text = DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(cal);
-        assertEquals("10:11:12", text);
-        
-        text = DateFormatUtils.format(cal.getTime(), 
-                      DateFormatUtils.ISO_TIME_NO_T_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("10:11:12-03:00", text);
-        text = DateFormatUtils.format(cal.getTime().getTime(), 
-                      DateFormatUtils.ISO_TIME_NO_T_TIME_ZONE_FORMAT.getPattern(), timeZone);
-        assertEquals("10:11:12-03:00", text);
-        text = DateFormatUtils.ISO_TIME_NO_T_TIME_ZONE_FORMAT.format(cal);
-        assertEquals("10:11:12-03:00", text);
-    }
 allPublicChildFields() {
         Class<? super PublicChild> parentClass = PublicChild.class.getSuperclass();
 		final Field[] fieldsParent =  parentClass.getDeclaredFields();
@@ -551,12 +537,6 @@ allPublicChildFields() {
 
 		final Field[] fieldsPublicChild = PublicChild.class.getDeclaredFields();
         return ArrayUtils.addAll(fieldsPublicChild, fieldsParent);
-    }
-allIntegerFields() {
-        final Field[] fieldsNumber = Number.class.getDeclaredFields();
-        assertArrayEquals(Number.class.getDeclaredFields(), FieldUtils.getAllFields(Number.class));
-        final Field[] fieldsInteger = Integer.class.getDeclaredFields();
-        return ArrayUtils.addAll(fieldsInteger, fieldsNumber);
     }
 testGetAllFields() {
         assertArrayEquals(new Field[0], FieldUtils.getAllFields(Object.class));
@@ -788,126 +768,6 @@ reverse(final Object[] array) {
             i++;
         }
     }
-reverse(final long[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        long tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final int[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        int tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final short[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        short tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final char[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        char tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final byte[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        byte tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final double[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        double tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final float[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        float tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
-reverse(final boolean[] array) {
-        if (array == null) {
-            return;
-        }
-        int i = 0;
-        int j = array.length - 1;
-        boolean tmp;
-        while (j > i) {
-            tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
-        }
-    }
 reverse(final byte[] array) {
         if (array == null) {
             return;
@@ -1068,224 +928,9 @@ min(long[] array) {
     
         return min;
     }
-min(int[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns min
-        int min = array[0];
-        for (int j = 1; j < array.length; j++) {
-            if (array[j] < min) {
-                min = array[j];
-            }
-        }
-    
-        return min;
-    }
-min(short[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns min
-        short min = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] < min) {
-                min = array[i];
-            }
-        }
-    
-        return min;
-    }
-min(byte[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns min
-        byte min = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] < min) {
-                min = array[i];
-            }
-        }
-    
-        return min;
-    }
-min(double[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns min
-        double min = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (Double.isNaN(array[i])) {
-                return Double.NaN;
-            }
-            if (array[i] < min) {
-                min = array[i];
-            }
-        }
-    
-        return min;
-    }
-min(float[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns min
-        float min = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (Float.isNaN(array[i])) {
-                return Float.NaN;
-            }
-            if (array[i] < min) {
-                min = array[i];
-            }
-        }
-    
-        return min;
-    }
-max(long[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-
-        // Finds and returns max
-        long max = array[0];
-        for (int j = 1; j < array.length; j++) {
-            if (array[j] > max) {
-                max = array[j];
-            }
-        }
-
-        return max;
-    }
-max(int[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns max
-        int max = array[0];
-        for (int j = 1; j < array.length; j++) {
-            if (array[j] > max) {
-                max = array[j];
-            }
-        }
-    
-        return max;
-    }
-max(short[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns max
-        short max = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
-            }
-        }
-    
-        return max;
-    }
-max(byte[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns max
-        byte max = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
-            }
-        }
-    
-        return max;
-    }
-max(double[] array) {
-        // Validates input
-        if (array== null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-    
-        // Finds and returns max
-        double max = array[0];
-        for (int j = 1; j < array.length; j++) {
-            if (Double.isNaN(array[j])) {
-                return Double.NaN;
-            }
-            if (array[j] > max) {
-                max = array[j];
-            }
-        }
-    
-        return max;
-    }
-max(float[] array) {
-        // Validates input
-        if (array == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        } else if (array.length == 0) {
-            throw new IllegalArgumentException("Array cannot be empty.");
-        }
-
-        // Finds and returns max
-        float max = array[0];
-        for (int j = 1; j < array.length; j++) {
-            if (Float.isNaN(array[j])) {
-                return Float.NaN;
-            }
-            if (array[j] > max) {
-                max = array[j];
-            }
-        }
-
-        return max;
-    }
 format(long millis) {
         Calendar c = new GregorianCalendar(mTimeZone, mLocale);  // hard code GregorianCalendar
         c.setTimeInMillis(millis);
-        return applyRules(c, new StringBuffer(mMaxLengthEstimate)).toString();
-    }
-format(Date date) {
-        Calendar c = new GregorianCalendar(mTimeZone, mLocale);  // hard code GregorianCalendar
-        c.setTime(date);
         return applyRules(c, new StringBuffer(mMaxLengthEstimate)).toString();
     }
 getStrategy(String formatField) {
@@ -1365,66 +1010,6 @@ testLocales_Long_AD() throws Exception {
             }
         }
     }
-testLocales_Long_BC() throws Exception {
-                
-        for(Locale locale : Locale.getAvailableLocales()) {
-            Calendar cal= Calendar.getInstance(NEW_YORK, Locale.US);
-            cal.clear();
-            cal.set(2003, 1, 10);
-            cal.set(Calendar.ERA, GregorianCalendar.BC);
-
-            try {
-                String longFormat= "GGGG/yyyy/MMMM/dddd/aaaa/EEEE/ZZZZ";
-                SimpleDateFormat sdf = new SimpleDateFormat(longFormat, locale);
-                DateParser fdf = getInstance(longFormat, locale);               
-                checkParse(cal, sdf, fdf);
-            }
-            catch(ParseException ex) {
-                // TODO: why do ja_JP_JP, hi_IN, th_TH, and th_TH_TH fail?
-                System.out.println("Long BC Locale "+locale+ " failed\n" + ex.toString());
-            }
-        }
-    }
-testLocales_Short_BC() throws Exception {
-                
-        for(Locale locale : Locale.getAvailableLocales()) {
-            Calendar cal= Calendar.getInstance(NEW_YORK, Locale.US);
-            cal.clear();
-            cal.set(2003, 1, 10);
-            cal.set(Calendar.ERA, GregorianCalendar.BC);                        
-
-            try {
-                String shortFormat= "G/y/M/d/a/E/Z";
-                SimpleDateFormat sdf = new SimpleDateFormat(shortFormat, locale);
-                DateParser fdf = getInstance(shortFormat, locale);
-                checkParse(cal, sdf, fdf);
-            }
-            catch(ParseException ex) {
-                // TODO: why do ja_JP_JP, hi_IN, th_TH, and th_TH_TH fail?
-                System.out.println("Short BC Locale "+locale+ " failed\n" + ex.toString());
-            }
-        }
-    }
-testLocales_Short_AD() throws Exception {
-                
-        for(Locale locale : Locale.getAvailableLocales()) {
-            Calendar cal= Calendar.getInstance(NEW_YORK, Locale.US);
-            cal.clear();
-            cal.set(2003, 1, 10);
-            cal.set(Calendar.ERA, GregorianCalendar.AD);
-
-            try {
-                String shortFormat= "G/y/M/d/a/E/Z";
-                SimpleDateFormat sdf = new SimpleDateFormat(shortFormat, locale);
-                DateParser fdf = getInstance(shortFormat, locale);              
-                checkParse(cal, sdf, fdf);
-            }
-            catch(ParseException ex) {
-                // TODO: why do ja_JP_JP, hi_IN, th_TH, and th_TH_TH fail?
-                System.out.println("Short_AD Locale "+locale+ " failed\n" + ex.toString());
-            }
-        }
-    }
 processBitVector(Class<E> enumClass, long value) {
         final E[] constants = checkBitVectorable(enumClass).getEnumConstants();
         final EnumSet<E> results = EnumSet.noneOf(enumClass);
@@ -1486,26 +1071,6 @@ processBitVector(Class<E> enumClass, long value) {
             }
         }
         return results;
-    }
-generateBitVector(Class<E> enumClass, EnumSet<E> set) {
-        if (enumClass == null) {
-            throw new IllegalArgumentException("EnumClass must be defined.");
-        }
-        final E[] constants = enumClass.getEnumConstants();
-        if (constants != null && constants.length > 64) {
-            throw new IllegalArgumentException("EnumClass is too big to be stored in a 64-bit value.");
-        }
-        long total = 0;
-        if (set != null) {
-            if (constants != null && constants.length > 0) {
-                for (E constant : constants) {
-                    if (set.contains(constant)) {
-                        total += Math.pow(2, constant.ordinal());
-                    }
-                }
-            }
-        }
-        return total;
     }
 addContextValue(Pair<String, Object> pair) {
         if (pair == null) {
@@ -1816,63 +1381,6 @@ isAssignable(Class cls, Class toClass) {
         }
         return toClass.isAssignableFrom(cls);
     }
-isAssignable(Class cls, Class toClass) {
-        if (toClass == null) {
-            return false;
-        }
-        // have to check for null, as isAssignableFrom doesn't
-        if (cls == null) {
-            return !(toClass.isPrimitive());
-        }
-        if (cls.equals(toClass)) {
-            return true;
-        }
-        if (cls.isPrimitive()) {
-            if (toClass.isPrimitive() == false) {
-                return false;
-            }
-            if (Integer.TYPE.equals(cls)) {
-                return Long.TYPE.equals(toClass)
-                    || Float.TYPE.equals(toClass)
-                    || Double.TYPE.equals(toClass);
-            }
-            if (Long.TYPE.equals(cls)) {
-                return Float.TYPE.equals(toClass)
-                    || Double.TYPE.equals(toClass);
-            }
-            if (Boolean.TYPE.equals(cls)) {
-                return false;
-            }
-            if (Double.TYPE.equals(cls)) {
-                return false;
-            }
-            if (Float.TYPE.equals(cls)) {
-                return Double.TYPE.equals(toClass);
-            }
-            if (Character.TYPE.equals(cls)) {
-                return Integer.TYPE.equals(toClass)
-                    || Long.TYPE.equals(toClass)
-                    || Float.TYPE.equals(toClass)
-                    || Double.TYPE.equals(toClass);
-            }
-            if (Short.TYPE.equals(cls)) {
-                return Integer.TYPE.equals(toClass)
-                    || Long.TYPE.equals(toClass)
-                    || Float.TYPE.equals(toClass)
-                    || Double.TYPE.equals(toClass);
-            }
-            if (Byte.TYPE.equals(cls)) {
-                return Short.TYPE.equals(toClass)
-                    || Integer.TYPE.equals(toClass)
-                    || Long.TYPE.equals(toClass)
-                    || Float.TYPE.equals(toClass)
-                    || Double.TYPE.equals(toClass);
-            }
-            // should never get here
-            return false;
-        }
-        return toClass.isAssignableFrom(cls);
-    }
 testExtendedFormats() {
         String pattern = "Lower: {0,lower} Upper: {1,upper}";
         ExtendedMessageFormat emf = new ExtendedMessageFormat(pattern, registry);
@@ -1882,28 +1390,6 @@ testExtendedFormats() {
         assertEquals("Lower: foo Upper: BAR", emf.format(new Object[] {"FOO", "BAR"}));
         assertEquals("Lower: foo Upper: BAR", emf.format(new Object[] {"FOO", "bar"}));
         assertEquals("Lower: foo Upper: BAR", emf.format(new Object[] {"foo", "BAR"}));
-    }
-checkBuiltInFormat(String pattern, Object[] args, Locale locale) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("Pattern=[");
-        buffer.append(pattern);
-        buffer.append("], locale=[");
-        buffer.append(locale);
-        buffer.append("]");
-        MessageFormat mf = new MessageFormat(pattern);
-        if (locale != null) {
-            mf.setLocale(locale);
-            mf.applyPattern(pattern);
-        }
-        // System.out.println(buffer + ", result=[" + mf.format(args) +"]");
-        ExtendedMessageFormat emf = null;
-        if (locale == null) {
-            emf = new ExtendedMessageFormat(pattern);
-        } else {
-            emf = new ExtendedMessageFormat(pattern, locale);
-        }
-        assertEquals("format "    + buffer.toString(), mf.format(args), emf.format(args));
-        assertEquals("toPattern " + buffer.toString(), mf.toPattern(),  emf.toPattern());
     }
 splitByWholeSeparator( String str, String separator, int max ) {
         if (str == null) {
@@ -2184,64 +1670,12 @@ testBugzilla38401() {
 
         assertEquals( "0000/00/30 16:00:00 000", DurationFormatUtils.formatPeriod(cal1.getTime().getTime(), cal2.getTime().getTime(), "yyyy/MM/dd HH:mm:ss SSS") );
     }
-testJiraLang281() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MONTH, Calendar.DECEMBER);
-        cal.set(Calendar.DAY_OF_MONTH, 31);
-        cal.set(Calendar.YEAR, 2005);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        Calendar cal2 = Calendar.getInstance();
-        cal2.set(Calendar.MONTH, Calendar.OCTOBER);
-        cal2.set(Calendar.DAY_OF_MONTH, 6);
-        cal2.set(Calendar.YEAR, 2006);
-        cal2.set(Calendar.HOUR_OF_DAY, 0);
-        cal2.set(Calendar.MINUTE, 0);
-        cal2.set(Calendar.SECOND, 0);
-        cal2.set(Calendar.MILLISECOND, 0);
-        String result = DurationFormatUtils.formatPeriod(cal.getTime().getTime(), cal2.getTime().getTime(), "MM");
-        assertEquals("09", result);
-    }
 join(Object[] array, char separator) {
         if (array == null) {
             return null;
         }
         int arraySize = array.length;
         int bufSize = (arraySize == 0 ? 0 : ((array[0] == null ? 16 : array[0].toString().length()) + 1) * arraySize);
-        StringBuffer buf = new StringBuffer(bufSize);
-
-        for (int i = 0; i < arraySize; i++) {
-            if (i > 0) {
-                buf.append(separator);
-            }
-            if (array[i] != null) {
-                buf.append(array[i]);
-            }
-        }
-        return buf.toString();
-    }
-join(Object[] array, String separator) {
-        if (array == null) {
-            return null;
-        }
-        if (separator == null) {
-            separator = EMPTY;
-        }
-        int arraySize = array.length;
-
-        // ArraySize ==  0: Len = 0
-        // ArraySize > 0:   Len = NofStrings *(len(firstString) + len(separator))
-        //           (Assuming that all Strings are roughly equally long)
-        int bufSize =
-            ((arraySize == 0)
-                ? 0
-                : arraySize
-                    * ((array[0] == null ? 16 : array[0].toString().length())
-                        + separator.length()));
-
         StringBuffer buf = new StringBuffer(bufSize);
 
         for (int i = 0; i < arraySize; i++) {
@@ -2397,22 +1831,6 @@ getRootCause(Throwable throwable) {
         }
         return cause;
     }
-getThrowableCount(Throwable throwable) {
-        int count = 0;
-        while (throwable != null) {
-            count++;
-            throwable = ExceptionUtils.getCause(throwable);
-        }
-        return count;
-    }
-getThrowables(Throwable throwable) {
-        List list = new ArrayList();
-        while (throwable != null) {
-            list.add(throwable);
-            throwable = ExceptionUtils.getCause(throwable);
-        }
-        return (Throwable[]) list.toArray(new Throwable[list.size()]);
-    }
 ExceptionWithCause(Throwable cause) {
             this.cause = cause;
         }
@@ -2425,70 +1843,6 @@ assertLocaleLookupList(Locale locale, Locale defaultLocale, Locale[] expected) {
         assertEquals(Arrays.asList(expected), localeList);
         try {
             localeList.add("Unmodifiable");
-            fail();
-        } catch (UnsupportedOperationException ex) {}
-    }
-assertLanguageByCountry(String country, String[] languages) {
-        List list = LocaleUtils.languagesByCountry(country);
-        List list2 = LocaleUtils.languagesByCountry(country);
-        assertNotNull(list);
-        assertSame(list, list2);
-        assertEquals(languages.length, list.size());
-        //search through langauges
-        for (int i = 0; i < languages.length; i++) {
-            Iterator iterator = list.iterator();
-            boolean found = false;
-            // see if it was returned by the set
-            while (iterator.hasNext()) {
-                Locale locale = (Locale) iterator.next();
-                // should have an en empty variant
-                assertTrue(locale.getVariant() == null
-                        || locale.getVariant().length() == 0);
-                assertEquals(country, locale.getCountry());
-                if (languages[i].equals(locale.getLanguage())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                fail("Cound not find language: " + languages[i]
-                        + " for country: " + country);
-            }
-        }
-        try {
-            list.add("Unmodifiable");
-            fail();
-        } catch (UnsupportedOperationException ex) {}
-    }
-assertCountriesByLanguage(String language, String[] countries) {
-        List list = LocaleUtils.countriesByLanguage(language);
-        List list2 = LocaleUtils.countriesByLanguage(language);
-        assertNotNull(list);
-        assertSame(list, list2);
-        assertEquals(countries.length, list.size());
-        //search through langauges
-        for (int i = 0; i < countries.length; i++) {
-            Iterator iterator = list.iterator();
-            boolean found = false;
-            // see if it was returned by the set
-            while (iterator.hasNext()) {
-                Locale locale = (Locale) iterator.next();
-                // should have an en empty variant
-                assertTrue(locale.getVariant() == null
-                        || locale.getVariant().length() == 0);
-                assertEquals(language, locale.getLanguage());
-                if (countries[i].equals(locale.getCountry())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                fail("Cound not find language: " + countries[i]
-                        + " for country: " + language);
-            }
-        }
-        try {
-            list.add("Unmodifiable");
             fail();
         } catch (UnsupportedOperationException ex) {}
     }
@@ -2575,21 +1929,6 @@ delete(int startIndex, int endIndex) {
         }
         return this;
     }
-delete(char ch) {
-        for (int i = 0; i < size; i++) {
-            if (buffer[i] == ch) {
-                int start = i;
-                while (++i < size) {
-                    if (buffer[i] != ch) {
-                        break;
-                    }
-                }
-                System.arraycopy(buffer, i, buffer, start, size - i);
-                size -= (i - start);
-            }
-        }
-        return this;
-    }
 replace(int startIndex, int endIndex, String str) {
         endIndex = validateRange(startIndex, endIndex);
         int insertLen = str.length();
@@ -2603,22 +1942,6 @@ replace(int startIndex, int endIndex, String str) {
             size = newSize;
         }
         str.getChars(0, insertLen, buffer, startIndex);
-        return this;
-    }
-replace(int startIndex, int endIndex, StrBuilder builder) {
-        endIndex = validateRange(startIndex, endIndex);
-        int insertLen = builder.length();
-        int removeLen = endIndex - startIndex;
-        if (insertLen > removeLen) {
-            ensureCapacity(size - removeLen + insertLen);
-        }
-        if (insertLen != removeLen) {
-            //shift the current characters to the right
-            System.arraycopy(buffer, endIndex, buffer, startIndex + insertLen, size - endIndex);
-            //adjust the size accordingly
-            size += (insertLen - removeLen);
-        }
-        builder.getChars(0, insertLen, buffer, startIndex);
         return this;
     }
 replace(int startIndex, int endIndex, StrBuilder builder) {
@@ -3032,186 +2355,6 @@ append(Object lhs, Object rhs) {
         }
         return this;
     }
-append(Object[] lhs, Object[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(long[] lhs, long[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(int[] lhs, int[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(short[] lhs, short[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(char[] lhs, char[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(byte[] lhs, byte[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(double[] lhs, double[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(float[] lhs, float[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
-append(boolean[] lhs, boolean[] rhs) {
-        if (isEquals == false) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            isEquals = false;
-            return this;
-        }
-        if (lhs.length != rhs.length) {
-            isEquals = false;
-            return this;
-        }
-        for (int i = 0; i < lhs.length && isEquals; ++i) {
-            append(lhs[i], rhs[i]);
-        }
-        return this;
-    }
 add(Fraction fraction) {
         if (fraction == null) {
             throw new IllegalArgumentException("The fraction must not be null");
@@ -3233,12 +2376,6 @@ add(Fraction fraction) {
                 throw new ArithmeticException("Integer overflow");
         }
         return Fraction.getReducedFraction((int) numeratorValue, (int) denominatorValue);
-    }
-subtract(Fraction fraction) {
-        if (fraction == null) {
-            throw new IllegalArgumentException("The fraction must not be null");
-        }
-        return add(fraction.negate());
     }
 split(String str, char separatorChar) {
         // Performance tuned for 2.0 (JDK1.4)
@@ -3345,21 +2482,6 @@ split(String str, String separatorChars, int max) {
         return (String[]) list.toArray(new String[list.size()]);
     }
 setValue(byte value) {
-        this.value = value;
-    }
-setValue(double value) {
-        this.value = value;
-    }
-setValue(float value) {
-        this.value = value;
-    }
-setValue(int value) {
-        this.value = value;
-    }
-setValue(long value) {
-        this.value = value;
-    }
-setValue(short value) {
         this.value = value;
     }
 uncapitalize(String str) {
@@ -4027,32 +3149,6 @@ getEnum(Class enumClass, String name) {
         }
         return (Enum) entry.map.get(name);
     }
-getEnumMap(Class enumClass) {
-        if (enumClass == null) {
-            throw new IllegalArgumentException("The Enum Class must not be null");
-        }
-        if (Enum.class.isAssignableFrom(enumClass) == false) {
-            throw new IllegalArgumentException("The Class must be a subclass of Enum");
-        }
-        Entry entry = (Entry) cEnumClasses.get(enumClass.getName());
-        if (entry == null) {
-            return EMPTY_MAP;
-        }
-        return Collections.unmodifiableMap(entry.map);
-    }
-getEnumList(Class enumClass) {
-        if (enumClass == null) {
-            throw new IllegalArgumentException("The Enum Class must not be null");
-        }
-        if (Enum.class.isAssignableFrom(enumClass) == false) {
-            throw new IllegalArgumentException("The Class must be a subclass of Enum");
-        }
-        Entry entry = (Entry) cEnumClasses.get(enumClass.getName());
-        if (entry == null) {
-            return Collections.EMPTY_LIST;
-        }
-        return Collections.unmodifiableList(entry.list);
-    }
 reflectionToString(Object object, ToStringStyle style, 
             boolean outputTransients) {
         if (object == null) {
@@ -4146,30 +3242,6 @@ append(Object lhs, Object rhs) {
                 // Not an array of primitives
                 append((Object[]) lhs, (Object[]) rhs);
             }
-        }
-        return this;
-    }
-append(Object[] lhs, Object[] rhs) {
-        if (comparison != 0) {
-            return this;
-        }
-        if (lhs == rhs) {
-            return this;
-        }
-        if (lhs == null || rhs == null) {
-            throw new NullPointerException();
-        }
-
-        int length = (lhs.length < rhs.length) ? lhs.length : rhs.length;
-        for (int i = 0; i < length && comparison == 0; ++i) {
-            Class lhsClass = lhs[i].getClass();
-            if (!lhsClass.isInstance(rhs[i])) {
-                throw new ClassCastException();
-            }
-            append(lhs[i], rhs[i]);
-        }
-        if (comparison == 0 && lhs.length != rhs.length) {
-            comparison = (lhs.length < rhs.length) ? -1 : +1;
         }
         return this;
     }
