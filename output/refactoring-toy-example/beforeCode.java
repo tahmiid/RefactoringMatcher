@@ -1,4 +1,4 @@
-sleep(){
+{
 		int s1 = 1;
 		int s2 = 2;
 		int s3 = 3;
@@ -9,7 +9,7 @@ sleep(){
 		int s8 = 8;
 		
 	}
-bark() {
+{
 		System.out.println("ruff");
 		System.out.println("ruff");
 		System.out.println("...");

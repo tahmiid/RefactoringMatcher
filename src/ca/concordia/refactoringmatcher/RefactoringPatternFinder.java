@@ -7,7 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public interface RefactoringPatternFinder {
 
-	List<Pair<RefactoringData, RefactoringData>> getSimilarRefactoringPairs();
+	List<RefactoringPair> getSimilarRefactoringPairs();
 	
 	List<HashSet<RefactoringData>> getSimilarRefactorings();
 }

@@ -1,4 +1,4 @@
-package ca.concordia.refactoringmatcher;
+package ca.concordia.refactoringmatcher.clonedetector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +20,8 @@ import java.util.ListIterator;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
+
+import ca.concordia.refactoringmatcher.RefactoringData;
 
 public class SourceCCOutputParser {
 	List<CodeLocation> codeBlocks;

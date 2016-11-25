@@ -1,5 +1,4 @@
-scrollVerify()
-	{
+{
 		System.err.println("SCROLL_VERIFY");
 		int verifyScrollLine = 0;
 		int currentPhysicalLine = getPhysicalLine();
@@ -17,8 +16,7 @@ scrollVerify()
 			Log.log(Log.ERROR,this,ex);
 		}
 	}
-showBuffer(Buffer buffer, boolean focus)
-	{
+{
 		if(editPane.getBuffer() == buffer
 			&& editPane.getTextArea().getVisibleLines() > 1)
 		{
@@ -45,8 +43,7 @@ showBuffer(Buffer buffer, boolean focus)
 		editPane.setBuffer(buffer, focus);
 		return editPane;
 	}
-cleanUpIncomplete(OutputStream out)
-	{
+{
 		// Incomplete autosave file should not exist.
 		if(out != null)
 		{
@@ -62,16 +59,14 @@ cleanUpIncomplete(OutputStream out)
 			}
 		}
 	}
-getLastVisitedPath()
-	{
+{
 		HistoryModel pathModel = HistoryModel.getModel("vfs.browser.path");
 		if(pathModel.getSize() == 0)
 			return null;
 		else
 			return pathModel.getItem(0);
 	}
-disablePlugin(PluginJAR jar, Plugin plugin, String installedVersion) 
-	{
+{
 		Log.log(Log.ERROR, this, "Plugin: " + plugin.name + " " + installedVersion +
 			" is not supported on this version of jEdit! Disabling plugin.");
 		jEdit.removePluginJAR(jar,false);
@@ -82,8 +77,7 @@ disablePlugin(PluginJAR jar, Plugin plugin, String installedVersion)
 		jEdit.setBooleanProperty("plugin." + jarName + ".disabled", true);
 		jEdit.propertiesChanged();		
 	}
-prepareGapForInsertion(int start, int len)
-	{
+{
 		moveGapStart(start);
 		if(gapEnd - gapStart < len)
 		{
@@ -92,8 +86,7 @@ prepareGapForInsertion(int start, int len)
 			moveGapEnd(start + gapSize);
 		}
 	}
-indexOf(String str)
-	{
+{
 		int length = (wrap ? ring.length : count);
 		for(int i = length - 1; i >= 0; i--)
 		{
@@ -104,8 +97,7 @@ indexOf(String str)
 		}
 		return -1;
 	}
-isElectricKey(char ch)
-	{
+{
 		if (electricKeys == null)
 		{
 			String[] props = {
@@ -127,8 +119,7 @@ isElectricKey(char ch)
 
 		return (electricKeys.indexOf(ch) >= 0);
 	}
-isElectricKey(char ch, String keysMode)
-	{
+{
 		if ("off".equals(keysMode))
 			return false;
 
@@ -157,10 +148,7 @@ isElectricKey(char ch, String keysMode)
 			&& (electricKeys.indexOf(ch) >= 0 ));
 		return isElectric1 || isElectric2;
 	}
-prepareBackupFile(File file, int backups,
-		 String backupPrefix, String backupSuffix,
-		 String backupDirectory, int backupTimeDistance)
-	{
+{
 		String name = file.getName();
 		File backupFile = getNthBackupFile(name, 1, backups,
 				backupPrefix, backupSuffix,
@@ -200,8 +188,7 @@ prepareBackupFile(File file, int backups,
 		}
 		return backupFile;
 	}
-saveBackup(File file, File backupFile)
-	{
+{
 		Log.log(Log.DEBUG,MiscUtilities.class,
 			"Saving backup of file \"" +
 			file.getAbsolutePath() + "\" to \"" +
@@ -209,12 +196,7 @@ saveBackup(File file, File backupFile)
 		if (!file.renameTo(backupFile))
 			IOUtilities.moveFile(file, backupFile);
 	}
-error(Component comp,
-		final String path,
-		String messageProp,
-		Object[] args,
-		int urgency)
-	{
+{
 		final Frame frame = JOptionPane.getFrameForComponent(comp);
 
 		synchronized(errorLock)
@@ -231,8 +213,7 @@ error(Component comp,
 			}
 		}
 	}
-getCurrentLanguage()
-	{
+{
 		String language;
 		if (getBooleanProperty("lang.usedefaultlocale"))
 		{
@@ -244,10 +225,7 @@ getCurrentLanguage()
 		}
 		return language;
 	}
-layoutGlyphVector(Font font,
-		FontRenderContext frc,
-		char[] text, int start, int end)
-	{
+{
 		// FIXME: Need BiDi support.
 		int flags = Font.LAYOUT_LEFT_TO_RIGHT
 			| Font.LAYOUT_NO_START_CONTEXT
@@ -263,8 +241,7 @@ layoutGlyphVector(Font font,
 
 		return result;
 	}
-insert(int offset, CharSequence seq)
-	{
+{
 		if(seq == null)
 			return;
 
@@ -306,8 +283,7 @@ insert(int offset, CharSequence seq)
 			writeUnlock();
 		}
 	}
-recalculateTabWidth(Chunk lineHead, Segment lineText)
-	{
+{
 		float x = 0.0f;
 		for(Chunk chunk = lineHead; chunk != null; chunk = (Chunk)chunk.next)
 		{
@@ -319,13 +295,11 @@ recalculateTabWidth(Chunk lineHead, Segment lineText)
 		}
 		return x;
 	}
-isTab(Segment lineText)
-	{
+{
 		return length == 1
 			&& lineText.array[lineText.offset + offset] == '\t';
 	}
-actionPerformed(ActionEvent evt)
-		{
+{
 			Object source = evt.getSource();
 
 			if(source == add)
@@ -398,8 +372,7 @@ actionPerformed(ActionEvent evt)
 				updatePreview();
 			}
 		}
-getFont(int i)
-	{
+{
 		Font f = null;
 		for (Font candidate : getFonts())
 		{
@@ -411,8 +384,7 @@ getFont(int i)
 		}
 		return f;
 	}
-getBaseName(String path)
-	{
+{
 		String name = getFileName(path);
 		int index = name.indexOf('.');
 		if(index == -1)
@@ -420,11 +392,7 @@ getBaseName(String path)
 		else
 			return name.substring(0,index);
 	}
-copy(ProgressObserver progress, VFS sourceVFS, Object sourceSession,String sourcePath,
-		VFS targetVFS, Object targetSession,String targetPath, Component comp, boolean canStop,
-		boolean sendVFSUpdate)
-	throws IOException
-	{
+{
 		if (progress != null)
 			progress.setStatus("Initializing");
 
@@ -476,10 +444,7 @@ copy(ProgressObserver progress, VFS sourceVFS, Object sourceSession,String sourc
 			IOUtilities.closeQuietly(out);
 		}
 	}
-copy(ProgressObserver progress, String sourcePath,String targetPath, Component comp,
-				   boolean canStop, boolean sendVFSUpdate)
-		throws IOException
-	{
+{
 		VFS sourceVFS = VFSManager.getVFSForPath(sourcePath);
 		Object sourceSession = sourceVFS.createVFSSession(sourcePath, comp);
 		if (sourceSession == null)
@@ -499,8 +464,7 @@ copy(ProgressObserver progress, String sourcePath,String targetPath, Component c
 		return copy(progress, sourceVFS, sourceSession, sourcePath, targetVFS, targetSession, targetPath,
 			    comp,canStop, sendVFSUpdate);
 	}
-processKeyEvent(KeyEvent evt, int from, boolean global)
-	{
+{
 		if(Debug.DUMP_KEY_EVENTS)
 		{
 			Log.log(Log.DEBUG,this,"Key event                 : "
@@ -564,8 +528,7 @@ processKeyEvent(KeyEvent evt, int from, boolean global)
 			break;
 		}
 	}
-getPrevOrNextFile(View view, String path, Direction direction)
-	{
+{
 		if(files == null)
 			files = _getFiles(view);
 
@@ -633,8 +596,7 @@ getPrevOrNextFile(View view, String path, Direction direction)
 			return null;
 		}
 	}
-_paste(TextArea textArea, boolean vertical, String selection, JEditBuffer buffer)
-	{
+{
 		try
 		{
 			buffer.beginCompoundEdit();
@@ -684,8 +646,7 @@ _paste(TextArea textArea, boolean vertical, String selection, JEditBuffer buffer
 
 		HistoryModel.getModel("clipboard").addItem(selection);
 	}
-parseModifiers(String modifierString)
-	{
+{
 		int modifiers = 0;
 		
 		for (char ch : modifierString.toCharArray())
@@ -709,21 +670,18 @@ parseModifiers(String modifierString)
 		
 		return modifiers;
 	}
-abbreviate(String path)
-	{
+{
 		if (svc == null)
 			svc = new VarCompressor();
 		return svc.compress(path);
 	}
-abbreviate(String path, boolean crossPlatform)
-	{
+{
 		if (svc == null)
 			svc = new VarCompressor();
 		return svc.compress(path, crossPlatform);
 	
 	}
-expandFolds(int foldLevel, boolean update)
-	{
+{
 		if(buffer.getFoldHandler() instanceof IndentFoldHandler)
 			foldLevel = (foldLevel - 1) * buffer.getIndentSize() + 1;
 
@@ -763,8 +721,7 @@ expandFolds(int foldLevel, boolean update)
 			textArea.foldStructureChanged();
 		}
 	}
-setFileFlag(String fileName, boolean present)
-	{
+{
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory != null)
 		{
@@ -793,8 +750,7 @@ setFileFlag(String fileName, boolean present)
 			}
 		}
 	}
-reloadModels()
-	{
+{
 		models.clear();
 		List<KeyBinding[]> allBindings = new ArrayList<KeyBinding[]>();
 		Collection<String> knownBindings = new HashSet<String>();
@@ -848,16 +804,14 @@ reloadModels()
 		filteredModel.setDelegated(delegated);
 		filteredModel.fireTableDataChanged();
 	}
-cleanup()
-	{
+{
 		// Remove the reference to the JList from the history model so that the
 		// list doesn't keep getting updated after the dialog is gone
 		Object[] nothing = {};
 		clips.setListData(nothing);
 		dispose();
 	}
-_expandFold(int line, boolean fully)
-	{
+{
 		// the first sub-fold. used by JEditTextArea.expandFold().
 		int returnValue = -1;
 
@@ -960,8 +914,7 @@ _expandFold(int line, boolean fully)
 
 		return returnValue;
 	}
-getModeForFile(String filepath, String filename, String firstLine)
-	{
+{
 		if ((filepath != null) && filepath.endsWith(".gz"))
 			filepath = filepath.substring(0, filepath.length() - 3);
 		if ((filename != null) && filename.endsWith(".gz"))
@@ -1032,8 +985,7 @@ getModeForFile(String filepath, String filename, String firstLine)
 		// no matching mode found for this file
 		return null;
 	}
-rename(VFS vfs, String from, String newname)
-	{
+{
 		String filename = vfs.getFileName(from);
 		String to = newname;
 

@@ -1,5 +1,4 @@
-changed()
-	{
+{
 		//{{{ Debug code
 		if(Debug.SCROLL_DEBUG)
 		{
@@ -48,8 +47,7 @@ changed()
 				+ ':' + skew);
 		} //}}}
 	}
-setBuffer(Buffer buffer, boolean disableFileStatusCheck, boolean focus)
-	{
+{
 		editPane.setBuffer(buffer, focus);
 		int check = jEdit.getIntegerProperty("checkFileStatus");
 		if(!disableFileStatusCheck && (check == GeneralOptionPane.checkFileStatus_all ||
@@ -57,8 +55,7 @@ setBuffer(Buffer buffer, boolean disableFileStatusCheck, boolean focus)
 						  check == GeneralOptionPane.checkFileStatus_focusBuffer))
 			jEdit.checkBufferStatus(this, true);
 	}
-_run()
-	{
+{
 		OutputStream out = null;
 
 		try
@@ -124,9 +121,7 @@ _run()
 			IOUtilities.closeQuietly(out);
 		}
 	}
-VFSBrowser(View view, String path, int mode,
-		boolean multipleSelection, String position)
-	{
+{
 		super(new BorderLayout());
 
 		listenerList = new EventListenerList();
@@ -352,8 +347,7 @@ VFSBrowser(View view, String path, int mode,
 			}
 		});
 	}
-checkForObsoletePlugins() 
-	{
+{
 		if ((pluginList == null) || (pluginList.plugins == null)) return;
 		// for each plugin that is installed
 		for (PluginJAR jar: jEdit.getPluginJARs()) 
@@ -388,8 +382,7 @@ checkForObsoletePlugins()
 			}		
 		}
 	}
-insert(int start, String str)
-	{
+{
 		int len = str.length();
 		moveGapStart(start);
 		if(gapEnd - gapStart < len)
@@ -402,8 +395,7 @@ insert(int start, String str)
 		gapStart += len;
 		length += len;
 	}
-add(UndoManager.RemovedContent rem)
-	{
+{
 		// compare existing entries with this
 		int length = (wrap ? ring.length : count);
 		for(int i = 0; i < length; i++)
@@ -437,8 +429,7 @@ add(UndoManager.RemovedContent rem)
 			count = 0;
 		}
 	}
-isElectricKey(char ch, String keysMode)
-	{
+{
 		if ("off".equals(keysMode))
 			return false;
 
@@ -467,8 +458,7 @@ isElectricKey(char ch, String keysMode)
 			&& (electricKeys.indexOf(ch) >= 0 ));
 		return isElectric1 || isElectric2;
 	}
-isElectricKey(char ch)
-	{
+{
 		if (electricKeys == null)
 		{
 			String[] props = {
@@ -490,10 +480,7 @@ isElectricKey(char ch)
 
 		return (electricKeys.indexOf(ch) >= 0);
 	}
-saveBackup(File file, int backups,
-			       String backupPrefix, String backupSuffix,
-			       String backupDirectory, int backupTimeDistance)
-	{
+{
 		if(backupPrefix == null)
 			backupPrefix = "";
 		if(backupSuffix == null)
@@ -565,10 +552,7 @@ saveBackup(File file, int backups,
 			}
 		}
 	}
-saveBackup(File file, int backups,
-			       String backupPrefix, String backupSuffix,
-			       String backupDirectory, int backupTimeDistance)
-	{
+{
 		if(backupPrefix == null)
 			backupPrefix = "";
 		if(backupSuffix == null)
@@ -640,11 +624,7 @@ saveBackup(File file, int backups,
 			}
 		}
 	}
-error(Component comp,
-		final String path,
-		String messageProp,
-		Object[] args)
-	{
+{
 		final Frame frame = JOptionPane.getFrameForComponent(comp);
 
 		synchronized(errorLock)
@@ -661,8 +641,7 @@ error(Component comp,
 			}
 		}
 	}
-initLocalizationProperties()
-	{
+{
 		String language = null;
 		if (getBooleanProperty("lang.usedefaultlocale"))
 		{
@@ -691,10 +670,7 @@ initLocalizationProperties()
 			IOUtilities.closeQuietly(langResource);
 		}
 	}
-addGlyphVector(ArrayList<GlyphVector> glyphs,
-		Font font, FontRenderContext frc,
-		char[] text, int start, int end)
-	{
+{
 		// FIXME: Need BiDi support.
 		int layoutFlags = Font.LAYOUT_LEFT_TO_RIGHT
 			| Font.LAYOUT_NO_START_CONTEXT
@@ -714,8 +690,7 @@ addGlyphVector(ArrayList<GlyphVector> glyphs,
 		glyphs.add(gv);
 		return (float) gv.getLogicalBounds().getWidth();
 	}
-insert(int offset, String str)
-	{
+{
 		if(str == null)
 			return;
 
@@ -756,8 +731,7 @@ insert(int offset, String str)
 			writeUnlock();
 		}
 	}
-makeScreenLineInWrapMargin(Segment lineText)
-	{
+{
 		Chunk lineHead = (Chunk)firstToken;
 		boolean seenNonWhitespace = false;
 		float endOfWhitespace = 0.0f;
@@ -801,9 +775,7 @@ makeScreenLineInWrapMargin(Segment lineText)
 		}
 		out.add(mergeAdjucentChunks(lineHead,lineText));
 	}
-init(Segment lineText, TabExpander expander, float x,
-		FontRenderContext fontRenderContext, int physicalLineOffset)
-	{
+{
 		initialized = true;
 		if(!isAccessible())
 		{
@@ -826,19 +798,14 @@ init(Segment lineText, TabExpander expander, float x,
 					     textStart + length);
 		}
 	}
-selectWidget()
-		{
+{
 			WidgetSelectionDialog dialog = new WidgetSelectionDialog(StatusBarOptionPane.this);
 			String value = dialog.getValue();
 			if (value != null && value.length() == 0)
 				value = null;
 			return value;
 		}
-layoutGlyphs(FontRenderContext frc,
-				   char[] text,
-				   int start,
-				   int end)
-	{
+{
 		float width = 0.0f;
 		int max = 0;
 		Font dflt = style.getFont();
@@ -924,8 +891,7 @@ layoutGlyphs(FontRenderContext frc,
 		}
 		return width;
 	}
-getFileNameNoExtension(String path)
-	{
+{
 		String name = getFileName(path);
 		int index = name.indexOf('.');
 		if(index == -1)
@@ -933,10 +899,7 @@ getFileNameNoExtension(String path)
 		else
 			return name.substring(0,index);
 	}
-copy(ProgressObserver progress, VFS sourceVFS, Object sourceSession,String sourcePath,
-		VFS targetVFS, Object targetSession,String targetPath, Component comp, boolean canStop)
-	throws IOException
-	{
+{
 		if (progress != null)
 			progress.setStatus("Initializing");
 
@@ -987,9 +950,7 @@ copy(ProgressObserver progress, VFS sourceVFS, Object sourceSession,String sourc
 			IOUtilities.closeQuietly(out);
 		}
 	}
-copy(ProgressObserver progress, String sourcePath,String targetPath, Component comp, boolean canStop)
-	throws IOException
-	{
+{
 		VFS sourceVFS = VFSManager.getVFSForPath(sourcePath);
 		Object sourceSession = sourceVFS.createVFSSession(sourcePath, comp);
 		if (sourceSession == null)
@@ -1006,8 +967,7 @@ copy(ProgressObserver progress, String sourcePath,String targetPath, Component c
 		}
 		return copy(progress, sourceVFS, sourceSession, sourcePath, targetVFS, targetSession, targetPath, comp,canStop);
 	}
-_preprocessKeyEvent(KeyEvent evt)
-	{
+{
 		if(evt.isConsumed())
 			return null;
 
@@ -1019,8 +979,7 @@ _preprocessKeyEvent(KeyEvent evt)
 
 		return KeyEventWorkaround.processKeyEvent(evt);
 	}
-getNextFile(View view, String path)
-	{
+{
 		if(files == null)
 			files = _getFiles(view);
 
@@ -1064,9 +1023,7 @@ getNextFile(View view, String path)
 			return null;
 		}
 	}
-paste(TextArea textArea, char register,
-		boolean vertical)
-	{
+{
 		if(!textArea.isEditable())
 		{
 			textArea.getToolkit().beep();
@@ -1160,8 +1117,7 @@ paste(TextArea textArea, char register,
 
 		HistoryModel.getModel("clipboard").addItem(selection);
 	}
-parseKey(String keyStroke)
-	{
+{
 		if(keyStroke == null)
 			return null;
 		int modifiers = 0;
@@ -1228,21 +1184,18 @@ parseKey(String keyStroke)
 			return new Key(modifiersToString(modifiers),ch,'\0');
 		}
 	}
-abbreviate(String path, boolean crossPlatform)
-	{
+{
 		if (svc == null)
 			svc = new VarCompressor();
 		return svc.compress(path, crossPlatform);
 	
 	}
-abbreviate(String path)
-	{
+{
 		if (svc == null)
 			svc = new VarCompressor();
 		return svc.compress(path);
 	}
-expandFolds(int foldLevel)
-	{
+{
 		if(buffer.getFoldHandler() instanceof IndentFoldHandler)
 			foldLevel = (foldLevel - 1) * buffer.getIndentSize() + 1;
 
@@ -1282,8 +1235,7 @@ expandFolds(int foldLevel)
 			textArea.foldStructureChanged();
 		}
 	}
-_save()
-	{
+{
 		String lf = lfs[lookAndFeel.getSelectedIndex()].getClassName();
 		jEdit.setProperty("lookAndFeel",lf);
 		jEdit.setFontProperty("metal.primary.font",primaryFont.getFont());
@@ -1339,8 +1291,7 @@ _save()
 		jEdit.setBooleanProperty("decorate.frames",decorateFrames.isSelected());
 		jEdit.setBooleanProperty("decorate.dialogs",decorateDialogs.isSelected());
 	}
-initModels()
-	{
+{
 		List<KeyBinding[]> allBindings = new ArrayList<KeyBinding[]>();
 		Set<String> knownBindings = new HashSet<String>();
 		models = new Vector<ShortcutsModel>();
@@ -1391,8 +1342,7 @@ initModels()
 			}
 		};
 	}
-ok()
-	{
+{
 		Object[] selected = clips.getSelectedValues();
 		if(selected == null || selected.length == 0)
 		{
@@ -1417,8 +1367,7 @@ ok()
 
 		dispose();
 	}
-expandFold(int line, boolean fully)
-	{
+{
 		// the first sub-fold. used by JEditTextArea.expandFold().
 		int returnValue = -1;
 
@@ -1522,8 +1471,7 @@ expandFold(int line, boolean fully)
 
 		return returnValue;
 	}
-getModeForFile(String filename, String firstLine)
-	{
+{
 		String nogzName = filename.substring(0,filename.length() -
 			(filename.endsWith(".gz") ? 3 : 0));
 
@@ -1592,8 +1540,7 @@ getModeForFile(String filename, String firstLine)
 		// no matching mode found for this file
 		return null;
 	}
-rename(String from, String newname)
-	{
+{
 		VFS vfs = VFSManager.getVFSForPath(from);
 
 		String filename = vfs.getFileName(from);

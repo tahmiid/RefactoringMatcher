@@ -62,11 +62,12 @@ public class RefactoringMatcherTest {
 
 //	 String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
 //	 String projectLink = "https://github.com/romuloceccon/jedit.git";
-//	 String projectLink = "https://github.com/qos-ch/slf4j.git";
-//	 String projectLink = "https://github.com/jfree/jfreechart.git";
-	 String projectLink = "https://github.com/apache/commons-lang.git";
 //	 String projectLink = "https://`github.com/elastic/elasticsearch.git";
-//	String projectLink = "https://github.com/spring-projects/spring-framework.git";
+//	 String projectLink = "https://github.com/google/google-java-format.git";
+//	 String projectLink = "https://github.com/google/ExoPlayer.git";
+//	 String projectLink = "https://github.com/jfree/jfreechart.git";
+//	 String projectLink = "https://github.com/apache/commons-lang.git";
+	 String projectLink = "https://github.com/google/guava.git";
 	 
 
 	protected void runTest() throws Exception {
@@ -79,63 +80,58 @@ public class RefactoringMatcherTest {
 
 		List<RefactoringData> refactorings = project.loadRefactoringsFromFile(gitService);
 
-		
-
-		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings,
-				project.getOutputDirectory());
+		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
 
 		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
 
-//		List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
+//		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
 
 //		printpairs(similarRefactoringPairs);
 
-		printReport(refactorings, project);
+		printReport(refactorings, project);	
 		
-		
-		System.out.println();
-		System.out.println("Similar Refactorings: " + similarRefactorings.size());
-		
-		int i = 0;
-		for (HashSet<RefactoringData> hashSet : similarRefactorings) {
-			i++;
-			String name = "Set " + i;
-			int size = hashSet.size();
-			long timeDifferenceInDays, highestTime = 0, lowestTime = 0;
-			Date now = new Date();
-			lowestTime = now.getTime();
-			boolean sameAuthor = true;
-			ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(hashSet);
-			PersonIdent author = list.get(0).getCommit().getCommiter();
-
-			for (RefactoringData refactoringData : hashSet) {
-				if(sameAuthor)
-				{
-					if(!author.equals(refactoringData.getCommit().getCommiter()))
-					{
-						sameAuthor = false;
-					}
-				}
-				long time = refactoringData.getCommitTime().getTime();
-				if(time >= highestTime)
-					highestTime = time;
-				if(time <= lowestTime)
-					lowestTime = time;
-			}
-			
-			timeDifferenceInDays = (highestTime - lowestTime) ;
-			timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
-			
-//			timeDifferenceInDays = list.get(0).getCommitTime().compareTo(list.get(size-1).getCommitTime());
-
-//			timeDifferenceInDays = getDateDiff(list.get(0).getCommitTime(),list.get(size-1).getCommitTime(),TimeUnit.DAYS);
-//			timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
-			
-			System.out.println(name + "\t" + size + "\t" + timeDifferenceInDays + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + sameAuthor);
-		}
+		printReport(similarRefactorings);
 		
 		createTreeView(similarRefactorings);
 	}
+
+private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
+	System.out.println();
+	System.out.println("Similar Refactorings: " + similarRefactorings.size());
+	
+	int i = 0;
+	for (HashSet<RefactoringData> hashSet : similarRefactorings) {
+		i++;
+		String name = "Set " + i;
+		int size = hashSet.size();
+		long timeDifferenceInDays, highestTime = 0, lowestTime = 0;
+		Date now = new Date();
+		lowestTime = now.getTime();
+		boolean sameAuthor = true;
+		ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(hashSet);
+		PersonIdent author = list.get(0).getCommit().getCommiter();
+
+		for (RefactoringData refactoringData : hashSet) {
+			if(sameAuthor)
+			{
+				if(!author.equals(refactoringData.getCommit().getCommiter()))
+				{
+					sameAuthor = false;
+				}
+			}
+			long time = refactoringData.getCommitTime().getTime();
+			if(time >= highestTime)
+				highestTime = time;
+			if(time <= lowestTime)
+				lowestTime = time;
+		}
+		
+		timeDifferenceInDays = (highestTime - lowestTime) ;
+		timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
+		
+		System.out.println(name + "\t" + size + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + timeDifferenceInDays + "\t" + sameAuthor);
+	}
+}
 	
 	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
 	    long diffInMillies = date2.getTime() - date1.getTime();
@@ -232,14 +228,14 @@ public class RefactoringMatcherTest {
 		});
 	}
 
-	private void printpairs(List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs) {
+	private void printpairs(List<RefactoringPair> similarRefactoringPairs) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Refactoring Pairs");
-		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
+		for (RefactoringPair pair : similarRefactoringPairs) {
 			DefaultMutableTreeNode refactoringPairNode = new DefaultMutableTreeNode(
 					"Pair " + (similarRefactoringPairs.indexOf(pair) + 1));
 
-			refactoringPairNode.add(createTreeNode(pair.getRight()));
-			refactoringPairNode.add(createTreeNode(pair.getLeft()));
+			refactoringPairNode.add(createTreeNode(pair.getRefactoringOne()));
+			refactoringPairNode.add(createTreeNode(pair.getRefactoringTwo()));
 
 			root.add(refactoringPairNode);
 		}
@@ -256,41 +252,41 @@ public class RefactoringMatcherTest {
 
 				if (selectedNode.getLevel() == 1) {
 					lblNewLabel.setText(selectedNode.toString());
-					Pair<RefactoringData, RefactoringData> pair = (Pair<RefactoringData, RefactoringData>) similarRefactoringPairs
+					RefactoringPair pair = (RefactoringPair) similarRefactoringPairs
 							.get(selectedNode.getParent().getIndex(selectedNode));
 
 					TitledBorder border;
 
-					lblCommit.setToolTipText("Commit: " + pair.getLeft().getCommit().getId());
-					lblCommit_1.setToolTipText("Commit: " + pair.getRight().getCommit().getId());
+					lblCommit.setToolTipText("Commit: " + pair.getRefactoringOne().getCommit().getId());
+					lblCommit_1.setToolTipText("Commit: " + pair.getRefactoringTwo().getCommit().getId());
 
-					border = new TitledBorder(pair.getLeft().getBeforeCode().getFileName());
+					border = new TitledBorder(pair.getRefactoringOne().getBeforeCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
 					border.setTitlePosition(TitledBorder.TOP);
 
 					panel_2.setBorder(border);
-					beforeRef1.setText(pair.getLeft().getBeforeCodeText());
+					beforeRef1.setText(pair.getRefactoringOne().getBeforeCodeText());
 
-					border = new TitledBorder(pair.getRight().getBeforeCode().getFileName());
+					border = new TitledBorder(pair.getRefactoringTwo().getBeforeCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
 					border.setTitlePosition(TitledBorder.TOP);
 
 					panel_3.setBorder(border);
-					beforeRef2.setText(pair.getRight().getBeforeCodeText());
+					beforeRef2.setText(pair.getRefactoringTwo().getBeforeCodeText());
 
-					border = new TitledBorder(pair.getLeft().getAfterCode().getFileName());
+					border = new TitledBorder(pair.getRefactoringOne().getAfterCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
 					border.setTitlePosition(TitledBorder.TOP);
 
 					panel_4.setBorder(border);
-					afterRef1.setText(pair.getLeft().getAfterCodeText());
+					afterRef1.setText(pair.getRefactoringOne().getAfterCodeText());
 
-					border = new TitledBorder(pair.getRight().getAfterCode().getFileName());
+					border = new TitledBorder(pair.getRefactoringTwo().getAfterCode().getFileName());
 					border.setTitleJustification(TitledBorder.CENTER);
 					border.setTitlePosition(TitledBorder.TOP);
 
 					panel_5.setBorder(border);
-					afterRef2.setText(pair.getRight().getAfterCodeText());
+					afterRef2.setText(pair.getRefactoringTwo().getAfterCodeText());
 				}
 			}
 		});

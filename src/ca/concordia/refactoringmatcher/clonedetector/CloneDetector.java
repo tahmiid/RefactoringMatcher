@@ -1,4 +1,4 @@
-package ca.concordia.refactoringmatcher;
+package ca.concordia.refactoringmatcher.clonedetector;
 
 import java.io.IOException;
 import java.nio.file.Path;

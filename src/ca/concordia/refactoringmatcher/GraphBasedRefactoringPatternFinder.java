@@ -3,12 +3,10 @@ package ca.concordia.refactoringmatcher;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 public class GraphBasedRefactoringPatternFinder implements RefactoringPatternFinder{
 
 	@Override
-	public List<Pair<RefactoringData, RefactoringData>> getSimilarRefactoringPairs() {
+	public List<RefactoringPair> getSimilarRefactoringPairs() {
 		// TODO Auto-generated method stub
 		return null;
 	}

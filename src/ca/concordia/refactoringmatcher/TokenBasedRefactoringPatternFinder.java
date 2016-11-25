@@ -15,10 +15,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import ca.concordia.refactoringmatcher.clonedetector.CloneDetector;
+import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
+import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
+
 public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFinder {
 
 	List<HashSet<RefactoringData>> similarRefactorings;
-	List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs;
+	List<RefactoringPair> similarRefactoringPairs;
 
 	public TokenBasedRefactoringPatternFinder(List<RefactoringData> refactorings, Path outputDirectory)
 			throws IOException, InterruptedException, ParseException {
@@ -26,100 +30,78 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		Path beforeCodePath = createEmptyFile(Paths.get(outputDirectory + "/beforeCode.java"));
 		Path afterCodePath = createEmptyFile(Paths.get(outputDirectory + "/afterCode.java"));
 		HashMap<Integer, RefactoringData> codeMapingBefore = new HashMap<Integer, RefactoringData>();
+		ArrayList<Pair<Integer, RefactoringData>> beforeCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
+		ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
 		HashMap<Integer, RefactoringData> codeMapingAfter = new HashMap<Integer, RefactoringData>();
+		
 		String text;
 		int start;
 		int beforeLineCount = 1, afterLineCount = 1;
 		for (RefactoringData refactoringData : refactorings) {
 
-			text = refactoringData.getBeforeCodeText();
+			text = refactoringData.getBeforeCodeBody();
 			addToFile(beforeCodePath, text);
 			start = beforeLineCount;
 			beforeLineCount += countLines(text);
 			codeMapingBefore.put(start, refactoringData);
+			beforeCodeMaping.add(Pair.of(start, refactoringData));
 
-			text = refactoringData.getAfterCodeText();
+			text = refactoringData.getAfterCodeBody();
 			addToFile(afterCodePath, text);
 			start = afterLineCount;
 			afterLineCount += countLines(text);
 			codeMapingAfter.put(start, refactoringData);
+			afterCodeMaping.add(Pair.of(start, refactoringData));
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
 
-//		List<Pair<CodeLocation, CodeLocation>> beforeClonePairs = detector.detectClonePairs(beforeCodePath);
+		// List<Pair<CodeLocation, CodeLocation>> beforeClonePairs =
+		// detector.detectClonePairs(beforeCodePath);
 
 		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodePath);
 
-//		findSimilarRefactorings(beforeClonePairs, codeMapingBefore, afterClonePairs, codeMapingAfter);
+		// findSimilarRefactorings(beforeClonePairs, codeMapingBefore,
+		// afterClonePairs, codeMapingAfter);
 
-		findSimilarRefactoringsBasedOnExtractedCode(afterClonePairs, codeMapingAfter);
+		findSimilarRefactoringsBasedOnExtractedCode(afterClonePairs, codeMapingAfter, afterCodeMaping);
 	}
 
 	private void findSimilarRefactoringsBasedOnExtractedCode(List<Pair<CodeLocation, CodeLocation>> afterClonePairs,
-			HashMap<Integer, RefactoringData> codeMapingAfter) {
+			HashMap<Integer, RefactoringData> codeMapingAfter,
+			ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping) {
 
-		similarRefactoringPairs = new ArrayList<Pair<RefactoringData, RefactoringData>>();
+		similarRefactoringPairs = new ArrayList<RefactoringPair>();
 		for (Pair<CodeLocation, CodeLocation> pair : afterClonePairs) {
-			RefactoringData left = codeMapingAfter.get(pair.getLeft().getStartLocation());
-			RefactoringData right = codeMapingAfter.get(pair.getRight().getStartLocation());
+			RefactoringData left = null; // =
+											// codeMapingAfter.get(pair.getLeft().getStartLocation());
+			RefactoringData right = null; // =
+											// codeMapingAfter.get(pair.getRight().getStartLocation());
 
-			if (left == null || right == null) {
-				// TODO handle methods inside innerclasses
-				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
-				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
-				continue;
-			}
-
-			Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
-			similarRefactoringPairs.add(refactoringPair);
-		}
-		createSimilarRefactoringSets();
-	}
-
-	private void findSimilarRefactorings(List<Pair<CodeLocation, CodeLocation>> beforeClonePairs,
-			HashMap<Integer, RefactoringData> codeMapingBefore, List<Pair<CodeLocation, CodeLocation>> afterClonePairs,
-			HashMap<Integer, RefactoringData> codeMapingAfter) {
-
-		List<Pair<RefactoringData, RefactoringData>> afterRefactoringPairs = new ArrayList<Pair<RefactoringData, RefactoringData>>();
-		for (Pair<CodeLocation, CodeLocation> pair : afterClonePairs) {
-			RefactoringData left = codeMapingAfter.get(pair.getLeft().getStartLocation());
-			RefactoringData right = codeMapingAfter.get(pair.getRight().getStartLocation());
-
-			if (left == null || right == null) {
-				// TODO handle methods inside innerclasses
-				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
-				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
-				continue;
-			}
-
-			Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
-			afterRefactoringPairs.add(refactoringPair);
-		}
-
-		similarRefactoringPairs = new ArrayList<Pair<RefactoringData, RefactoringData>>();
-		for (Pair<CodeLocation, CodeLocation> pair : beforeClonePairs) {
-			RefactoringData left = codeMapingBefore.get(pair.getLeft().getStartLocation());
-			RefactoringData right = codeMapingBefore.get(pair.getRight().getStartLocation());
-
-			if (left == null || right == null) {
-				// TODO handle methods inside innerclasses
-				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
-				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
-				continue;
-			}
-
-			// if (left.getAfterCode().equals(right.getAfterCode())) {
-			// continue;
-			// }
-
-			for (Pair<RefactoringData, RefactoringData> afterPair : afterRefactoringPairs) {
-				if ((afterPair.getLeft() == left && afterPair.getRight() == right)
-						|| (afterPair.getLeft() == right && afterPair.getRight() == left)) {
-					Pair<RefactoringData, RefactoringData> refactoringPair = Pair.of(left, right);
-					similarRefactoringPairs.add(refactoringPair);
+			for (int i = afterCodeMaping.size() - 1; i >= 0; i--) {
+				if (pair.getLeft().getStartLocation() >= afterCodeMaping.get(i).getLeft()) {
+					left = afterCodeMaping.get(i).getRight();
 					break;
 				}
+			}
+
+			for (int i = afterCodeMaping.size() - 1; i >= 0; i--) {
+				if (pair.getRight().getStartLocation() >= afterCodeMaping.get(i).getLeft()) {
+					right = afterCodeMaping.get(i).getRight();
+					break;
+				}
+			}
+
+			if (left == null || right == null) {
+				// TODO handle methods inside innerclasses
+				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
+				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
+				continue;
+			}
+
+			if (left != right) {
+				RefactoringPair refactoringPair = new RefactoringPair(left, right);
+				similarRefactoringPairs.add(refactoringPair);
 			}
 		}
 
@@ -129,10 +111,9 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 	private void createSimilarRefactoringSets() {
 		List<HashSet<RefactoringData>> sets = new ArrayList<HashSet<RefactoringData>>();
 
-		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
+		for (RefactoringPair pair : similarRefactoringPairs) {
 			HashSet<RefactoringData> set = new HashSet<>();
-			set.add(pair.getLeft());
-			set.add(pair.getRight());
+			set.addAll(pair.getRefactorings());
 			sets.add(set);
 		}
 
@@ -159,8 +140,57 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		}
 	}
 
+	private void findSimilarRefactorings(List<Pair<CodeLocation, CodeLocation>> beforeClonePairs,
+			HashMap<Integer, RefactoringData> codeMapingBefore, List<Pair<CodeLocation, CodeLocation>> afterClonePairs,
+			HashMap<Integer, RefactoringData> codeMapingAfter) {
+
+		List<RefactoringPair> afterRefactoringPairs = new ArrayList<RefactoringPair>();
+		for (Pair<CodeLocation, CodeLocation> pair : afterClonePairs) {
+			RefactoringData left = codeMapingAfter.get(pair.getLeft().getStartLocation());
+			RefactoringData right = codeMapingAfter.get(pair.getRight().getStartLocation());
+
+			if (left == null || right == null) {
+				// TODO handle methods inside innerclasses
+				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
+				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
+				continue;
+			}
+
+			RefactoringPair refactoringPair = new RefactoringPair(left, right);
+			afterRefactoringPairs.add(refactoringPair);
+		}
+
+		similarRefactoringPairs = new ArrayList<RefactoringPair>();
+		for (Pair<CodeLocation, CodeLocation> pair : beforeClonePairs) {
+			RefactoringData left = codeMapingBefore.get(pair.getLeft().getStartLocation());
+			RefactoringData right = codeMapingBefore.get(pair.getRight().getStartLocation());
+
+			if (left == null || right == null) {
+				// TODO handle methods inside innerclasses
+				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
+				System.out.println(pair.getRight().getEndLocation() + " " + pair.getRight().getFile());
+				continue;
+			}
+
+			// if (left.getAfterCode().equals(right.getAfterCode())) {
+			// continue;
+			// }
+
+			for (RefactoringPair afterPair : afterRefactoringPairs) {
+				if ((afterPair.getRefactoringOne() == left && afterPair.getRefactoringTwo() == right)
+						|| (afterPair.getRefactoringOne() == right && afterPair.getRefactoringTwo() == left)) {
+					RefactoringPair refactoringPair = new RefactoringPair(left, right);
+					similarRefactoringPairs.add(refactoringPair);
+					break;
+				}
+			}
+		}
+
+		createSimilarRefactoringSets();
+	}
+
 	@Override
-	public List<Pair<RefactoringData, RefactoringData>> getSimilarRefactoringPairs() {
+	public List<RefactoringPair> getSimilarRefactoringPairs() {
 		return similarRefactoringPairs;
 	}
 

@@ -31,7 +31,7 @@ public class Code implements Serializable {
 	private int startOffset;
 	private int length;
 	private String text;
-	private String methodBody;
+//	private String methodBody;
 	private String methodName;
 
 	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
@@ -128,7 +128,7 @@ public class Code implements Serializable {
 	}
 	
 	public String getMethodBody() {
-		return methodBody;
+		return text.substring(text.indexOf('{'));
 	}
 
 	public String toString(){

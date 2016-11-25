@@ -33,7 +33,7 @@ public class RefactoringMatcher {
 
 //		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
 		
-		List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
+		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
 
 		printpairs(similarRefactoringPairs);
 		
@@ -41,12 +41,12 @@ public class RefactoringMatcher {
 
 	}
 
-	private static void printpairs(List<Pair<RefactoringData, RefactoringData>> similarRefactoringPairs) {
+	private static void printpairs(List<RefactoringPair> similarRefactoringPairs) {
 		System.out.println("Refactorings Pairs: " + similarRefactoringPairs.size());
 		System.out.println();
-		for (Pair<RefactoringData, RefactoringData> pair : similarRefactoringPairs) {
-			System.out.println(pair.getLeft());
-			System.out.println(pair.getRight());
+		for (RefactoringPair pair : similarRefactoringPairs) {
+			System.out.println(pair.getRefactoringOne());
+			System.out.println(pair.getRefactoringTwo());
 
 			System.out.println();
 		}

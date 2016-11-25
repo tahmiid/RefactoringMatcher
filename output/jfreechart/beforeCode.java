@@ -1,18 +1,16 @@
-add(double x, double y, double deltaX, double deltaY) {
+{
         super.add(new VectorDataItem(x, y, deltaX, deltaY), true);
     }
-add(double x, double xLow, double xHigh, double y) {
+{
         super.add(new XIntervalDataItem(x, xLow, xHigh, y), true);
     }
-add(double x, double xLow, double xHigh, double y, double yLow,
-            double yHigh) {
+{
         super.add(new XYIntervalDataItem(x, xLow, xHigh, y, yLow, yHigh), true);
     }
-add(double x, double y, double yLow, double yHigh) {
+{
         super.add(new YIntervalDataItem(x, y, yLow, yHigh), true);
     }
-darker(TexturePaint paint,
-            boolean ignoreThisDummyArgument) {
+{
         try {
             return darker(paint);
         }
@@ -26,7 +24,7 @@ darker(TexturePaint paint,
             return paint;
         }
     }
-fetchLegendItems() {
+{
         this.items.clear();
         RectangleEdge p = getPosition();
         if (RectangleEdge.isTopOrBottom(p)) {
@@ -46,7 +44,7 @@ fetchLegendItems() {
             }
         }
     }
-DefaultPlotEditor(Plot plot) {
+{
         this.plotInsets = plot.getInsets();
         this.backgroundPaintSample = new PaintSample(plot.getBackgroundPaint());
         this.outlineStrokeSample = new StrokeSample(plot.getOutlineStroke());
@@ -237,7 +235,7 @@ DefaultPlotEditor(Plot plot) {
 
         add(panel);
     }
-refreshAngleTicks() {
+{
         List ticks = new ArrayList();
         for (double currentTickVal = 0.0; currentTickVal < 360.0;
                 currentTickVal += this.angleTickUnit.getSize()) {
@@ -274,7 +272,7 @@ refreshAngleTicks() {
         }
         return ticks;
     }
-setDataset(XYDataset dataset) {
+{
         // if there is an existing dataset, remove the plot from the list of
         // change listeners...
         XYDataset existing = this.dataset;
@@ -293,7 +291,7 @@ setDataset(XYDataset dataset) {
         DatasetChangeEvent event = new DatasetChangeEvent(this, this.dataset);
         datasetChanged(event);
     }
-addOrUpdate(Number x, Number y) {
+{
         if (x == null) {
             throw new IllegalArgumentException("Null 'x' argument.");
         }
@@ -353,8 +351,7 @@ addOrUpdate(Number x, Number y) {
         fireSeriesChanged();
         return overwritten;
     }
-addOrUpdate(RegularTimePeriod period,
-                                          Number value) {
+{
 
         if (period == null) {
             throw new IllegalArgumentException("Null 'period' argument.");
@@ -413,7 +410,7 @@ addOrUpdate(RegularTimePeriod period,
         return overwritten;
 
     }
-delete(int start, int end) {
+{
         if (end < start) {
             throw new IllegalArgumentException("Requires start <= end.");
         }
@@ -425,10 +422,7 @@ delete(int start, int end) {
         }
         fireSeriesChanged();
     }
-createPopupMenu(boolean properties,
-                                         boolean save,
-                                         boolean print,
-                                         boolean zoom) {
+{
 
         JPopupMenu result = new JPopupMenu("Chart:");
         boolean separator = false;
@@ -558,13 +552,13 @@ createPopupMenu(boolean properties,
         return result;
 
     }
-findRangeBounds(CategoryDataset dataset) {
+{
         if (dataset == null) {
             return null;
         }
         return DatasetUtilities.findRangeBounds(dataset);
     }
-findDomainBounds(XYDataset dataset) {
+{
         if (dataset != null) {
             return DatasetUtilities.findDomainBounds(dataset, false);
         }
@@ -572,7 +566,7 @@ findDomainBounds(XYDataset dataset) {
             return null;
         }
     }
-findRangeBounds(XYDataset dataset) {
+{
         if (dataset != null) {
             return DatasetUtilities.findRangeBounds(dataset, false);
         }
@@ -580,7 +574,7 @@ findRangeBounds(XYDataset dataset) {
             return null;
         }
     }
-createInstance(Date millisecond, TimeZone zone) {
+{
         RegularTimePeriod result = null;
         try {
             Constructor c = this.periodClass.getDeclaredConstructor(
@@ -593,8 +587,7 @@ createInstance(Date millisecond, TimeZone zone) {
         }
         return result;
     }
-sampleFunction2D(Function2D f, double start,
-            double end, int samples, Comparable seriesKey) {
+{
 
         if (f == null) {
             throw new IllegalArgumentException("Null 'f' argument.");
@@ -618,8 +611,7 @@ sampleFunction2D(Function2D f, double start,
         XYSeriesCollection collection = new XYSeriesCollection(series);
         return collection;
     }
-createStackedValueList(CategoryDataset dataset,
-            Comparable category, double base, boolean asPercentages) {
+{
 
         List result = new ArrayList();
         double posBase = base;
@@ -663,8 +655,7 @@ createStackedValueList(CategoryDataset dataset,
         return result;
 
     }
-refreshTicksHorizontal(Graphics2D g2,
-                Rectangle2D dataArea, RectangleEdge edge) {
+{
 
         List result = new java.util.ArrayList();
 
@@ -784,35 +775,35 @@ refreshTicksHorizontal(Graphics2D g2,
         return result;
 
     }
-mapDatasetToDomainAxis(int index, int axisIndex) {
+{
         this.datasetToDomainAxisMap.set(index, new Integer(axisIndex));
         // fake a dataset change event to update axes...
         datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
     }
-mapDatasetToRangeAxis(int index, int axisIndex) {
+{
         this.datasetToRangeAxisMap.set(index, new Integer(axisIndex));
         // fake a dataset change event to update axes...
         datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
     }
-mapDatasetToDomainAxis(int index, int axisIndex) {
+{
         this.datasetToDomainAxisMap.put(new Integer(index),
                 new Integer(axisIndex));
         // fake a dataset change event to update axes...
         datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
     }
-mapDatasetToRangeAxis(int index, int axisIndex) {
+{
         this.datasetToRangeAxisMap.put(new Integer(index),
                 new Integer(axisIndex));
         // fake a dataset change event to update axes...
         datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
     }
-setVisible(boolean flag) {
+{
         if (flag != this.visible) {
             this.visible = flag;
             notifyListeners(new AxisChangeEvent(this));
         }
     }
-createStandardDateTickUnits(TimeZone zone) {
+{
 
         if (zone == null) {
             throw new IllegalArgumentException("Null 'zone' argument.");
@@ -932,7 +923,7 @@ createStandardDateTickUnits(TimeZone zone) {
         return units;
 
     }
-setLabelInsets(RectangleInsets insets) {
+{
         if (insets == null) {
             throw new IllegalArgumentException("Null 'insets' argument.");
         }
@@ -941,8 +932,7 @@ setLabelInsets(RectangleInsets insets) {
             notifyListeners(new AxisChangeEvent(this));
         }
     }
-zoomRangeAxes(double factor, PlotRenderingInfo info, 
-                              Point2D source) {
+{
         // delegate 'info' and 'source' argument checks...
         CategoryPlot subplot = findSubplot(info, source);
         if (subplot != null) {
@@ -958,8 +948,7 @@ zoomRangeAxes(double factor, PlotRenderingInfo info,
             }
         }
     }
-zoomRangeAxes(double factor, PlotRenderingInfo info, 
-                              Point2D source) {
+{
         // delegate 'info' and 'source' argument checks...
         XYPlot subplot = findSubplot(info, source);
         if (subplot != null) {
@@ -975,8 +964,7 @@ zoomRangeAxes(double factor, PlotRenderingInfo info,
             }
         }
     }
-zoomDomainAxes(double factor, PlotRenderingInfo info, 
-                               Point2D source) {
+{
         // delegate 'info' and 'source' argument checks...
         XYPlot subplot = findSubplot(info, source);
         if (subplot != null) {
@@ -992,8 +980,7 @@ zoomDomainAxes(double factor, PlotRenderingInfo info,
             }
         }
     }
-iterateCategoryRangeBounds(CategoryDataset dataset, 
-            boolean includeInterval) {
+{
         double minimum = Double.POSITIVE_INFINITY;
         double maximum = Double.NEGATIVE_INFINITY;
         boolean interval = includeInterval 
@@ -1029,8 +1016,7 @@ iterateCategoryRangeBounds(CategoryDataset dataset,
             return new Range(minimum, maximum);
         }
     }
-findRangeBounds(XYDataset dataset, 
-                                        boolean includeInterval) {
+{
         if (dataset == null) {
             throw new IllegalArgumentException("Null 'dataset' argument.");
         }
@@ -1044,17 +1030,7 @@ findRangeBounds(XYDataset dataset,
         }
         return result;
     }
-drawHorizontalItem(Graphics2D g2, 
-                                   Rectangle2D dataArea,
-                                   PlotRenderingInfo info,
-                                   XYPlot plot, 
-                                   ValueAxis domainAxis, 
-                                   ValueAxis rangeAxis,
-                                   XYDataset dataset, 
-                                   int series, 
-                                   int item,
-                                   CrosshairState crosshairState,
-                                   int pass) {
+{
 
         // setup for collecting optional entity info...
         EntityCollection entities = null;
@@ -1175,11 +1151,11 @@ drawHorizontalItem(Graphics2D g2,
         }
 
     }
-setNoDataMessage(String message) {
+{
         this.noDataMessage = message;
         notifyListeners(new PlotChangeEvent(this));
     }
-addDomainMarker(int index, CategoryMarker marker, Layer layer) {
+{
         if (marker == null) {
             throw new IllegalArgumentException("Null 'marker' not permitted.");
         }
@@ -1208,7 +1184,7 @@ addDomainMarker(int index, CategoryMarker marker, Layer layer) {
         marker.addChangeListener(this);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeDomainMarker(int index, Marker marker, Layer layer) {
+{
         ArrayList markers;
         if (layer == Layer.FOREGROUND) {
             markers = (ArrayList) this.foregroundDomainMarkers.get(new Integer(
@@ -1224,7 +1200,7 @@ removeDomainMarker(int index, Marker marker, Layer layer) {
         }
         return removed;
     }
-addRangeMarker(int index, Marker marker, Layer layer) {
+{
         Collection markers;
         if (layer == Layer.FOREGROUND) {
             markers = (Collection) this.foregroundRangeMarkers.get(
@@ -1247,7 +1223,7 @@ addRangeMarker(int index, Marker marker, Layer layer) {
         marker.addChangeListener(this);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeRangeMarker(int index, Marker marker, Layer layer) {
+{
         if (marker == null) {
             throw new IllegalArgumentException("Null 'marker' argument.");
         }
@@ -1267,14 +1243,14 @@ removeRangeMarker(int index, Marker marker, Layer layer) {
         }
         return removed;
     }
-addAnnotation(CategoryAnnotation annotation) {
+{
         if (annotation == null) {
             throw new IllegalArgumentException("Null 'annotation' argument.");
         }
         this.annotations.add(annotation);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeAnnotation(CategoryAnnotation annotation) {
+{
         if (annotation == null) {
             throw new IllegalArgumentException("Null 'annotation' argument.");
         }
@@ -1284,7 +1260,7 @@ removeAnnotation(CategoryAnnotation annotation) {
         }
         return removed;
     }
-addDomainMarker(int index, Marker marker, Layer layer) {
+{
         if (marker == null) {
             throw new IllegalArgumentException("Null 'marker' not permitted.");
         }
@@ -1313,7 +1289,7 @@ addDomainMarker(int index, Marker marker, Layer layer) {
         marker.addChangeListener(this);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeDomainMarker(int index, Marker marker, Layer layer) {
+{
         ArrayList markers;
         if (layer == Layer.FOREGROUND) {
             markers = (ArrayList) this.foregroundDomainMarkers.get(new Integer(
@@ -1329,7 +1305,7 @@ removeDomainMarker(int index, Marker marker, Layer layer) {
         }
         return removed;
     }
-addRangeMarker(int index, Marker marker, Layer layer) {
+{
         Collection markers;
         if (layer == Layer.FOREGROUND) {
             markers = (Collection) this.foregroundRangeMarkers.get(
@@ -1352,7 +1328,7 @@ addRangeMarker(int index, Marker marker, Layer layer) {
         marker.addChangeListener(this);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeRangeMarker(int index, Marker marker, Layer layer) {
+{
         if (marker == null) {
             throw new IllegalArgumentException("Null 'marker' argument.");
         }
@@ -1372,14 +1348,14 @@ removeRangeMarker(int index, Marker marker, Layer layer) {
         }
         return removed;
     }
-addAnnotation(XYAnnotation annotation) {
+{
         if (annotation == null) {
             throw new IllegalArgumentException("Null 'annotation' argument.");
         }
         this.annotations.add(annotation);
         notifyListeners(new PlotChangeEvent(this));
     }
-removeAnnotation(XYAnnotation annotation) {
+{
         if (annotation == null) {
             throw new IllegalArgumentException("Null 'annotation' argument.");
         }
@@ -1389,18 +1365,7 @@ removeAnnotation(XYAnnotation annotation) {
         }
         return removed;
     }
-drawItem(Graphics2D g2, 
-                         XYItemRendererState state,
-                         Rectangle2D dataArea, 
-                         PlotRenderingInfo info,
-                         XYPlot plot, 
-                         ValueAxis domainAxis, 
-                         ValueAxis rangeAxis,
-                         XYDataset dataset, 
-                         int series, 
-                         int item,
-                         CrosshairState crosshairState, 
-                         int pass) {
+{
 
         // do nothing if item is not visible
         if (!getItemVisible(series, item)) {
@@ -1513,25 +1478,23 @@ drawItem(Graphics2D g2,
             }
         }
     }
-setFixedDomainAxisSpace(AxisSpace space) {
+{
         this.fixedDomainAxisSpace = space;
         notifyListeners(new PlotChangeEvent(this));
     }
-setFixedRangeAxisSpace(AxisSpace space) {
+{
         this.fixedRangeAxisSpace = space;
         notifyListeners(new PlotChangeEvent(this));
     }
-setFixedDomainAxisSpace(AxisSpace space) {
+{
         this.fixedDomainAxisSpace = space;
         // TODO: notify?
     }
-setFixedRangeAxisSpace(AxisSpace space) {
+{
         this.fixedRangeAxisSpace = space;
         // TODO: fire event?
     }
-add(BoxAndWhiskerItem item, 
-                    Comparable rowKey, 
-                    Comparable columnKey) {
+{
 
         this.data.addObject(item, rowKey, columnKey);
         
@@ -1585,8 +1548,7 @@ add(BoxAndWhiskerItem item,
         fireDatasetChanged();
 
     }
-zoomRangeAxes(double factor, PlotRenderingInfo state, 
-                              Point2D source) {
+{
         for (int i = 0; i < this.rangeAxes.size(); i++) {
             ValueAxis rangeAxis = (ValueAxis) this.rangeAxes.get(i);
             if (rangeAxis != null) {
@@ -1594,8 +1556,7 @@ zoomRangeAxes(double factor, PlotRenderingInfo state,
             }
         }
     }
-zoomDomainAxes(double factor, PlotRenderingInfo info,
-                               Point2D source) {
+{
         for (int i = 0; i < this.domainAxes.size(); i++) {
             ValueAxis domainAxis = (ValueAxis) this.domainAxes.get(i);
             if (domainAxis != null) {
@@ -1603,8 +1564,7 @@ zoomDomainAxes(double factor, PlotRenderingInfo info,
             }
         }
     }
-zoomRangeAxes(double factor, PlotRenderingInfo info,
-                              Point2D source) {
+{
         for (int i = 0; i < this.rangeAxes.size(); i++) {
             ValueAxis rangeAxis = (ValueAxis) this.rangeAxes.get(i);
             if (rangeAxis != null) {

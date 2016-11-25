@@ -1,4 +1,4 @@
-package ca.concordia.refactoringmatcher;
+package ca.concordia.refactoringmatcher.clonedetector;
 
 public class HeaderClonePair {
 	private CodeLocation headerOne;

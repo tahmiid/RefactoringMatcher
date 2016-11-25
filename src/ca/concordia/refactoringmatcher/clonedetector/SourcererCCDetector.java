@@ -1,4 +1,4 @@
-package ca.concordia.refactoringmatcher;
+package ca.concordia.refactoringmatcher.clonedetector;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class SourcererCCDetector implements CloneDetector {
 		Files.createDirectories(headerDirectory);
 
 		Files.copy(path, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
-		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, "blocks", "java", 8, 0, 0, 3, 0, false,
+		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, "blocks", "java", 8, 0, 0, 4, 0, false,
 				false, false);
 
 		Files.copy(tokensPath, queryDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
