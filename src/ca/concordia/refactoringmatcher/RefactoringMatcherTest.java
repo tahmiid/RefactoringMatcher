@@ -62,7 +62,7 @@ public class RefactoringMatcherTest {
 
 //	 String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
 //	 String projectLink = "https://github.com/romuloceccon/jedit.git";
-//	 String projectLink = "https://`github.com/elastic/elasticsearch.git";
+//	 String projectLink = "https://github.com/elastic/elasticsearch.git";
 //	 String projectLink = "https://github.com/google/google-java-format.git";
 //	 String projectLink = "https://github.com/google/ExoPlayer.git";
 //	 String projectLink = "https://github.com/jfree/jfreechart.git";
@@ -84,10 +84,6 @@ public class RefactoringMatcherTest {
 
 		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
 
-//		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
-
-//		printpairs(similarRefactoringPairs);
-
 		printReport(refactorings, project);	
 		
 		printReport(similarRefactorings);
@@ -97,26 +93,31 @@ public class RefactoringMatcherTest {
 
 private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
 	System.out.println();
-	System.out.println("Similar Refactorings: " + similarRefactorings.size());
+	System.out.println("Similar Refactorings\t" + similarRefactorings.size());
 	
 	int i = 0;
+	int totalRefactoringsInSets = 0;
+	int sameDaySets = 0;
+	int sameDevSets = 0;
+	int sumOfDayDifference = 0;
 	for (HashSet<RefactoringData> hashSet : similarRefactorings) {
+		totalRefactoringsInSets += hashSet.size();
 		i++;
 		String name = "Set " + i;
 		int size = hashSet.size();
 		long timeDifferenceInDays, highestTime = 0, lowestTime = 0;
 		Date now = new Date();
 		lowestTime = now.getTime();
-		boolean sameAuthor = true;
+		boolean sameCommitter = true;
 		ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(hashSet);
 		PersonIdent author = list.get(0).getCommit().getCommiter();
 
 		for (RefactoringData refactoringData : hashSet) {
-			if(sameAuthor)
+			if(sameCommitter)
 			{
-				if(!author.equals(refactoringData.getCommit().getCommiter()))
+				if(!author.getEmailAddress().equals(refactoringData.getCommit().getCommiter().getEmailAddress()))
 				{
-					sameAuthor = false;
+					sameCommitter = false;
 				}
 			}
 			long time = refactoringData.getCommitTime().getTime();
@@ -128,9 +129,24 @@ private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
 		
 		timeDifferenceInDays = (highestTime - lowestTime) ;
 		timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
+		sumOfDayDifference += timeDifferenceInDays;
 		
-		System.out.println(name + "\t" + size + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + timeDifferenceInDays + "\t" + sameAuthor);
+		if(timeDifferenceInDays == 0)
+			sameDaySets++;
+		if(sameCommitter)
+			sameDevSets++;
+			
+		System.out.println(name + "\t" + size + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + timeDifferenceInDays + "\t" + sameCommitter);
 	}
+	
+	System.out.println();
+	System.out.println( similarRefactorings.size() + "\t" + 
+						(float)totalRefactoringsInSets/similarRefactorings.size() + "\t" +
+						sameDaySets + "\t" + 
+						(similarRefactorings.size()-sameDaySets) + "\t" + 
+						(float)sumOfDayDifference/similarRefactorings.size() + "\t" +
+						sameDevSets + "\t" +
+						(similarRefactorings.size() - sameDevSets));
 }
 	
 	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
@@ -321,13 +337,13 @@ private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
 		}
 
 		System.out.println();
-		System.out.println("Project: " + project.getName());
-		System.out.println(project.getLink());
-		System.out.println("Analyzed Commits: " + project.getCommitCount());
-		System.out.println("Refactorings Found: " + allRefactoringData.size());
-		System.out.println("Inlined Method: " + inlineMethod);
-		System.out.println("Extract Method: " + extractMethod);
-		System.out.println("Extract and Move Method: " + extractAndMoveMethod);
+		System.out.println("Project\t" + project.getName());
+		System.out.println("Link\t" + project.getLink());
+		System.out.println("Commits\t" + project.getCommitCount());
+		System.out.println("Refactorings\t" + allRefactoringData.size());
+		System.out.println("Inlined Methods\t" + inlineMethod);
+		System.out.println("Extract Methods\t" + extractMethod);
+		System.out.println("Extract and Move Methods\t" + extractAndMoveMethod);
 	}
 
 	public static void main(String[] args) {

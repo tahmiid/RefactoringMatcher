@@ -16,11 +16,24 @@ import input.logic.InputBuilderClassic;
 
 public class SourcererCCDetector implements CloneDetector {
 
+	static final String MATCHING_LANGUAGE = "java";
+	static final int MATCHING_THREADS = 8;
+	
+	static final String DETECTION_LEVEL = "blocks";
+	static final int MIN_TOKENS = 0;
+	static final int MAX_TOKENS = 0;
+	static final int MIN_LINES = 4;
+	static final int MAX_LINES = 0;
+	static final boolean IGNORE_SEPERATORS = false;
+	static final boolean IGNORE_OPERATORS = false;
+	static final boolean IGNORE_CASE = false;
+	
+	static final int MATCHING_THRESHOLD = 8;
+	
 	@Override
 	public List<Pair<CodeLocation, CodeLocation>> detectClonePairs(Path path)
 			throws ParseException, InterruptedException, IOException {
-		int matchingThreshold = 8;
-		Path sourcererCCOutputPath = Paths.get("output" + matchingThreshold + ".0/tokensclones_index_WITH_FILTER.txt");
+		Path sourcererCCOutputPath = Paths.get("output" + MATCHING_THRESHOLD + ".0/tokensclones_index_WITH_FILTER.txt");
 
 		Path detectionDirectory = Paths.get("cloneDetectionTmp");
 		Path queryDirectory = Paths.get(detectionDirectory.toString() + "/query");
@@ -43,14 +56,13 @@ public class SourcererCCDetector implements CloneDetector {
 		Files.createDirectories(headerDirectory);
 
 		Files.copy(path, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
-		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, "blocks", "java", 8, 0, 0, 4, 0, false,
-				false, false);
+		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, DETECTION_LEVEL, MATCHING_LANGUAGE, MATCHING_THREADS, MIN_TOKENS, MAX_TOKENS, MIN_LINES, MAX_LINES, IGNORE_SEPERATORS, IGNORE_OPERATORS, IGNORE_CASE);
 
 		Files.copy(tokensPath, queryDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(tokensPath, datasetDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 		String[] arg = new String[2];
 		arg[0] = "index";
-		arg[1] = matchingThreshold + "";
+		arg[1] = MATCHING_THRESHOLD + "";
 		SearchManager.main(arg);
 		arg[0] = "search";
 		SearchManager.main(arg);
@@ -62,7 +74,7 @@ public class SourcererCCDetector implements CloneDetector {
 		deleteDir(Paths.get("fwdindex"));
 		deleteDir(Paths.get("gtpm"));
 		deleteDir(Paths.get("index"));
-		deleteDir(Paths.get("output" + matchingThreshold + ".0"));
+		deleteDir(Paths.get("output" + MATCHING_THRESHOLD + ".0"));
 		deleteDir(Paths.get("output/sortedFiles"));
 		return sccResults;
 
