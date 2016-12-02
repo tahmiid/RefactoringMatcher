@@ -16,4 +16,11 @@ public class NiCadDetector implements CloneDetector{
 		return null;
 	}
 
+	@Override
+	public List<Pair<CodeLocation, CodeLocation>> detectClones(Path datasetPath, Path queryPath)
+			throws ParseException, InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

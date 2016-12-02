@@ -31,7 +31,6 @@ public class Code implements Serializable {
 	private int startOffset;
 	private int length;
 	private String text;
-//	private String methodBody;
 	private String methodName;
 
 	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
@@ -53,7 +52,6 @@ public class Code implements Serializable {
 		parser.setResolveBindings(true);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(cu, startOffset, length);
-//		methodBody = wholeText.subSequence(block.getStartPosition(), block.getLength()) + "\n";
 		MethodDeclaration parent = (MethodDeclaration) block.getParent();
 		this.methodName = extractMethodSignature(parent);
 		startOffset = parent.getName().getStartPosition();

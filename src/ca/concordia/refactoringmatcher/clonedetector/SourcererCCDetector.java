@@ -79,6 +79,60 @@ public class SourcererCCDetector implements CloneDetector {
 		return sccResults;
 
 	}
+	
+	@Override
+	public List<Pair<CodeLocation, CodeLocation>> detectClones(Path datasetPath, Path queryPath)
+			throws ParseException, InterruptedException, IOException {
+		Path sourcererCCOutputPath = Paths.get("output" + MATCHING_THRESHOLD + ".0/tokensclones_index_WITH_FILTER.txt");
+
+		Path detectionDirectory = Paths.get("cloneDetectionTmp");
+		Path queryDirectory = Paths.get(detectionDirectory.toString() + "/query");
+		Path datasetDirectory = Paths.get(detectionDirectory.toString() + "/dataset");
+		Path searchDirectory = Paths.get(detectionDirectory.toString() + "/search");
+		Path tokenDirectory = Paths.get(detectionDirectory.toString() + "/tokens");
+		Path headerDirectory = Paths.get(detectionDirectory.toString() + "/headers");
+
+		Path tokensPath = Paths.get(tokenDirectory.toString() + "/tokens.file");
+		Path headersPath = Paths.get(headerDirectory.toString() + "/headers.file");
+		Path searchFilePath = Paths.get(searchDirectory.toString() + "/search.java");
+
+		if (Files.exists(detectionDirectory))
+			deleteDir(detectionDirectory);
+		Files.createDirectories(detectionDirectory);
+		Files.createDirectories(queryDirectory);
+		Files.createDirectories(datasetDirectory);
+		Files.createDirectories(searchDirectory);
+		Files.createDirectories(tokenDirectory);
+		Files.createDirectories(headerDirectory);
+
+		Files.copy(queryPath, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
+		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, DETECTION_LEVEL, MATCHING_LANGUAGE, MATCHING_THREADS, MIN_TOKENS, MAX_TOKENS, MIN_LINES, MAX_LINES, IGNORE_SEPERATORS, IGNORE_OPERATORS, IGNORE_CASE);
+
+		Files.copy(tokensPath, queryDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+		
+		Files.copy(datasetPath, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
+		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, DETECTION_LEVEL, MATCHING_LANGUAGE, MATCHING_THREADS, MIN_TOKENS, MAX_TOKENS, MIN_LINES, MAX_LINES, IGNORE_SEPERATORS, IGNORE_OPERATORS, IGNORE_CASE);
+
+		Files.copy(tokensPath, datasetDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+		String[] arg = new String[2];
+		arg[0] = "index";
+		arg[1] = MATCHING_THRESHOLD + "";
+		SearchManager.main(arg);
+		arg[0] = "search";
+		SearchManager.main(arg);
+
+		SourceCCOutputParser sccParser = new SourceCCOutputParser(headersPath, sourcererCCOutputPath, searchFilePath);
+		List<Pair<CodeLocation, CodeLocation>> sccResults = sccParser.parseClonePairs();
+
+		deleteDir(detectionDirectory);
+		deleteDir(Paths.get("fwdindex"));
+		deleteDir(Paths.get("gtpm"));
+		deleteDir(Paths.get("index"));
+		deleteDir(Paths.get("output" + MATCHING_THRESHOLD + ".0"));
+		deleteDir(Paths.get("output/sortedFiles"));
+		return sccResults;
+
+	}
 
 	public void deleteDir(Path dir) {
 		File[] files = dir.toFile().listFiles();

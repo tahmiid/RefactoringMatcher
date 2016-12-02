@@ -35,6 +35,8 @@ import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.util.GitServiceImpl;
 
+import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
+
 public class RefactoringMatcherTest {
 
 	private JFrame frame;
@@ -81,53 +83,56 @@ public class RefactoringMatcherTest {
 
 		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
 
-		List<RefactoringSet> similarRefactorings = patternFinder.getSimilarRefactorings();
+		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
 
 		printReport(refactorings, project);	
 		
-		printReport(similarRefactorings);
+		printReport(refactoringSets);
 		
-		createTreeView(similarRefactorings);
+		createTreeView(refactoringSets);
+		
+		for (RefactoringSet refactoringSet : refactoringSets) {
+			for (Commit commit : refactoringSet.getCommits()) {
+				gitService.checkout(project.getRepository(), commit.getId());
+				SourcererCCDetector sccd = new SourcererCCDetector();
+				sccd.detectClonePairs(projectsDirectory);
+			}
+		}
 	}
 
-private void printReport(List<RefactoringSet> similarRefactorings) {
+private void printReport(List<RefactoringSet> refactoringSets) {
 	System.out.println();
-	System.out.println("Similar Refactorings\t" + similarRefactorings.size());
+	System.out.println("Similar Refactorings\t" + refactoringSets.size());
 	
 	int i = 0;
 	int totalRefactoringsInSets = 0;
 	int sameDaySets = 0;
 	int sameDevSets = 0;
 	int sumOfDayDifference = 0;
-	for (RefactoringSet hashSet : similarRefactorings) {
+	for (RefactoringSet refactoringSet : refactoringSets) {
 		i++;
 		
-		totalRefactoringsInSets += hashSet.size();
-		sumOfDayDifference += hashSet.getDuration();
+		totalRefactoringsInSets += refactoringSet.size();
+		sumOfDayDifference += refactoringSet.getDuration();
 		
-		if(hashSet.isSameDay())
+		if(refactoringSet.isSameDay())
 			sameDaySets++;
-		if(hashSet.isSameDeveloper())
+		if(refactoringSet.isSameDeveloper())
 			sameDevSets++;
 			
-		System.out.println("Set " + i + "\t" + hashSet.size() + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(hashSet.getFirstRefactoringDate()) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(hashSet.getLastRefactoringDate()) + "\t" + hashSet.getDuration() + "\t" + hashSet.isSameDeveloper());
+		System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t" + refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper());
 //		System.out.println(hashSet.getSimilarCode());
 	}
 	
 	System.out.println();
-	System.out.println( similarRefactorings.size() + "\t" + 
-						(float)totalRefactoringsInSets/similarRefactorings.size() + "\t" +
+	System.out.println( refactoringSets.size() + "\t" + 
+						(float)totalRefactoringsInSets/refactoringSets.size() + "\t" +
 						sameDaySets + "\t" + 
-						(similarRefactorings.size()-sameDaySets) + "\t" + 
-						(float)sumOfDayDifference/similarRefactorings.size() + "\t" +
+						(refactoringSets.size()-sameDaySets) + "\t" + 
+						(float)sumOfDayDifference/refactoringSets.size() + "\t" +
 						sameDevSets + "\t" +
-						(similarRefactorings.size() - sameDevSets));
+						(refactoringSets.size() - sameDevSets));
 }
-	
-	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-	    long diffInMillies = date2.getTime() - date1.getTime();
-	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
-	}
 
 	private void createTreeView(List<RefactoringSet> similarRefactorings) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
