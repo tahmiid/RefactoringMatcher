@@ -32,6 +32,11 @@ public class Commit implements Serializable{
 	public PersonIdent getCommiter() {
 		return commiter;
 	}
+	
+	public boolean equals(Commit commit)
+	{
+		return id.equals(commit.getId()) ? true : false;
+	}
 
 	private String id;
 	private String message;

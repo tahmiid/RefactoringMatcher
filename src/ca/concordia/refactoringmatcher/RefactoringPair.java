@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class RefactoringPair {
 	
-	public RefactoringPair(RefactoringData left, RefactoringData right) {
+	public RefactoringPair(RefactoringData left, RefactoringData right, String similarBlock) {
 		this.refactoringOne = left;
 		this.refactoringTwo = right;
+		this.similarBlock = similarBlock;
 	}
 	
 	public RefactoringData getRefactoringOne() {
@@ -16,6 +17,10 @@ public class RefactoringPair {
 		return refactoringTwo;
 	}
 	
+	public String getSimilarBlock() {
+		return similarBlock;
+	}
+
 	public ArrayList<RefactoringData> getRefactorings(){
 		ArrayList<RefactoringData> list = new ArrayList<RefactoringData>();
 		list.add(refactoringOne);
@@ -25,4 +30,5 @@ public class RefactoringPair {
 
 	private RefactoringData refactoringOne;
 	private RefactoringData refactoringTwo;
+	private String similarBlock;
 }

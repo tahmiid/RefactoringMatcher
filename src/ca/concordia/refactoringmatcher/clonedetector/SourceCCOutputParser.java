@@ -26,16 +26,10 @@ import ca.concordia.refactoringmatcher.RefactoringData;
 public class SourceCCOutputParser {
 	List<CodeLocation> codeBlocks;
 	List<Pair<Integer, Integer>> rawClonePairs;
+	Path searchFile;
 
-	File beforeHeader;
-	File afterHeader;
-	File beforeClones;
-	File afterClones;
-	List<RefactoringData> allRefactoringData;
-	List<HashSet<RefactoringData>> clones;
-
-	public SourceCCOutputParser(Path headersPath, Path sourcererCCOutputPath) throws IOException {
-		ParseHeaderFile(headersPath);
+	public SourceCCOutputParser(Path headersPath, Path sourcererCCOutputPath, Path searchFilePath) throws IOException {
+		ParseHeaderFile(headersPath,searchFilePath);
 		ParseOutputFile(sourcererCCOutputPath);
 	}
 
@@ -50,7 +44,7 @@ public class SourceCCOutputParser {
 		return clonePairs;
 	}
 	
-	private void ParseHeaderFile(Path headersPath) throws IOException {
+	private void ParseHeaderFile(Path headersPath, Path searchFilePath) throws IOException {
 		codeBlocks = new ArrayList<CodeLocation>();
 		String line;
 		try (InputStream fis = new FileInputStream(headersPath.toString());
@@ -62,8 +56,8 @@ public class SourceCCOutputParser {
 				Path file = Paths.get(headerParts[1]);
 				int start = Integer.parseInt(headerParts[2]);
 				int end = Integer.parseInt(headerParts[3]);
-				CodeLocation header = new CodeLocation(id, file, start, end);
-				codeBlocks.add(header);
+				CodeLocation codeLocation = new CodeLocation(id, file, start, end,searchFilePath);
+				codeBlocks.add(codeLocation);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

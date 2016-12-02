@@ -12,7 +12,7 @@ public class GraphBasedRefactoringPatternFinder implements RefactoringPatternFin
 	}
 
 	@Override
-	public List<HashSet<RefactoringData>> getSimilarRefactorings() {
+	public List<RefactoringSet> getSimilarRefactorings() {
 		// TODO Auto-generated method stub
 		return null;
 	}

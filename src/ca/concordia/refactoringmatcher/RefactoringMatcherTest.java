@@ -30,7 +30,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
@@ -82,7 +81,7 @@ public class RefactoringMatcherTest {
 
 		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
 
-		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
+		List<RefactoringSet> similarRefactorings = patternFinder.getSimilarRefactorings();
 
 		printReport(refactorings, project);	
 		
@@ -91,7 +90,7 @@ public class RefactoringMatcherTest {
 		createTreeView(similarRefactorings);
 	}
 
-private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
+private void printReport(List<RefactoringSet> similarRefactorings) {
 	System.out.println();
 	System.out.println("Similar Refactorings\t" + similarRefactorings.size());
 	
@@ -100,43 +99,19 @@ private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
 	int sameDaySets = 0;
 	int sameDevSets = 0;
 	int sumOfDayDifference = 0;
-	for (HashSet<RefactoringData> hashSet : similarRefactorings) {
-		totalRefactoringsInSets += hashSet.size();
+	for (RefactoringSet hashSet : similarRefactorings) {
 		i++;
-		String name = "Set " + i;
-		int size = hashSet.size();
-		long timeDifferenceInDays, highestTime = 0, lowestTime = 0;
-		Date now = new Date();
-		lowestTime = now.getTime();
-		boolean sameCommitter = true;
-		ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(hashSet);
-		PersonIdent author = list.get(0).getCommit().getCommiter();
-
-		for (RefactoringData refactoringData : hashSet) {
-			if(sameCommitter)
-			{
-				if(!author.getEmailAddress().equals(refactoringData.getCommit().getCommiter().getEmailAddress()))
-				{
-					sameCommitter = false;
-				}
-			}
-			long time = refactoringData.getCommitTime().getTime();
-			if(time >= highestTime)
-				highestTime = time;
-			if(time <= lowestTime)
-				lowestTime = time;
-		}
 		
-		timeDifferenceInDays = (highestTime - lowestTime) ;
-		timeDifferenceInDays = timeDifferenceInDays / (1000*60*60*24);
-		sumOfDayDifference += timeDifferenceInDays;
+		totalRefactoringsInSets += hashSet.size();
+		sumOfDayDifference += hashSet.getDuration();
 		
-		if(timeDifferenceInDays == 0)
+		if(hashSet.isSameDay())
 			sameDaySets++;
-		if(sameCommitter)
+		if(hashSet.isSameDeveloper())
 			sameDevSets++;
 			
-		System.out.println(name + "\t" + size + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(lowestTime) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(highestTime) + "\t" + timeDifferenceInDays + "\t" + sameCommitter);
+		System.out.println("Set " + i + "\t" + hashSet.size() + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(hashSet.getFirstRefactoringDate()) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(hashSet.getLastRefactoringDate()) + "\t" + hashSet.getDuration() + "\t" + hashSet.isSameDeveloper());
+//		System.out.println(hashSet.getSimilarCode());
 	}
 	
 	System.out.println();
@@ -154,7 +129,7 @@ private void printReport(List<HashSet<RefactoringData>> similarRefactorings) {
 	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 
-	private void createTreeView(List<HashSet<RefactoringData>> similarRefactorings) {
+	private void createTreeView(List<RefactoringSet> similarRefactorings) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
 		for (HashSet<RefactoringData> set : similarRefactorings) {
 			DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode("Set " + (similarRefactorings.indexOf(set) + 1));

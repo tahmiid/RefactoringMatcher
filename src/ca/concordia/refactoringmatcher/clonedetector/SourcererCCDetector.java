@@ -67,7 +67,7 @@ public class SourcererCCDetector implements CloneDetector {
 		arg[0] = "search";
 		SearchManager.main(arg);
 
-		SourceCCOutputParser sccParser = new SourceCCOutputParser(headersPath, sourcererCCOutputPath);
+		SourceCCOutputParser sccParser = new SourceCCOutputParser(headersPath, sourcererCCOutputPath, searchFilePath);
 		List<Pair<CodeLocation, CodeLocation>> sccResults = sccParser.parseClonePairs();
 
 		deleteDir(detectionDirectory);
