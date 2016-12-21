@@ -25,7 +25,7 @@ public class RefactoringMatcher {
 
 		Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
 
-		List<RefactoringData> refactorings = project.loadRefactoringsFromFile(gitService);
+		List<RefactoringData> refactorings = project.getRefactorings();
 
 		printReport(refactorings, project);
 

@@ -6,11 +6,13 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,15 +62,16 @@ public class RefactoringMatcherTest {
 	private JLabel lblCommit_1;
 	private JLabel lblRefactoring;
 	private JLabel lblRefactoring_1;
-
-//	 String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
-//	 String projectLink = "https://github.com/romuloceccon/jedit.git";
-//	 String projectLink = "https://github.com/elastic/elasticsearch.git";
-//	 String projectLink = "https://github.com/google/google-java-format.git";
-//	 String projectLink = "https://github.com/google/ExoPlayer.git";
-//	 String projectLink = "https://github.com/jfree/jfreechart.git";
-//	 String projectLink = "https://github.com/apache/commons-lang.git";
-	 String projectLink = "https://github.com/google/guava.git";
+	 
+	 String[] projectLinks = {  //"https://github.com/danilofes/refactoring-toy-example.git",
+			 					//"https://github.com/romuloceccon/jedit.git",
+			 					//"https://github.com/elastic/elasticsearch.git",
+			 					//"https://github.com/google/google-java-format.git",
+			 					//"https://github.com/google/ExoPlayer.git",
+			 					"https://github.com/jfree/jfreechart.git",
+			 					"https://github.com/apache/commons-lang.git",
+			 					"https://github.com/google/guava.git"	
+			 					};
 	 
 
 	protected void runTest() throws Exception {
@@ -77,28 +80,39 @@ public class RefactoringMatcherTest {
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 		GitService gitService = new GitServiceImpl();
 
-		Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
-
-		List<RefactoringData> refactorings = project.loadRefactoringsFromFile(gitService);
-
-		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
-
-		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
-
-		printReport(refactorings, project);	
+		ArrayList<Project> projects = new ArrayList<Project>();
 		
+		for (String projectLink : projectLinks) {
+			Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
+			project.printReport();
+			projects.add(project);
+		}
+		
+
+		List<RefactoringData> refactorings = new ArrayList<RefactoringData>();
+		for (Project project : projects) {
+			refactorings.addAll(project.getRefactorings());
+		}
+		
+		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
+		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();	
 		printReport(refactoringSets);
 		
 		createTreeView(refactoringSets);
-		
-		for (RefactoringSet refactoringSet : refactoringSets) {
-			for (Commit commit : refactoringSet.getCommits()) {
-				gitService.checkout(project.getRepository(), commit.getId());
-				SourcererCCDetector sccd = new SourcererCCDetector();
-				sccd.detectClonePairs(projectsDirectory);
-			}
+
+//		countUnusedOpportunities(projectsDirectory, gitService, project, refactoringSets);
+	}
+
+private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
+		List<RefactoringSet> refactoringSets) throws Exception, ParseException, InterruptedException, IOException {
+	for (RefactoringSet refactoringSet : refactoringSets) {
+		for (Commit commit : refactoringSet.getCommits()) {
+			gitService.checkout(project.getRepository(), commit.getId());
+			SourcererCCDetector sccd = new SourcererCCDetector();
+			sccd.detectClonePairs(projectsDirectory);
 		}
 	}
+}
 
 private void printReport(List<RefactoringSet> refactoringSets) {
 	System.out.println();
@@ -302,30 +316,6 @@ private void printReport(List<RefactoringSet> refactoringSets) {
 		return before;
 	}
 
-	private void printReport(List<RefactoringData> allRefactoringData, Project project) {
-		int inlineMethod = 0;
-		int extractMethod = 0;
-		int extractAndMoveMethod = 0;
-		for (RefactoringData refactoringData : allRefactoringData) {
-			if (refactoringData.getType() == RefactoringType.INLINE_OPERATION) {
-				inlineMethod++;
-			} else if (refactoringData.getType() == RefactoringType.EXTRACT_OPERATION) {
-				extractMethod++;
-			} else if (refactoringData.getType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
-				extractAndMoveMethod++;
-			}
-		}
-
-		System.out.println();
-		System.out.println("Project\t" + project.getName());
-		System.out.println("Link\t" + project.getLink());
-		System.out.println("Commits\t" + project.getCommitCount());
-		System.out.println("Refactorings\t" + allRefactoringData.size());
-		System.out.println("Inlined Methods\t" + inlineMethod);
-		System.out.println("Extract Methods\t" + extractMethod);
-		System.out.println("Extract and Move Methods\t" + extractAndMoveMethod);
-	}
-
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -448,7 +438,8 @@ private void printReport(List<RefactoringSet> refactoringSets) {
 	}
 
 	protected void openLink(String text) {
-		String commitLink = projectLink.substring(0, projectLink.lastIndexOf('.')) + "/commit/";
+		//TODO fix it. Works only for one project
+		String commitLink = projectLinks[0].substring(0, projectLinks[0].lastIndexOf('.')) + "/commit/";
 		String link = commitLink + text.substring(text.indexOf(' ') + 1, text.length() - 1);
 
 		try {

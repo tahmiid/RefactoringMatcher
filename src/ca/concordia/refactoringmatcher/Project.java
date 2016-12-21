@@ -27,6 +27,10 @@ import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
 import gr.uom.java.xmi.diff.InlineOperationRefactoring;
 
+/**
+ * @author tahmiid
+ *
+ */
 public class Project {
 	
 	private String link;
@@ -35,6 +39,7 @@ public class Project {
 	private Path outputDirectory;
 	private Repository repository;
 	private int commitCount;
+	private List<RefactoringData> refactorings;
 	
 	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, GitService gitService) throws Exception {
 		this.link = projectLink;
@@ -43,6 +48,7 @@ public class Project {
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
 		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
 		this.commitCount = gitService.countCommits(repository, "master");
+		this.refactorings = loadRefactoringsFromFile(gitService);
 	}
 
 	private String getName(String projectLink) {
@@ -56,7 +62,7 @@ public class Project {
 		return projectLink;
 	}
 
-	public List<RefactoringData> getAllRefactorings(GitService gitService) throws Exception {
+	private List<RefactoringData> getAllRefactorings(GitService gitService) throws Exception {
 		List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();
 
 		GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
@@ -135,7 +141,7 @@ public class Project {
 		return allRefactoringData;
 	}
 	
-	public List<RefactoringData> loadRefactoringsFromFile(GitService gitService) throws Exception {
+	private List<RefactoringData> loadRefactoringsFromFile(GitService gitService) throws Exception {
 		List<RefactoringData> refactorings;
 		if (Files.exists(Paths.get(outputDirectory + "/" + name))) {
 			FileInputStream fis = new FileInputStream(outputDirectory + "/" + name);
@@ -167,6 +173,30 @@ public class Project {
 		}
 
 	}
+	
+	public void printReport() {
+		int inlineMethod = 0;
+		int extractMethod = 0;
+		int extractAndMoveMethod = 0;
+		for (RefactoringData refactoringData : getRefactorings()) {
+			if (refactoringData.getType() == RefactoringType.INLINE_OPERATION) {
+				inlineMethod++;
+			} else if (refactoringData.getType() == RefactoringType.EXTRACT_OPERATION) {
+				extractMethod++;
+			} else if (refactoringData.getType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
+				extractAndMoveMethod++;
+			}
+		}
+
+		System.out.println();
+		System.out.println("Project\t" + getName());
+		System.out.println("Link\t" + getLink());
+		System.out.println("Commits\t" + getCommitCount());
+		System.out.println("Refactorings\t" + getRefactorings().size());
+		System.out.println("Inlined Methods\t" + inlineMethod);
+		System.out.println("Extract Methods\t" + extractMethod);
+		System.out.println("Extract and Move Methods\t" + extractAndMoveMethod);
+	}
 
 	public String getLink() {
 		return link;
@@ -191,6 +221,12 @@ public class Project {
 	public int getCommitCount() {
 		return commitCount;
 	}
+
+	public List<RefactoringData> getRefactorings() {
+		return refactorings;
+	}
+	
+	
 	
 }
 

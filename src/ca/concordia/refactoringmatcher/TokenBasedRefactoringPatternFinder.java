@@ -29,10 +29,8 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 
 		Path beforeCodePath = createEmptyFile(Paths.get(outputDirectory + "/beforeCode.java"));
 		Path afterCodePath = createEmptyFile(Paths.get(outputDirectory + "/afterCode.java"));
-		HashMap<Integer, RefactoringData> codeMapingBefore = new HashMap<Integer, RefactoringData>();
 		ArrayList<Pair<Integer, RefactoringData>> beforeCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
 		ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
-		HashMap<Integer, RefactoringData> codeMapingAfter = new HashMap<Integer, RefactoringData>();
 		
 		String text;
 		int start;
@@ -43,14 +41,12 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 			addToFile(beforeCodePath, text);
 			start = beforeLineCount;
 			beforeLineCount += countLines(text);
-			codeMapingBefore.put(start, refactoringData);
 			beforeCodeMaping.add(Pair.of(start, refactoringData));
 
 			text = refactoringData.getAfterCodeBody();
 			addToFile(afterCodePath, text);
 			start = afterLineCount;
 			afterLineCount += countLines(text);
-			codeMapingAfter.put(start, refactoringData);
 			afterCodeMaping.add(Pair.of(start, refactoringData));
 		}
 
@@ -58,12 +54,10 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 
 		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodePath);
 
-		findSimilarRefactoringsBasedOnExtractedCode(afterClonePairs, codeMapingAfter, afterCodeMaping);
+		findSimilarRefactoringsBasedOnExtractedCode(afterClonePairs, afterCodeMaping);
 	}
 
-	private void findSimilarRefactoringsBasedOnExtractedCode(List<Pair<CodeLocation, CodeLocation>> afterClonePairs,
-			HashMap<Integer, RefactoringData> codeMapingAfter,
-			ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping) {
+	private void findSimilarRefactoringsBasedOnExtractedCode(List<Pair<CodeLocation, CodeLocation>> afterClonePairs, ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping) {
 
 		similarRefactoringPairs = new ArrayList<RefactoringPair>();
 		for (Pair<CodeLocation, CodeLocation> pair : afterClonePairs) {
