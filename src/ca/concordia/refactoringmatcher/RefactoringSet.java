@@ -127,6 +127,16 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 		return duration;
 	}
 
+	public boolean isSameProject()
+	{
+		HashSet<String> projectNames = new HashSet<String>();
+		for (RefactoringData refactoringData : this) {
+			projectNames.add(refactoringData.getProjectName());
+		}
+		
+		return projectNames.size() == 1 ? true : false;
+	}
+	
 	public HashSet<Commit> getCommits() {
 		return commits;
 	}

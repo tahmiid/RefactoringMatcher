@@ -15,12 +15,18 @@ public class RefactoringData implements Serializable {
 	private RefactoringType type;
 	private Code beforeCode;
 	private Code afterCode;
+	private String projectName;
 	
-	public RefactoringData(String name, RefactoringType type, Code beforeCode, Code afterCode) {
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public RefactoringData(String name, RefactoringType type, Code beforeCode, Code afterCode, String projectName) {
 		this.name = name;
 		this.type = type;
 		this.beforeCode = beforeCode;
 		this.afterCode = afterCode;
+		this.projectName = projectName;
 	}
 	
 	public String getBeforeCodeBody() {

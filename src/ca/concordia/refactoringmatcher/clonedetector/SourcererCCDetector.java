@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import indexbased.SearchManager;
@@ -55,7 +56,8 @@ public class SourcererCCDetector implements CloneDetector {
 		Files.createDirectories(tokenDirectory);
 		Files.createDirectories(headerDirectory);
 
-		Files.copy(path, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
+		FileUtils.copyDirectory(path.toFile(), searchDirectory.toFile());
+//		Files.copy(path, searchFilePath, StandardCopyOption.REPLACE_EXISTING);
 		InputBuilderClassic.build(searchDirectory, tokensPath, headersPath, DETECTION_LEVEL, MATCHING_LANGUAGE, MATCHING_THREADS, MIN_TOKENS, MAX_TOKENS, MIN_LINES, MAX_LINES, IGNORE_SEPERATORS, IGNORE_OPERATORS, IGNORE_CASE);
 
 		Files.copy(tokensPath, queryDirectory.resolve(tokensPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);

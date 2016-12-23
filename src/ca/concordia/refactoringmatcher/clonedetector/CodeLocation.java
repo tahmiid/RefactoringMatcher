@@ -24,17 +24,17 @@ public class CodeLocation {
 		this.code = "";
 		String line;
 		int lineNumber = 1;
-		try (InputStream fis = new FileInputStream(searchFilePath.toString());
-				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				BufferedReader br = new BufferedReader(isr);) {
-			while ((line = br.readLine()) != null) {
-				if(lineNumber>= start && lineNumber <= end)
-					code += line+"\n";
-				
-				lineNumber++;
-			}
-			
-		}
+//		try (InputStream fis = new FileInputStream(searchFilePath.toString());
+//				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+//				BufferedReader br = new BufferedReader(isr);) {
+//			while ((line = br.readLine()) != null) {
+//				if(lineNumber>= start && lineNumber <= end)
+//					code += line+"\n";
+//				
+//				lineNumber++;
+//			}
+//			
+//		}
 	}
 
 	
@@ -43,14 +43,17 @@ public class CodeLocation {
 		return code;
 	}
 
-
-
 	public int getId() {
 		return id;
 	}
 
 	public Path getFile() {
 		return file;
+	}
+	
+	public int getFileNumber() {
+		String filename = file.getFileName().toString();
+		return Integer.parseInt(filename.subSequence(0, filename.lastIndexOf('.')).toString());
 	}
 
 	public int getStartLocation() {

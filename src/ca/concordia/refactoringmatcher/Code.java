@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jgit.lib.Repository;
 import org.refactoringminer.api.GitService;
+import org.refactoringminer.util.GitServiceImpl;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
 
@@ -44,7 +45,8 @@ public class Code implements Serializable {
 
 	private String extractText(GitService gitService, Repository repository) throws Exception {
 		String text;
-		gitService.checkout(repository, commit.getId());
+		if(!repository.getFullBranch().equals(commit.getId()))
+			gitService.checkout2(repository, commit.getId());
 		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -119,10 +121,14 @@ public class Code implements Serializable {
 	}
 
 	public boolean equals(Code code) {
-		if (code.methodName.equals(methodName) && code.filePath.equals(filePath) && code.commit.getId().equals(commit.getId()))
-			return true;
-		else
+		try {
+			if (code.methodName.equals(methodName) && code.filePath.equals(filePath) && code.commit.getId().equals(commit.getId()))
+				return true;
+			else
+				return false;
+		} catch (Exception e) {
 			return false;
+		}
 	}
 	
 	public String getMethodBody() {

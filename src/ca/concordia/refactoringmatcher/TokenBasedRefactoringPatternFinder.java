@@ -27,32 +27,55 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 	public TokenBasedRefactoringPatternFinder(List<RefactoringData> refactorings, Path outputDirectory)
 			throws IOException, InterruptedException, ParseException {
 
-		Path beforeCodePath = createEmptyFile(Paths.get(outputDirectory + "/beforeCode.java"));
-		Path afterCodePath = createEmptyFile(Paths.get(outputDirectory + "/afterCode.java"));
+//		Path beforeCodePath = createEmptyFile(Paths.get(outputDirectory + "/beforeCode.java"));
+//		Path afterCodePath = createEmptyFile(Paths.get(outputDirectory + "/afterCode.java"));
+		Path beforeCodeDirectory = Paths.get(outputDirectory.toString() + "/beforeCode");
+		Path afterCodeDirectory = Paths.get(outputDirectory.toString() + "/afterCode");
+		if (Files.exists(beforeCodeDirectory))
+			deleteDir(beforeCodeDirectory);
+		if (Files.exists(afterCodeDirectory))
+			deleteDir(afterCodeDirectory);
+		Files.createDirectories(beforeCodeDirectory);
+		Files.createDirectories(afterCodeDirectory);
+		
 		ArrayList<Pair<Integer, RefactoringData>> beforeCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
 		ArrayList<Pair<Integer, RefactoringData>> afterCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
 		
 		String text;
-		int start;
-		int beforeLineCount = 1, afterLineCount = 1;
+//		int start;
+//		int beforeLineCount = 1, afterLineCount = 1;
+//		for (RefactoringData refactoringData : refactorings) {
+//
+//			text = refactoringData.getBeforeCodeBody();
+//			addToFile(beforeCodePath, text);
+//			start = beforeLineCount;
+//			beforeLineCount += countLines(text);
+//			beforeCodeMaping.add(Pair.of(start, refactoringData));
+//
+//			text = refactoringData.getAfterCodeBody();
+//			addToFile(afterCodePath, text);
+//			start = afterLineCount;
+//			afterLineCount += countLines(text);
+//			afterCodeMaping.add(Pair.of(start, refactoringData));
+//		}
+		
+		int fileNumber = 1;
 		for (RefactoringData refactoringData : refactorings) {
 
 			text = refactoringData.getBeforeCodeBody();
-			addToFile(beforeCodePath, text);
-			start = beforeLineCount;
-			beforeLineCount += countLines(text);
-			beforeCodeMaping.add(Pair.of(start, refactoringData));
+			addToFile(Paths.get(beforeCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
+			beforeCodeMaping.add(Pair.of(fileNumber, refactoringData));
+			fileNumber++;
 
 			text = refactoringData.getAfterCodeBody();
-			addToFile(afterCodePath, text);
-			start = afterLineCount;
-			afterLineCount += countLines(text);
-			afterCodeMaping.add(Pair.of(start, refactoringData));
+			addToFile(Paths.get(afterCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
+			afterCodeMaping.add(Pair.of(fileNumber, refactoringData));
+			fileNumber++;
 		}
 
 		CloneDetector detector = new SourcererCCDetector();
 
-		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodePath);
+		List<Pair<CodeLocation, CodeLocation>> afterClonePairs = detector.detectClonePairs(afterCodeDirectory);
 
 		findSimilarRefactoringsBasedOnExtractedCode(afterClonePairs, afterCodeMaping);
 	}
@@ -64,7 +87,15 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 			RefactoringData left = null; 
 			RefactoringData right = null;
 
-			for (int i = afterCodeMaping.size() - 1; i >= 0; i--) {
+			for (Pair<Integer, RefactoringData> maping : afterCodeMaping) {
+				if(maping.getKey() == pair.getLeft().getFileNumber())
+					left = maping.getRight();
+				if(maping.getKey() == pair.getRight().getFileNumber())
+					right = maping.getRight();
+			}
+			
+			
+/*			for (int i = afterCodeMaping.size() - 1; i >= 0; i--) {
 				if (pair.getLeft().getStartLocation() >= afterCodeMaping.get(i).getLeft()) {
 					left = afterCodeMaping.get(i).getRight();
 					break;
@@ -76,7 +107,7 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 					right = afterCodeMaping.get(i).getRight();
 					break;
 				}
-			}
+			}*/
 
 			if (left == null || right == null) {
 				System.out.println(pair.getLeft().getEndLocation() + " " + pair.getLeft().getFile());
@@ -151,11 +182,27 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		return lines.length;
 	}
 
-	private void addToFile(Path codePath, String text) {
+	private void addToFile(Path codePath, String text) throws IOException {
+		if (!Files.exists(codePath))
+			createEmptyFile(codePath);
+		
 		try {
 			Files.write(codePath, text.getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			System.out.println(e);
 		}
+	}
+	
+	public void deleteDir(Path dir) {
+		File[] files = dir.toFile().listFiles();
+
+		for (File myFile : files) {
+			if (myFile.isDirectory()) {
+				deleteDir(myFile.toPath());
+			}
+			myFile.delete();
+
+		}
+		dir.toFile().delete();
 	}
 }

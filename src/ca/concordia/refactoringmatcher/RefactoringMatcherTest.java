@@ -64,12 +64,16 @@ public class RefactoringMatcherTest {
 	private JLabel lblRefactoring_1;
 	 
 	 String[] projectLinks = {  //"https://github.com/danilofes/refactoring-toy-example.git",
-			 					//"https://github.com/romuloceccon/jedit.git",
-			 					//"https://github.com/elastic/elasticsearch.git",
-			 					//"https://github.com/google/google-java-format.git",
-			 					//"https://github.com/google/ExoPlayer.git",
+								//"https://github.com/elastic/elasticsearch.git",
+								//"https://github.com/google/google-java-format.git",
+								//"https://github.com/google/ExoPlayer.git",					
+			 					"https://github.com/romuloceccon/jedit.git",
 			 					"https://github.com/jfree/jfreechart.git",
 			 					"https://github.com/apache/commons-lang.git",
+			 					"https://github.com/apache/nifi-minifi.git",
+			 					"https://github.com/apache/knox.git",
+			 					"https://github.com/apache/zeppelin.git",
+			 					"https://github.com/spring-projects/spring-framework.git",
 			 					"https://github.com/google/guava.git"	
 			 					};
 	 
@@ -134,7 +138,7 @@ private void printReport(List<RefactoringSet> refactoringSets) {
 		if(refactoringSet.isSameDeveloper())
 			sameDevSets++;
 			
-		System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t" + refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper());
+		System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t" + new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t" + refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper()+ "\t" + refactoringSet.isSameProject());
 //		System.out.println(hashSet.getSimilarCode());
 	}
 	

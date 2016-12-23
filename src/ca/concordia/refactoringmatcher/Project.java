@@ -120,10 +120,10 @@ public class Project {
 						commit = new Commit(commitData.getName(), commitData.getFullMessage(), commitData.getCommitTime(), commitData.getCommitterIdent());
 						afterCode = new Code(commit, directory, astAfterChange, gitService, repository);
 					} catch (Exception e) {
-						e.printStackTrace();
+						continue;
 					}
 				
-					RefactoringData refactoringData = new RefactoringData(ref.getName(), ref.getRefactoringType(), beforeCode, afterCode);
+					RefactoringData refactoringData = new RefactoringData(ref.getName(), ref.getRefactoringType(), beforeCode, afterCode, name);
 					
 					boolean exists = false;
 					for (RefactoringData existingRefactoring : allRefactoringData) {
