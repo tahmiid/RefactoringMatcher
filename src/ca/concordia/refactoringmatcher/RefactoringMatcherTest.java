@@ -67,14 +67,21 @@ public class RefactoringMatcherTest {
 								//"https://github.com/elastic/elasticsearch.git",
 								//"https://github.com/google/google-java-format.git",
 								//"https://github.com/google/ExoPlayer.git",					
-			 					"https://github.com/romuloceccon/jedit.git",
-			 					"https://github.com/jfree/jfreechart.git",
+//			 					"https://github.com/romuloceccon/jedit.git",
+//			 					"https://github.com/jfree/jfreechart.git",
 			 					"https://github.com/apache/commons-lang.git",
 			 					"https://github.com/apache/nifi-minifi.git",
 			 					"https://github.com/apache/knox.git",
 			 					"https://github.com/apache/zeppelin.git",
-			 					"https://github.com/spring-projects/spring-framework.git",
-			 					"https://github.com/google/guava.git"	
+//			 					"https://github.com/apache/cassandra.git",
+			 					"https://github.com/apache/storm.git",
+//			 					"https://github.com/apache/hadoop.git",
+//			 					"https://github.com/apache/kafka.git",
+//			 					"https://github.com/apache/zookeeper.git",
+			 					"https://github.com/apache/camel.git",
+//			 					"https://github.com/apache/hive.git"
+//			 					"https://github.com/spring-projects/spring-framework.git",
+//			 					"https://github.com/google/guava.git"	
 			 					};
 	 
 

@@ -47,7 +47,11 @@ public class Project {
 		this.directory = Paths.get(projectsDirectory + "/" + name);
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
 		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
-		this.commitCount = gitService.countCommits(repository, "master");
+		try {
+			this.commitCount = gitService.countCommits(repository, "master");
+		} catch (Exception e) {
+			commitCount = 0;
+		}
 		this.refactorings = loadRefactoringsFromFile(gitService);
 	}
 
