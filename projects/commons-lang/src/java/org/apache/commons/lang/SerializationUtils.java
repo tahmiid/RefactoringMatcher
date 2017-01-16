@@ -1,5 +1,3 @@
-package org.apache.commons.lang;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +51,7 @@ package org.apache.commons.lang;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.commons.lang;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -64,8 +63,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 /**
- * Methods that assist with the serialization process, or perform
- * additional functionality based on serialization.
+ * <p><code>SerializationUtils</code> provides methods that assist with the 
+ * serialization process, or perform additional functionality based on serialization.</p>
  * <ul>
  * <li>Deep clone using serialization
  * <li>Serialize managing finally and IOException
@@ -75,40 +74,50 @@ import java.io.Serializable;
  * @author <a href="mailto:nissim@nksystems.com">Nissim Karpenstein</a>
  * @author <a href="mailto:janekdb@yahoo.co.uk">Janek Bogucki</a>
  * @author <a href="mailto:dlr@finemaltcoding.com">Daniel Rall</a>
- * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
- * @version $Id: SerializationUtils.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @author Stephen Colebourne
+ * @author Jeff Varszegi
+ * @since 1.0
+ * @version $Id: SerializationUtils.java,v 1.4 2002/12/22 19:55:30 scolebourne Exp $
  */
 public class SerializationUtils {
     
     /**
-     * Constructor for SerializationUtils is private
+     * <p>SerializationUtils instances should NOT be constructed in standard programming.
+     * Instead, the class should be used as <code>SerializationUtils.clone(object)</code>.</p>
+     *
+     * <p>This constructor is public to permit tools that require a JavaBean instance
+     * to operate.</p>
      */
-    private SerializationUtils() {
+    public SerializationUtils() {
         super();
     }
 
     /**
-     * Deep clone an object using serialization.
-     * <p>
-     * This is many times slower than writing clone methods by hand
+     * <p>Deep clone an <code>Object</code> using serialization.</p>
+     *
+     * <p>This is many times slower than writing clone methods by hand
      * on all objects in your object graph. However, for complex object
      * graphs, or for those that don't support deep cloning this can
      * be a simple alternative implementation. Of course all the objects
-     * must be <code>Serializable</code>.
+     * must be <code>Serializable</code>.</p>
      * 
      * @param object  the <code>Serializable</code> object to clone
      * @return the cloned object
      * @throws SerializationException (runtime) if the serialization fails
      */
     public static Object clone(Serializable object) {
-        return deserialize( serialize(object) );
+        return deserialize(serialize(object));
     }
     
     /**
-     * Serializes an object to the specified stream. The stream will
-     * be closed once the object is written. This avoids the need for
-     * a finally clause, and maybe also exception handling, in the
-     * application code.
+     * <p>Serializes an <code>Object</code> to the specified stream.</p>
+     *
+     * <p>The stream will be closed once the object is written.
+     * This avoids the need for a finally clause, and maybe also exception
+     * handling, in the application code.</p>
+     * 
+     * <p>The stream passed in is not buffered internally within this method.
+     * This is the responsibility of your application if desired.</p>
      *
      * @param obj  the object to serialize to bytes
      * @param outputStream  the stream to write to
@@ -135,25 +144,30 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to a byte array for storage/serialization.
+     * <p>Serializes an <code>Object</code> to a byte array for
+     * storage/serialization.</p>
      *
      * @param obj  the object to serialize to bytes
-     * @return a byte[] with the converted Serializable.
+     * @return a byte[] with the converted Serializable
      * @throws SerializationException (runtime) if the serialization fails
      */
     public static byte[] serialize(Serializable obj) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
         serialize(obj, baos);
         return baos.toByteArray();
     }
 
     /**
-     * Deserializes an object from the specified stream. The stream will
-     * be closed once the object is written. This avoids the need for
-     * a finally clause, and maybe also exception handling, in the
-     * application code.
+     * <p>Deserializes an <code>Object</code> from the specified stream.</p>
      *
-     * @param objectData  the serialized object.
+     * <p>The stream will be closed once the object is written. This
+     * avoids the need for a finally clause, and maybe also exception
+     * handling, in the application code.</p>
+     * 
+     * <p>The stream passed in is not buffered internally within this method.
+     * This is the responsibility of your application if desired.</p>
+     *
+     * @param inputStream  the serialized object input stream
      * @return the deserialized object
      * @throws SerializationException (runtime) if the serialization fails
      */
@@ -180,9 +194,9 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a single object from an array of bytes.
+     * <p>Deserializes a single <code>Object</code> from an array of bytes.</p>
      *
-     * @param objectData  the serialized object.
+     * @param objectData  the serialized object
      * @return the deserialized object
      * @throws SerializationException (runtime) if the serialization fails
      */

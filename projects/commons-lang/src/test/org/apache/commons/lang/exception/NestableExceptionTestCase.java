@@ -55,8 +55,12 @@ package org.apache.commons.lang.exception;
  */
 
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -64,13 +68,16 @@ import junit.textui.TestRunner;
  * Tests the org.apache.commons.lang.exception.NestableException class.
  *
  * @author <a href="mailto:steven@caswell.name">Steven Caswell</a>
- * @version $Id: NestableExceptionTestCase.java,v 1.1 2002/07/19 03:35:55 bayard Exp $
+ * @version $Id: NestableExceptionTestCase.java,v 1.7 2002/10/09 17:20:44 sullis Exp $
  */
-public class NestableExceptionTestCase extends junit.framework.TestCase
+public class NestableExceptionTestCase extends AbstractNestableTestCase
 {
     
     /**
-     * Construct a new instance of NestableExceptionTestCase with the specified name
+     * Construct a new instance of
+     * <code>NestableExceptionTestCase</code>.
+     *
+     * @param name test case name
      */
     public NestableExceptionTestCase(String name)
     {
@@ -78,413 +85,229 @@ public class NestableExceptionTestCase extends junit.framework.TestCase
     }
 
     /**
-     * Set up instance variables required by this test case.
+     * Sets up instance variables required by this test case.
      */
     public void setUp()
     {
     }
     
+    /**
+     * Returns the test suite
+     *
+     * @return the test suite
+     */
     public static Test suite()
     {
         return new TestSuite(NestableExceptionTestCase.class);
     }
     
     /**
-     * Tear down instance variables required by this test case.
+     * Tears down instance variables required by this test case.
      */
     public void tearDown()
     {
     }
     
     /**
-     * Test the implementation
+     * Command line entry point for running the test suite.
+     *
+     * @param args array of command line arguments
      */
-    public void testGetCause()
-    {
-        NestableException ne1 = new NestableException();
-        assertNull("nestable exception() cause is null", ne1.getCause()); 
-        
-        NestableException ne2 = new NestableException("ne2");
-        assertNull("nestable exception(\"ne2\") cause is null", ne2.getCause());
-        
-        NestableException ne3 = new NestableException(new Exception("ne3 exception"));
-        assertNotNull("nestable exception(new Exception(\"ne3 exception\") cause is not null",
-            ne3.getCause()); 
-        assertTrue("nestable exception(new Exception(\"ne3 exception\") cause message == ne3 exception",
-            ne3.getCause().getMessage().equals("ne3 exception")); 
-        
-        NestableException ne4 = new NestableException("ne4", new Exception("ne4 exception"));
-        assertNotNull("nestable exception(\"ne4\", new Exception(\"ne4 exception\") cause is not null", 
-            ne4.getCause()); 
-        
-        NestableException ne5 = new NestableException("ne5", null);
-        assertNull("nestable exception(\"ne5\", null) cause is null", 
-            ne5.getCause()); 
-        
-        NestableException ne6 = new NestableException(null, new Exception("ne6 exception"));
-        assertNotNull("nestable exception(null, new Exception(\"ne6 exception\") cause is not null", 
-            ne6.getCause()); 
-    }
-
-    public void testGetLength()
-    {
-        NestableException ne1 = new NestableException();
-        assertEquals("ne1 length", 1, ne1.getLength());
-
-        NestableException ne2 = new NestableException("ne2");
-        assertEquals("ne2 length", 1, ne2.getLength());
-        
-        NestableException ne3 = new NestableException(new Exception("ne3 exception"));
-        assertEquals("ne3 length", 2, ne3.getLength());
-        
-        NestableException ne4 = new NestableException("ne4", new Exception("ne4 exception"));
-        assertEquals("ne4 length", 2, ne4.getLength());
-        
-        NestableException ne5 = new NestableException("ne5", null);
-        assertEquals("ne 5 length", 1, ne5.getLength());
-        
-        NestableException ne6 = new NestableException(null, new Exception("ne6 exception"));
-        assertEquals("ne 6 length", 2, ne6.getLength());
-        
-        NestableException ne7 = new NestableException("ne7o", new NestableException("ne7i", new Exception("ne7 exception")));
-        assertEquals("ne 7 length", 3, ne7.getLength());
-
-        NestableException ne8 = new NestableException("level 1", new NestableException("level 2", new NestableException(new NestableException("level 4", new Exception("level 5")))));
-        assertEquals("ne 8 length", 5, ne8.getLength());
-    }
-    
-    public void testGetMessage()
-    {
-        NestableException ne1 = new NestableException();
-        assertNull("nestable exception() message is null", ne1.getMessage()); 
-
-        NestableException ne2 = new NestableException("ne2");
-        assertNotNull("nestable exception(\"ne2\") message is not null", ne2.getMessage());
-        assertTrue("nestable exception(\"ne2\") message == ne2", ne2.getMessage().equals("ne2"));
-        
-        NestableException ne3 = new NestableException(new Exception("ne3 exception"));
-        assertNotNull("nestable exception(new Exception(\"ne3 exception\") message is not null",
-            ne3.getMessage()); 
-        assertTrue("nestable exception(new Exception(\"ne3 exception\") message == cause message",
-            ne3.getMessage().equals(ne3.getCause().getMessage())); 
-        
-        NestableException ne4 = new NestableException("ne4", new Exception("ne4 exception"));
-        assertNotNull("nestable exception(\"ne4\", new Exception(\"ne4 exception\") message is not null", 
-            ne4.getMessage()); 
-        assertTrue("nestable exception(\"ne4\", new Exception(\"ne4 exception\") message == ne4: ne4 exception", 
-            ne4.getMessage().equals("ne4: ne4 exception")); 
-        
-        NestableException ne5 = new NestableException("ne5", null);
-        assertNotNull("nestable exception(\"ne5\", new Exception(\"ne5 exception\") message is not null", 
-            ne5.getMessage()); 
-        assertTrue("nestable exception(\"ne5\", null) message == ne5", 
-            ne5.getMessage().equals("ne5")); 
-        
-        NestableException ne6 = new NestableException(null, new Exception("ne6 exception"));
-        assertTrue("nestable exception(null, new Exception(\"ne6 exception\") cause == ne6 exception", 
-            ne6.getMessage().equals("ne6 exception")); 
-        
-        NestableException ne7 = new NestableException("ne7o", new NestableException("ne7i", new Exception("ne7 exception")));
-        assertTrue("nextable exception(\"ne7o\", new NestableException(\"ne7i\", new Exception(\"ne7 exception\"))) message is ne7o: ne7i: ne7 exception",
-            ne7.getMessage().equals("ne7o: ne7i: ne7 exception"));
-
-    }
-
-    public void testGetMessageN()
-    {
-        String[] msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        NestableException ne = new NestableException(msgs[0], new NestableException(msgs[1], new NestableException(new NestableException(msgs[3], new Exception(msgs[4])))));
-        for(int i = 0; i < msgs.length; i++)
-        {
-            assertEquals("message " + i, msgs[i], ne.getMessage(i));
-        }
-        assertEquals("message -1", msgs[0], ne.getMessage(-1));
-        assertEquals("message 999", msgs[4], ne.getMessage(999));
-    }
-    
-    public void testGetMessages()
-    {
-        String[] msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        NestableException ne = new NestableException(msgs[0], new NestableException(msgs[1], new NestableException(new NestableException(msgs[3], new Exception(msgs[4])))));
-        String[] nMsgs = ne.getMessages();
-        assertEquals("messages length", msgs.length, nMsgs.length);
-        for(int i = 0; i < nMsgs.length; i++)
-        {
-            assertEquals("message " + i, msgs[i], nMsgs[i]);
-        }
-    }
-
-    public void testGetThrowable()
-    {
-        Nestable n = null;
-        String msgs[] = null;
-        Class[] throwables = null;
-        
-        msgs = new String[2];
-        msgs[0] = null;
-        msgs[1] = "level 2";
-        throwables = new Class[2];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = Exception.class;
-        n = new NestableExceptionTester1(new Exception(msgs[1]));
-        doNestableExceptionGetThrowable(n, throwables, msgs);
- 
-        msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        throwables = new Class[5];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = NestableExceptionTester2.class;
-        throwables[2] = NestableExceptionTester1.class;
-        throwables[3] = NestableExceptionTester2.class;
-        throwables[4] = Exception.class;        
-        n = new NestableExceptionTester1(msgs[0], new NestableExceptionTester2(msgs[1], new NestableExceptionTester1(new NestableExceptionTester2(msgs[3], new Exception(msgs[4])))));
-        doNestableExceptionGetThrowable(n, throwables, msgs);
-    }
-    
-    private void doNestableExceptionGetThrowable(Nestable n, Class[] classes, String[] msgs)
-    {
-        Throwable t = null;
-        String msg = null;
-
-        for(int i = 0; i < classes.length; i++)
-        {
-            t = n.getThrowable(i);
-            assertEquals("throwable class", classes[i], t.getClass());
-            if(Nestable.class.isInstance(t))
-            {
-                msg = ((Nestable) t).getMessage(0);
-            }
-            else
-            {
-                msg = t.getMessage();
-            }
-            assertEquals("throwable message", msgs[i], msg);
-        }
-        t = n.getThrowable(-1);
-        assertEquals("throwable(-1)", classes[0], t.getClass());
-        if(Nestable.class.isInstance(t))
-        {
-            msg = ((Nestable) t).getMessage(0);
-        }
-        else
-        {
-            msg = t.getMessage();
-        }
-        assertEquals("throwable message", msgs[0], msg);
-        t = n.getThrowable(999);
-        assertEquals("throwable(999)", classes[classes.length - 1], t.getClass());
-        if(Nestable.class.isInstance(t))
-        {
-            msg = ((Nestable) t).getMessage(0);
-        }
-        else
-        {
-            msg = t.getMessage();
-        }
-        assertEquals("throwable message", msgs[msgs.length - 1], msg);
-    }
-    
-    public void testGetThrowables()
-    {
-        Nestable n = null;
-        String msgs[] = null;
-        Class[] throwables = null;
-        
-        msgs = new String[2];
-        msgs[0] = null;
-        msgs[1] = "level 2";
-        throwables = new Class[2];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = Exception.class;
-        n = new NestableExceptionTester1(new Exception(msgs[1]));
-        doNestableExceptionGetThrowables(n, throwables, msgs);
- 
-        msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        throwables = new Class[5];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = NestableExceptionTester2.class;
-        throwables[2] = NestableExceptionTester1.class;
-        throwables[3] = NestableExceptionTester2.class;
-        throwables[4] = Exception.class;        
-        n = new NestableExceptionTester1(msgs[0], new NestableExceptionTester2(msgs[1], new NestableExceptionTester1(new NestableExceptionTester2(msgs[3], new Exception(msgs[4])))));
-        doNestableExceptionGetThrowables(n, throwables, msgs);
-    }
-    
-    private void doNestableExceptionGetThrowables(Nestable n, Class[] classes, String[] msgs)
-    {
-        String msg = null;
-
-        Throwable throwables[] = n.getThrowables();
-        assertEquals("throwables length", classes.length, throwables.length);
-        for(int i = 0; i < classes.length; i++)
-        {
-            assertEquals("throwable class", classes[i], throwables[i].getClass());
-            Throwable t = throwables[i];
-            if(Nestable.class.isInstance(t))
-            {
-                msg = ((Nestable) t).getMessage(0);
-            }
-            else
-            {
-                msg = t.getMessage();
-            }
-            assertEquals("throwable message", msgs[i], msg);
-        }
-    }
-    
-    public void testIndexOfThrowable()
-    {
-        Nestable n = null;
-        String msgs[] = null;
-        Class[] throwables = null;
-        
-        msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        throwables = new Class[5];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = NestableExceptionTester2.class;
-        throwables[2] = NestableExceptionTester1.class;
-        throwables[3] = NestableExceptionTester2.class;
-        throwables[4] = Exception.class;
-        int[] indexes = {0, 1, 0, 1, 4};
-        n = new NestableExceptionTester1(msgs[0], new NestableExceptionTester2(msgs[1], new NestableExceptionTester1(new NestableExceptionTester2(msgs[3], new Exception(msgs[4])))));
-        for(int i = 0; i < throwables.length; i++)
-        {
-            doNestableExceptionIndexOfThrowable(n, throwables[i], indexes[i], msgs[indexes[i]]);
-        }
-        doNestableExceptionIndexOfThrowable(n, java.util.Date.class, -1, null);
-    }
-    
-    private void doNestableExceptionIndexOfThrowable(Nestable n, Class type, int expectedIndex, String expectedMsg)
-    {
-        Throwable t = null;
-        
-        int index = n.indexOfThrowable(type);
-        assertEquals("index of throwable " + type.getName(), expectedIndex, index);
-        t = n.getThrowable(index);
-        if(expectedMsg != null)
-        {
-            String msg = null;
-            if(Nestable.class.isInstance(t))
-            {
-                msg = ((Nestable) t).getMessage(0);
-            }
-            else
-            {
-                msg = t.getMessage();
-            }
-            assertEquals("message of indexed throwable", expectedMsg, msg);
-        }
-    }
-    
-    public void testIndexOfThrowableN()
-    {
-        Nestable n = null;
-        String msgs[] = null;
-        Class[] throwables = null;
-        
-        msgs = new String[5];
-        msgs[0] = "level 1";
-        msgs[1] = "level 2";
-        msgs[2] = null;
-        msgs[3] = "level 4";
-        msgs[4] = "level 5";
-        throwables = new Class[5];
-        throwables[0] = NestableExceptionTester1.class;
-        throwables[1] = NestableExceptionTester2.class;
-        throwables[2] = NestableExceptionTester1.class;
-        throwables[3] = NestableExceptionTester2.class;
-        throwables[4] = Exception.class;
-        int[] indexes = {0, 1, 0, 1, 4};
-        n = new NestableExceptionTester1(msgs[0], new NestableExceptionTester2(msgs[1], new NestableExceptionTester1(new NestableExceptionTester2(msgs[3], new Exception(msgs[4])))));
-        for(int i = 0; i < throwables.length; i++)
-        {
-            doNestableExceptionIndexOfThrowableN(n, throwables[i], 0, indexes[i], msgs[indexes[i]]);
-        }
-        doNestableExceptionIndexOfThrowableN(n, NestableExceptionTester2.class, 2, 3, msgs[3]);
-        doNestableExceptionIndexOfThrowableN(n, NestableExceptionTester1.class, 1, 2, msgs[2]);
-        doNestableExceptionIndexOfThrowableN(n, java.util.Date.class, 0, -1, null);
-    }
-
-    private void doNestableExceptionIndexOfThrowableN(Nestable n, Class type, int pos, int expectedIndex, String expectedMsg)
-    {
-        Throwable t = null;
-        
-        int index = n.indexOfThrowable(pos, type);
-        assertEquals("index of throwable " + type.getName(), expectedIndex, index);
-        t = n.getThrowable(index);
-        if(expectedMsg != null)
-        {
-            String msg = null;
-            if(Nestable.class.isInstance(t))
-            {
-                msg = ((Nestable) t).getMessage(0);
-            }
-            else
-            {
-                msg = t.getMessage();
-            }
-            assertEquals("message of indexed throwable", expectedMsg, msg);
-        }
-    }
-    
-    public void testPrintPartialStackTrace()
-    {
-        NestableException ne9 = new NestableException("ne9", new Exception("ne9 exception"));
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        PrintStream ps2 = new PrintStream(baos2);
-        PrintWriter pw2 = new PrintWriter(ps2, true);
-        ne9.printPartialStackTrace(pw2);
-        String stack2 = baos2.toString();
-        assertTrue("stack trace startsWith == org.apache.commons.lang.exception.NestableException: ne9: ne9 exception",
-            stack2.startsWith("org.apache.commons.lang.exception.NestableException: ne9: ne9 exception"));
-        assertEquals("stack trace indexOf rethrown == -1",
-            stack2.indexOf("rethrown"), -1);
-    }
-    
-    public void testPrintStackTrace()
-    {
-        NestableException ne8 = new NestableException("ne8", new Exception("ne8 exception"));
-        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        PrintStream ps1 = new PrintStream(baos1);
-        PrintWriter pw1 = new PrintWriter(ps1, true);
-        ne8.printStackTrace(ps1);
-        String stack1 = baos1.toString();
-        assertTrue("stack trace startsWith == java.lang.Exception: ne8 exception",
-            stack1.startsWith("java.lang.Exception: ne8 exception")); 
-        assertTrue("stack trace indexOf org.apache.commons.lang.exception.NestableException: ne8: ne8 exception > -1",
-            stack1.indexOf("org.apache.commons.lang.exception.NestableException: ne8: ne8 exception") > -1); 
-    }
-
     public static void main(String args[])
     {
         TestRunner.run(suite());
     }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable()
+     */
+    public Nestable getNestable()
+    {
+        return new NestableException();
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable(Nestable)
+     */
+    public Nestable getNestable(Nestable n)
+    {
+        return new NestableException((Throwable) n);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable(String)
+     */
+    public Nestable getNestable(String msg)
+    {
+        return new NestableException(msg);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable(Throwable)
+     */
+    public Nestable getNestable(Throwable t)
+    {
+        return new NestableException(t);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable(String, Throwable)
+     */
+    public Nestable getNestable(String msg, Throwable t)
+    {
+        return new NestableException(msg, t);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getNestable(String, Nestable)
+     */
+    public Nestable getNestable(String msg, Nestable n)
+    {
+        return new NestableException(msg, (Throwable) n);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester1(Throwable)
+     */
+    public Nestable getTester1(Throwable t)
+    {
+        return new NestableExceptionTester1(t);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester1(Nestable)
+     */
+    public Nestable getTester1(Nestable n)
+    {
+        return new NestableExceptionTester1((Throwable) n);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester1(String, Throwable)
+     */
+    public Nestable getTester1(String msg, Throwable t)
+    {
+        return new NestableExceptionTester1(msg, t);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester1(String, Nestable)
+     */
+    public Nestable getTester1(String msg, Nestable n)
+    {
+        return new NestableExceptionTester1(msg, (Throwable) n);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester1Class()
+     */
+    public Class getTester1Class()
+    {
+        return NestableExceptionTester1.class;
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester2(String, Throwable)
+     */
+    public Nestable getTester2(String msg, Throwable t)
+    {
+        return new NestableExceptionTester2(msg, t);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester2(String, Nestable)
+     */
+    public Nestable getTester2(String msg, Nestable n)
+    {
+        return new NestableExceptionTester2(msg, (Throwable) n);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getTester2Class()
+     */
+    public Class getTester2Class()
+    {
+        return NestableExceptionTester2.class;
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getThrowable(String)
+     */
+    public Throwable getThrowable(String msg)
+    {
+        return new Exception(msg);
+    }
+    
+    /**
+     * @see AbstractNestableTestCase#getThrowableClass()
+     */
+    public Class getThrowableClass()
+    {
+        return Exception.class;
+    }
+    
+    public void testSerialization()
+    	throws java.io.IOException, ClassNotFoundException
+    {
+    	RuntimeException nestedEx = new RuntimeException("nested exception message");
+    	NestableExceptionTester1 ex = new NestableExceptionTester1("serialization test", nestedEx);
+
+		assertTrue( "implements java.io.Serializable", nestedEx instanceof java.io.Serializable);
+		
+		assertTrue( "implements java.io.Serializable", ex instanceof java.io.Serializable);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ByteArrayInputStream bais = null;
+		ObjectOutputStream oos = null;
+		ObjectInputStream ois = null;
+
+		try
+		{		
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(ex);
+			oos.flush();
+			bais = new ByteArrayInputStream(baos.toByteArray());
+			ois = new ObjectInputStream(bais);
+			NestableExceptionTester1 deserializedEx = (NestableExceptionTester1) ois.readObject();
+			assertEquals( 
+					"getThrowableCount() return value",
+						ex.getThrowableCount(),
+						deserializedEx.getThrowableCount());
+			
+			for (int i = 0; i < ex.getThrowableCount(); i++)
+			{
+				Throwable t = ex.getThrowable(i);
+				Throwable deserializedThrowable = deserializedEx.getThrowable(i);
+				
+				assertEquals( t.getClass(),
+						deserializedThrowable.getClass());
+						
+				assertEquals(
+					t.getMessage(),
+					deserializedThrowable.getMessage());
+			}
+		}
+		finally
+		{
+			if (null != oos)
+			{
+				try
+				{
+					oos.close();
+				}
+				catch (Exception ignored)
+				{
+					// intentionally empty
+				}
+			}
+		}
+		
+    }
 }
 
+/**
+ * First nestable tester implementation for use in test cases.
+ */
 class NestableExceptionTester1 extends NestableException
 {
     public NestableExceptionTester1()
@@ -509,6 +332,9 @@ class NestableExceptionTester1 extends NestableException
     
 }
 
+/**
+ * Second nestable tester implementation for use in test cases.
+ */
 class NestableExceptionTester2 extends NestableException
 {
     public NestableExceptionTester2()

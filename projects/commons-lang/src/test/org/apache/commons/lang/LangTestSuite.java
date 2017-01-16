@@ -60,9 +60,9 @@ import junit.textui.TestRunner;
 /**
  * Test suite for the Lang package.
  *
- * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
+ * @author Stephen Colebourne
  * @author <a href="mailto:ridesmet@users.sourceforge.net">Ringo De Smet</a>
- * @version $Id: LangTestSuite.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @version $Id: LangTestSuite.java,v 1.12 2002/12/29 22:09:53 scolebourne Exp $
  */
 public class LangTestSuite extends TestCase {
     
@@ -86,7 +86,10 @@ public class LangTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Commons-Lang Tests");
+        suite.addTest(ArrayUtilsTest.suite());
+        suite.addTest(BooleanUtilsTest.suite());
         suite.addTest(CharSetUtilsTest.suite());
+        suite.addTest(ClassUtilsTest.suite());
         suite.addTest(NumberRangeTest.suite());
         suite.addTest(NumberUtilsTest.suite());
         suite.addTest(ObjectUtilsTest.suite());

@@ -62,7 +62,7 @@ import junit.textui.TestRunner;
  * Unit tests {@link org.apache.commons.lang.StringUtils} - Substring methods
  *
  * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
- * @version $Id: StringUtilsIsTest.java,v 1.1 2002/07/19 03:35:55 bayard Exp $
+ * @version $Id: StringUtilsIsTest.java,v 1.4 2002/12/15 16:54:23 scolebourne Exp $
  */
 public class StringUtilsIsTest extends TestCase {
 
@@ -116,6 +116,19 @@ public class StringUtilsIsTest extends TestCase {
         assertEquals(true, StringUtils.isAlphanumeric("hkHKHik6iUGHKJgU7tUJgKJGI87GIkug"));
         assertEquals(false, StringUtils.isAlphanumeric("_"));
         assertEquals(false, StringUtils.isAlphanumeric("hkHKHik*khbkuh"));
+    }
+
+    public void testIsWhitespace() {
+        assertEquals(false, StringUtils.isWhitespace(null));
+        assertEquals(true, StringUtils.isWhitespace(""));
+        assertEquals(true, StringUtils.isWhitespace(" "));
+        assertEquals(true, StringUtils.isWhitespace("\t \n \t"));
+        assertEquals(false, StringUtils.isWhitespace("\t aa\n \t"));
+        assertEquals(true, StringUtils.isWhitespace(" "));
+        assertEquals(false, StringUtils.isWhitespace(" a "));
+        assertEquals(false, StringUtils.isWhitespace("a  "));
+        assertEquals(false, StringUtils.isWhitespace("  a"));
+        assertEquals(false, StringUtils.isWhitespace("aba"));
     }
 
     public void testIsAlphaspace() {

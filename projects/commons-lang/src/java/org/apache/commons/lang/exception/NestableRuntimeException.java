@@ -1,5 +1,3 @@
-package org.apache.commons.lang.exception;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,14 +51,10 @@ package org.apache.commons.lang.exception;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.commons.lang.exception;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
 
 /**
  * The base class of all runtime exceptions which can contain other
@@ -71,11 +65,11 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:dlr@collab.net">Daniel Rall</a>
  * @author <a href="mailto:knielsen@apache.org">Kasper Nielsen</a>
  * @author <a href="mailto:steven@caswell.name">Steven Caswell</a>
- * @version $Id: NestableRuntimeException.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @since 1.0
+ * @version $Id: NestableRuntimeException.java,v 1.6 2002/12/23 00:15:19 scolebourne Exp $
  */
-public class NestableRuntimeException extends RuntimeException
-    implements Nestable
-{
+public class NestableRuntimeException extends RuntimeException implements Nestable {
+    
     /**
      * The helper instance which contains much of the code which we
      * delegate to.
@@ -92,8 +86,7 @@ public class NestableRuntimeException extends RuntimeException
      * Constructs a new <code>NestableRuntimeException</code> without specified
      * detail message.
      */
-    public NestableRuntimeException()
-    {
+    public NestableRuntimeException() {
         super();
     }
 
@@ -101,10 +94,9 @@ public class NestableRuntimeException extends RuntimeException
      * Constructs a new <code>NestableRuntimeException</code> with specified
      * detail message.
      *
-     * @param msg The error message.
+     * @param msg the error message
      */
-    public NestableRuntimeException(String msg)
-    {
+    public NestableRuntimeException(String msg) {
         super(msg);
     }
 
@@ -112,11 +104,10 @@ public class NestableRuntimeException extends RuntimeException
      * Constructs a new <code>NestableRuntimeException</code> with specified
      * nested <code>Throwable</code>.
      *
-     * @param nested The exception or error that caused this exception
-     *               to be thrown.
+     * @param cause the exception or error that caused this exception to be
+     * thrown
      */
-    public NestableRuntimeException(Throwable cause)
-    {
+    public NestableRuntimeException(Throwable cause) {
         super();
         this.cause = cause;
     }
@@ -125,164 +116,69 @@ public class NestableRuntimeException extends RuntimeException
      * Constructs a new <code>NestableRuntimeException</code> with specified
      * detail message and nested <code>Throwable</code>.
      *
-     * @param msg    The error message.
-     * @param nested The exception or error that caused this exception
-     *               to be thrown.
+     * @param msg    the error message
+     * @param cause  the exception or error that caused this exception to be
+     * thrown
      */
-    public NestableRuntimeException(String msg, Throwable cause)
-    {
+    public NestableRuntimeException(String msg, Throwable cause) {
         super(msg);
         this.cause = cause;
     }
 
-    /**
-     * @see org.apache.commons.lang.exception.Nestable#getCause()
-     */
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return cause;
     }
 
-    /**
-     * Returns the number of nested <code>Throwable</code>s represented by
-     * this <code>Nestable</code>, including this <code>Nestable</code>.
-     */
-    public int getLength()
-    {
-        return delegate.getLength();
-    }
-    
-    /**
-     * @see org.apache.commons.lang.exception.Nestable#getMessage()
-     */
-    public String getMessage()
-    {
-        StringBuffer msg = new StringBuffer();
-        String ourMsg = super.getMessage();
-        if (ourMsg != null)
-        {
-            msg.append(ourMsg);
-        }
-        if (cause != null)
-        {
-            String causeMsg = cause.getMessage();
-            if (causeMsg != null)
-            {
-                if (ourMsg != null)
-                {
-                    msg.append(": ");
-                }
-                msg.append(causeMsg);
-            }
-
-        }
-        return (msg.length() > 0 ? msg.toString() : null);
+    public String getMessage() {
+        return delegate.getMessage(super.getMessage());
     }
 
-    /**
-     * Returns the error message of this and any nested <code>Throwable</code>s
-     * in an array of Strings, one element for each message. Any
-     * <code>Throwable</code> specified without a message is represented in
-     * the array by a null.
-     */
-    public String[] getMessages()
-    {
-        return delegate.getMessages();
-    }
-    
-    public Throwable getThrowable(int index)
-    {
-        return delegate.getThrowable(index);
-    }
-    
-    public Throwable[] getThrowables()
-    {
-        return delegate.getThrowables();
-    }
-    
-    public String getMessage(int index)
-    {
-        if(index == 0)
-        {
+    public String getMessage(int index) {
+        if (index == 0) {
             return super.getMessage();
-        }
-        else
-        {
+        } else {
             return delegate.getMessage(index);
         }
     }
-    
-    /**
-     * Returns the index, numbered from 0, of the first occurrence of the
-     * specified type in the chain of <code>Throwable</code>s, or -1 if the
-     * specified type is not found in the chain. If <code>pos</code> is
-     * negative, the effect is the same as if it were 0. If <code>pos</code>
-     * is greater than or equal to the length of the chain, the effect is the
-     * same as if it were the index of the last element in the chain.
-     *
-     * @param type <code>Class</code> to be found
-     * @return index of the first occurrence of the type in the chain, or -1 if
-     * the type is not found
-     */
-    public int indexOfThrowable(Class type)
-    {
-        return delegate.indexOfThrowable(0, type);
+
+    public String[] getMessages() {
+        return delegate.getMessages();
     }
 
-    /**
-     * Returns the index, numbered from 0, of the first <code>Throwable</code>
-     * that matches the specified type in the chain of <code>Throwable</code>s
-     * with an index greater than or equal to the specified position, or -1 if
-     * the type is not found. If <code>pos</code> is negative, the effect is the
-     * same as if it were 0. If <code>pos</code> is greater than or equal to the
-     * length of the chain, the effect is the same as if it were the index of
-     * the last element in the chain.
-     *
-     * @param type <code>Class</code> to be found
-     * @param pos index, numbered from 0, of the starting position in the chain
-     * to be searched
-     * 
-     * @return index of the first occurrence of the type in the chain, or -1 if
-     * the type is not found
-     */
-    public int indexOfThrowable(int pos, Class type)
-    {
-        return delegate.indexOfThrowable(pos, type);
+    public Throwable getThrowable(int index) {
+        return delegate.getThrowable(index);
     }
-    
-    /**
-     * Prints the stack trace of this exception the the standar error
-     * stream.
-     */
-    public void printStackTrace()
-    {
+
+    public int getThrowableCount() {
+        return delegate.getThrowableCount();
+    }
+
+    public Throwable[] getThrowables() {
+        return delegate.getThrowables();
+    }
+
+    public int indexOfThrowable(Class type) {
+        return delegate.indexOfThrowable(type, 0);
+    }
+
+    public int indexOfThrowable(Class type, int fromIndex) {
+        return delegate.indexOfThrowable(type, fromIndex);
+    }
+
+    public void printStackTrace() {
         delegate.printStackTrace();
     }
 
-    /**
-     * Prints the stack trace of this exception to the specified print stream.
-     *
-     * @param out <code>PrintStream</code> to use for output.
-     */
-    public void printStackTrace(PrintStream out)
-    {
+    public void printStackTrace(PrintStream out) {
         delegate.printStackTrace(out);
     }
 
-    /**
-     * @see org.apache.commons.lang.exception.Nestable#printStackTrace(PrintWriter out)
-     */
-    public void printStackTrace(PrintWriter out)
-    {
+    public void printStackTrace(PrintWriter out) {
         delegate.printStackTrace(out);
     }
 
-    /**
-     * @see org.apache.commons.lang.exception.Nestable#printPartialStackTrace(PrintWriter out)
-     */
-    public final void printPartialStackTrace(PrintWriter out)
-    {
+    public final void printPartialStackTrace(PrintWriter out) {
         super.printStackTrace(out);
     }
-    
+
 }

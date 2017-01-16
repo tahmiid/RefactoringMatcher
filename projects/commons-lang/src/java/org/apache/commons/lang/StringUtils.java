@@ -1,5 +1,3 @@
-package org.apache.commons.lang;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,18 +51,12 @@ package org.apache.commons.lang;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.commons.lang;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
 import java.util.Iterator;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * <p>Common <code>String</code> manipulation routines.</p>
@@ -76,34 +68,37 @@ import java.util.Iterator;
  * @author <a href="mailto:jon@latchkey.com">Jon S. Stevens</a>
  * @author <a href="mailto:dlr@finemaltcoding.com">Daniel Rall</a>
  * @author <a href="mailto:gcoladonato@yahoo.com">Greg Coladonato</a>
- * @author <a href="mailto:bayard@generationjava.com">Bayard</a>
+ * @author <a href="mailto:bayard@generationjava.com">Henri Yandell</a>
  * @author <a href="mailto:ed@apache.org">Ed Korthof</a>
- * @author <a href="mailto:rand_mcneely@yahoo.com>Rand McNeely</a>
- * @author <a href="mailto:scolebourne@joda.org>Stephen Colebourne</a>
- * @version $Id: StringUtils.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @author <a href="mailto:rand_mcneely@yahoo.com">Rand McNeely</a>
+ * @author Stephen Colebourne
+ * @author <a href="mailto:fredrik@westermarck.com">Fredrik Westermarck</a>
+ * @since 1.0
+ * @version $Id: StringUtils.java,v 1.30 2002/12/23 00:32:24 scolebourne Exp $
  */
 public class StringUtils {
 
     /**
-     * The size of the buffer to use when working with I/O (4 kB).
+     * <p><code>StringUtils<code> instances should NOT be constructed in
+     * standard programming. Instead, the class should be used as
+     * <code>StringUtils.trim(" foo ");</code>.</p>
+     *
+     * <p>This constructor is public to permit tools that require a JavaBean
+     * instance to operate.</p>
      */
-    public static int CHAR_BUFFER_SIZE = 4 * 1024;
-    
-    /**
-     * Prevent construction of StringUtils instances
-     */
-    private StringUtils() {
+    public StringUtils() {
     }
 
     // Empty
     //--------------------------------------------------------------------------
 
     /**
-     * Removes white space from both ends of this string, handling null
-     * by returning an empty string.
+     * <p>Removes control characters, including whitespace, from both
+     * ends of this String, handling <code>null</code> by returning
+     * an empty String.</p>
      *
      * @see java.lang.String#trim()
-     * @param str  the string to check
+     * @param str the String to check
      * @return the trimmed text (never <code>null</code>)
      */
     public static String clean(String str) {
@@ -111,11 +106,12 @@ public class StringUtils {
     }
 
     /**
-     * Removes white space from both ends of this string, handling null
-     * by returning null.
+     * <p>Removes control characters, including whitespace, from both
+     * ends of this String, handling <code>null</code> by returning
+     * <code>null</code>.</p>
      *
      * @see java.lang.String#trim()
-     * @param str  the string to check
+     * @param str the String to check
      * @return the trimmed text (or <code>null</code>)
      */
     public static String trim(String str) {
@@ -123,9 +119,45 @@ public class StringUtils {
     }
 
     /**
-     * Checks if a String is non null and is not empty (length > 0).
+     * <p>Deletes all 'space' characters from a String.</p>
      *
-     * @param str  the string to check
+     * <p>Spaces are defined as <code>{' ', '\t', '\r', '\n', '\b'}</code>
+     * in line with the deprecated {@link Character#isSpace(char)}.</p>
+     *
+     * @param str String target to delete spaces from
+     * @return the String without spaces
+     * @throws NullPointerException
+     */
+    public static String deleteSpaces(String str) {
+        return CharSetUtils.delete(str, " \t\r\n\b");
+    }
+
+    /**
+     * <p>Deletes all whitespaces from a String.</p>
+     *
+     * <p>Whitespace is defined by
+     * {@link Character#isWhitespace(char)}.</p>
+     *
+     * @param str String target to delete whitespace from
+     * @return the String without whitespaces
+     * @throws NullPointerException
+     */
+    public static String deleteWhitespace(String str) {
+        StringBuffer buffer = new StringBuffer();
+        int sz = str.length();
+        for (int i=0; i<sz; i++) {
+            if(!Character.isWhitespace(str.charAt(i))) {
+                buffer.append(str.charAt(i));
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * <p>Checks if a String is non <code>null</code> and is
+     * not empty (<code>length > 0</code>).</p>
+     *
+     * @param str the String to check
      * @return true if the String is non-null, and not length zero
      */
     public static boolean isNotEmpty(String str) {
@@ -133,10 +165,11 @@ public class StringUtils {
     }
 
     /**
-     * Checks if a (trimmed) String is null or empty.
+     * <p>Checks if a (trimmed) String is <code>null</code> or empty.</p>
      *
-     * @param str  the string to check
-     * @return true if the String is null, or length zero once trimmed
+     * @param str the String to check
+     * @return <code>true</code> if the String is <code>null</code>, or
+     *  length zero once trimmed
      */
     public static boolean isEmpty(String str) {
         return (str == null || str.trim().length() == 0);
@@ -146,38 +179,47 @@ public class StringUtils {
     //--------------------------------------------------------------------------
 
     /**
-     * Compares two Strings, returning true if they are equal.
-     * Nulls are handled without exceptions. Two <code>null</code>
-     * references are considered equal. Comparison is case sensitive.
+     * <p>Compares two Strings, returning <code>true</code> if they are equal.</p>
      *
-     * @param str1  the first string
-     * @param str2  the second string
-     * @return true if the Strings are equal, case sensitive, or both null
+     * <p><code>null</code>s are handled without exceptions. Two <code>null</code>
+     * references are considered to be equal. The comparison is case sensitive.</p>
+     *
+     * @see java.lang.String#equals(Object)
+     * @param str1 the first string
+     * @param str2 the second string
+     * @return <code>true</code> if the Strings are equal, case sensitive, or
+     *  both <code>null</code>
      */
     public static boolean equals(String str1, String str2) {
         return (str1 == null ? str2 == null : str1.equals(str2));
     }
 
     /**
-     * Compares two Strings, returning true if they are equal ignoring case.
-     * Nulls are handled without exceptions. Two <code>null</code>
-     * references are considered equal. Comparison is case insensitive.
+     * <p>Compares two Strings, returning <code>true</code> if they are equal ignoring
+     * the case.</p>
      *
+     * <p><code>Nulls</code> are handled without exceptions. Two <code>null</code>
+     * references are considered equal. Comparison is case insensitive.</p>
+     *
+     * @see java.lang.String#equalsIgnoreCase(String)
      * @param str1  the first string
      * @param str2  the second string
-     * @return true if the Strings are equal, case insensitive, or both null
+     * @return <code>true</code> if the Strings are equal, case insensitive, or
+     *  both <code>null</code>
      */
     public static boolean equalsIgnoreCase(String str1, String str2) {
         return (str1 == null ? str2 == null : str1.equalsIgnoreCase(str2));
     }
 
     /**
-     * Find the earliest index of any of a set of potential substrings.
-     * Null string will return -1.
+     * <p>Find the first index of any of a set of potential substrings.</p>
+     *
+     * <p><code>null</code> String will return <code>-1</code>.</p>
      * 
-     * @param str  the string to check
-     * @param searchStrs  the strings to search for
-     * @return the earliest index of any of the strings
+     * @param str the String to check
+     * @param searchStrs the Strings to search for
+     * @return the first index of any of the searchStrs in str
+     * @throws NullPointerException if any of searchStrs[i] is <code>null</code>
      */
     public static int indexOfAny(String str, String[] searchStrs) {
         if ((str == null) || (searchStrs == null)) {
@@ -204,12 +246,14 @@ public class StringUtils {
     }
 
     /**
-     * Find the latest index of any of a set of potential substrings.
-     * Null string will return -1.
+     * <p>Find the latest index of any of a set of potential substrings.</p>
+     *
+     * <p><code>null</code> string will return <code>-1</code>.</p>
      * 
-     * @param str  the string to check
-     * @param searchStrs  the strings to search for
-     * @return the last index of any of the strings
+     * @param str  the String to check
+     * @param searchStrs  the Strings to search for
+     * @return the last index of any of the Strings
+     * @throws NullPointerException if any of searchStrs[i] is <code>null</code>
      */
     public static int lastIndexOfAny(String str, String[] searchStrs) {
         if ((str == null) || (searchStrs == null)) {
@@ -231,13 +275,14 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Gets a substring of the specified string avoiding exceptions.
-     * A negative start position can be used to start n characters from
-     * the end of the string.
+     * <p>Gets a substring from the specified string avoiding exceptions.</p>
+     *
+     * <p>A negative start position can be used to start <code>n</code>
+     * characters from the end of the String.</p>
      * 
-     * @param str  the string to get the substring from
-     * @param start  the position to start from,  negative means 
-     * count back from the end of the string by this many characters
+     * @param str the String to get the substring from
+     * @param start the position to start from, negative means
+     *  count back from the end of the String by this many characters
      * @return substring from start position
      */
     public static String substring(String str, int start) {
@@ -261,15 +306,16 @@ public class StringUtils {
     }
     
     /**
-     * Gets a substring of the specified string avoiding exceptions.
-     * A negative start position can be used to start/end n characters
-     * from the end of the string.
+     * <p>Gets a substring from the specified String avoiding exceptions.</p>
+     *
+     * <p>A negative start position can be used to start/end <code>n</code>
+     * characters from the end of the String.</p>
      * 
-     * @param str  the string to get the substring from
-     * @param start  the position to start from, negative means 
-     * count back from the end of the string by this many characters
-     * @param end  the position to end at (exclusive),  negative means 
-     * count back from the end of the string by this many characters
+     * @param str the String to get the substring from
+     * @param start the position to start from, negative means
+     *  count back from the end of the string by this many characters
+     * @param end the position to end at (exclusive), negative means
+     *  count back from the end of the String by this many characters
      * @return substring from start position to end positon
      */
     public static String substring(String str, int start, int end) {
@@ -307,12 +353,14 @@ public class StringUtils {
     }
 
     /**
-     * Gets the leftmost n characters of a string. If n characters are not 
-     * available, or the string is null, the string will be returned 
-     * without an exception.
+     * <p>Gets the leftmost <code>n</code> characters of a String.</p>
      *
-     * @param str  the string to get the leftmost characters from
-     * @param len  the length of the required string
+     * <p>If <code>n</code> characters are not available, or the
+     * String is <code>null</code>, the String will be returned without
+     * an exception.</p>
+     *
+     * @param str the String to get the leftmost characters from
+     * @param len the length of the required String
      * @return the leftmost characters
      * @throws IllegalArgumentException if len is less than zero
      */
@@ -328,12 +376,14 @@ public class StringUtils {
     }
 
     /**
-     * Gets the rightmost n characters of a string. If n characters are not 
-     * available, or the string is null, the string will be returned 
-     * without an exception.
+     * <p>Gets the rightmost <code>n</code> characters of a String.</p>
      *
-     * @param str  the string to get the rightmost characters from
-     * @param len  the length of the required string
+     * <p>If <code>n</code> characters are not available, or the String
+     * is <code>null</code>, the String will be returned without an
+     * exception.</p>
+     *
+     * @param str the String to get the rightmost characters from
+     * @param len the length of the required String
      * @return the leftmost characters
      * @throws IllegalArgumentException if len is less than zero
      */
@@ -349,13 +399,15 @@ public class StringUtils {
     }
 
     /**
-     * Gets n characters from the middle of a string. If n characters are 
-     * not available, the remainder of the string will be returned 
-     * without an exception. If the string is null, null will be returned.
+     * <p>Gets <code>n</code> characters from the middle of a String.</p>
      *
-     * @param str  the string to get the characters from
-     * @param pos  the position to start from
-     * @param len  the length of the required string
+     * <p>If <code>n</code> characters are not available, the remainder
+     * of the String will be returned without an exception. If the
+     * String is <code>null</code>, <code>null</code> will be returned.</p>
+     *
+     * @param str the String to get the characters from
+     * @param pos the position to start from
+     * @param len the length of the required String
      * @return the leftmost characters
      * @throws IndexOutOfBoundsException if pos is out of bounds
      * @throws IllegalArgumentException if len is less than zero
@@ -382,51 +434,51 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Splits the provided text into a list, using whitespace as the separator.
-     * The separator is not included in the returned String array.
+     * <p>Splits the provided text into a array, using whitespace as the
+     * separator.</p>
      *
-     * @param str  the string to parse
+     * <p>The separator is not included in the returned String array.</p>
+     *
+     * @param str the String to parse
      * @return an array of parsed Strings 
      */
-    public static String[] split(String text) {
-        return split(text, null, -1);
+    public static String[] split(String str) {
+        return split(str, null, -1);
     }
 
     /**
-     * Splits the provided text into a list, based on a given separator.
-     * The separator is not included in the returned String array.
-     * A null separator will cause parsing to be on whitespace.
-     *
-     * @param str  the string to parse
-     * @param separator  The separator character. If <code>null</code>, splits
-     *  on whitespace.
-     * @return an array of parsed Strings 
+     * @see #split(String, String, int)
      */
     public static String[] split(String text, String separator) {
         return split(text, separator, -1);
     }
 
     /**
-     * Splits the provided text into a list, based on a given separator.
-     * The separator is not included in the returned String array.
-     * The maximum number of splits to perfom can be controlled.
-     * A null separator will cause parsing to be on whitespace.
+     * <p>Splits the provided text into a array, based on a given separator.</p>
      *
-     * @param str  the string to parse
-     * @param separator  The separator character. If <code>null</code>, splits
-     *  on whitespace.
-     * @param max  The maximum number of elements to include in the
-     *  list.  A zero or negative value implies no limit.
+     * <p>The separator is not included in the returned String array. The
+     * maximum number of splits to perfom can be controlled. A <code>null</code>
+     * separator will cause parsing to be on whitespace.</p>
+     *
+     * <p>This is useful for quickly splitting a String directly into
+     * an array of tokens, instead of an enumeration of tokens (as
+     * <code>StringTokenizer</code> does).</p>
+     *
+     * @param str The string to parse.
+     * @param separator Characters used as the delimiters. If
+     *  <code>null</code>, splits on whitespace.
+     * @param max The maximum number of elements to include in the
+     *  array.  A zero or negative value implies no limit.
      * @return an array of parsed Strings 
      */
-    public static String[] split(String text, String separator, int max) {
+    public static String[] split(String str, String separator, int max) {
         StringTokenizer tok = null;
         if (separator == null) {
             // Null separator means we're using StringTokenizer's default
             // delimiter, which comprises all whitespace characters.
-            tok = new StringTokenizer(text);
+            tok = new StringTokenizer(str);
         } else {
-            tok = new StringTokenizer(text, separator);
+            tok = new StringTokenizer(str, separator);
         }
 
         int listSize = tok.countTokens();
@@ -436,22 +488,21 @@ public class StringUtils {
 
         String[] list = new String[listSize];
         int i = 0;
+        int lastTokenBegin = 0;
+        int lastTokenEnd = 0;
         while (tok.hasMoreTokens()) {
             if (max > 0 && i == listSize - 1) {
                 // In the situation where we hit the max yet have
                 // tokens left over in our input, the last list
                 // element gets all remaining text.
-                StringBuffer buf = new StringBuffer((int) 1.2 * text.length() * (listSize - i) / listSize);
-                while (tok.hasMoreTokens()) {
-                    buf.append(tok.nextToken());
-                    if (tok.hasMoreTokens()) {
-                        buf.append(separator);
-                    }
-                }
-                list[i] = buf.toString();
+                String endToken = tok.nextToken();
+                lastTokenBegin = str.indexOf(endToken, lastTokenEnd);
+                list[i] = str.substring(lastTokenBegin);
                 break;
             } else {
                 list[i] = tok.nextToken();
+                lastTokenBegin = str.indexOf(list[i], lastTokenEnd);
+                lastTokenEnd = lastTokenBegin + list[i].length();
             }
             i++;
         }
@@ -460,15 +511,27 @@ public class StringUtils {
 
     // Joining
     //--------------------------------------------------------------------------
+    /**
+     * <p>Concatenates elements of an array into a single String.</p>
+     *
+     * <p>The difference from join is that concatenate has no delimiter.</p>
+     * 
+     * @param array the array of values to concatenate.
+     * @return the concatenated string.
+     */
+    public static String concatenate(Object[] array) {
+        return join(array, "");
+    }
     
     /**
-     * Joins the elements of the provided array into a single string
-     * containing the provided list of elements. 
-     * No delimiter is added before or after the list.
-     * A null separator is the same as a blank String.
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
      *
-     * @param array  the array of values to join together
-     * @param separator  the separator character to use
+     * <p>No delimiter is added before or after the list. A
+     * <code>null</code> separator is the same as a blank String.</p>
+     *
+     * @param array the array of values to join together
+     * @param separator the separator character to use
      * @return the joined String
      */
     public static String join(Object[] array, String separator) {
@@ -490,12 +553,13 @@ public class StringUtils {
     }
 
     /**
-     * Joins the elements of the provided iterator into a single string
-     * containing the provided elements.
-     * No delimiter is added before or after the list.
-     * A null separator is the same as a blank String.
+     * <p>Joins the elements of the provided <code>Iterator</code> into
+     * a single String containing the provided elements.</p>
      *
-     * @param iterator  the iterator of values to join together
+     * <p>No delimiter is added before or after the list. A
+     * <code>null</code> separator is the same as a blank String.</p>
+     *
+     * @param iterator the <code>Iterator</code> of values to join together
      * @param separator  the separator character to use
      * @return the joined String
      */
@@ -519,12 +583,12 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Replace a string with another string inside a larger string, once.
+     * <p>Replace a String with another String inside a larger String, once.</p>
      *
      * @see #replace(String text, String repl, String with, int max)
-     * @param text  text to search and replace in
-     * @param repl  String to search for
-     * @param with  String to replace with
+     * @param text text to search and replace in
+     * @param repl String to search for
+     * @param with String to replace with
      * @return the text with any replacements processed
      */
     public static String replaceOnce(String text, String repl, String with) {
@@ -532,12 +596,12 @@ public class StringUtils {
     }
 
     /**
-     * Replace all occurances of a string within another string.
+     * <p>Replace all occurances of a String within another String.</p>
      *
      * @see #replace(String text, String repl, String with, int max)
-     * @param text  text to search and replace in
-     * @param repl  String to search for
-     * @param with  String to replace with
+     * @param text text to search and replace in
+     * @param repl String to search for
+     * @param with String to replace with
      * @return the text with any replacements processed
      */
     public static String replace(String text, String repl, String with) {
@@ -545,17 +609,19 @@ public class StringUtils {
     }
 
     /**
-     * Replace a string with another string inside a larger string,
-     * for the first <code>max</code> values of the search string.  A
-     * <code>null</code> reference is passed to this method is a
-     * no-op.
+     * <p>Replace a String with another String inside a larger String,
+     * for the first <code>max</code> values of the search String.</p>
      *
-     * @param text  text to search and replace in
-     * @param repl  String to search for
-     * @param with  String to replace with
-     * @param max  maximum number of values to replace, or
-     * <code>-1</code> if no maximum
+     * <p>A <code>null</code> reference is passed to this method is a
+     * no-op.</p>
+     *
+     * @param text text to search and replace in
+     * @param repl String to search for
+     * @param with String to replace with
+     * @param max maximum number of values to replace, or
+     *  <code>-1</code> if no maximum
      * @return the text with any replacements processed
+     * @throws NullPointerException if repl is <code>null</code>
      */
     public static String replace(String text, String repl, String with,
                                  int max) {
@@ -565,7 +631,7 @@ public class StringUtils {
 
         StringBuffer buf = new StringBuffer(text.length());
         int start = 0, end = 0;
-        while ( (end = text.indexOf(repl, start)) != -1 ) {
+        while ((end = text.indexOf(repl, start)) != -1) {
             buf.append(text.substring(start, end)).append(with);
             start = end + repl.length();
 
@@ -578,45 +644,52 @@ public class StringUtils {
     }
 
     /**
-     * Overlay a part of a string with another string.
+     * <p>Overlay a part of a String with another String.</p>
      *
      * @param text String to do overlaying in
      * @param overlay String to overlay
      * @param start int to start overlaying at
-     * @param end   int to stop overlaying before
+     * @param end int to stop overlaying before
      * @return String with overlayed text
+     * @throws NullPointerException if text or overlay is <code>null</code>
      */
     public static String overlayString(String text, String overlay, int start, int end) {
         return new StringBuffer(start + overlay.length() + text.length() - end + 1)
-			.append(text.substring(0, start))
-			.append(overlay)
-			.append(text.substring(end))
-			.toString();
+            .append(text.substring(0, start))
+            .append(overlay)
+            .append(text.substring(end))
+            .toString();
     }
 
     // Centering
     //--------------------------------------------------------------------------
     
     /**
-     * Center a string in a larger string of size n.
-     * Uses spaces as the value to buffer the string with..
+     * <p>Center a String in a larger String of size <code>n</code>.<p>
      *
-     * @param str  String to center
-     * @param size  int size of new String
+     * <p>Uses spaces as the value to buffer the String with.
+     * Equivalent to <code>center(str, size, " ")</code>.</p>
+     *
+     * @param str String to center
+     * @param size int size of new String
      * @return String containing centered String
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String center(String str, int size) {
         return center(str, size, " ");
     }
 
     /**
-     * Center a string in a larger string of size n.
-     * Uses a supplied String as the value to buffer the string with..
+     * <p>Center a String in a larger String of size <code>n</code>.</p>
      *
-     * @param str  String to center
-     * @param size  int size of new String
-     * @param delim  String to buffer the new String with
+     * <p>Uses a supplied String as the value to buffer the String with.</p>
+     *
+     * @param str String to center
+     * @param size int size of new String
+     * @param delim String to buffer the new String with
      * @return String containing centered String
+     * @throws NullPointerException if str or delim is <code>null</code>
+     * @throws ArithmeticException if delim is the empty String
      */
     public static String center(String str, int size, String delim) {
         int sz = str.length();
@@ -633,49 +706,53 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /** 
-     * Remove the last newline, and everything after it from a String.
+     * <p>Remove the last newline, and everything after it from a String.</p>
      *
-     * @param str  String to chomp the newline from
+     * @param str String to chomp the newline from
      * @return String without chomped newline
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String chomp(String str) {
         return chomp(str, "\n");
     }
     
     /** 
-     * Remove the last value of a supplied String, and everything after it 
-     * from a String.
+     * <p>Remove the last value of a supplied String, and everything after
+     * it from a String.</p>
      *
-     * @param str  String to chomp from
-     * @param sep  String to chomp
+     * @param str String to chomp from
+     * @param sep String to chomp
      * @return String without chomped ending
+     * @throws NullPointerException if str or sep is <code>null</code>
      */
     public static String chomp(String str, String sep) {
         int idx = str.lastIndexOf(sep);
         if (idx != -1) {
-            return str.substring(0,idx);
+            return str.substring(0, idx);
         } else {
             return str;
         }
     }
     
     /**
-     * Remove a newline if and only if it is at the end 
-     * of the supplied string.
+     * <p>Remove a newline if and only if it is at the end
+     * of the supplied String.</p>
      * 
-     * @param str  String to chomp from
+     * @param str String to chomp from
      * @return String without chomped ending
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String chompLast(String str) {
         return chompLast(str, "\n");
     }
     
     /**
-     * Remove a value if and only if the string ends with that value.
+     * <p>Remove a value if and only if the String ends with that value.</p>
      * 
-     * @param str  String to chomp from
-     * @param sep  String to chomp
+     * @param str String to chomp from
+     * @param sep String to chomp
      * @return String without chomped ending
+     * @throws NullPointerException if str or sep is <code>null</code>
      */
     public static String chompLast(String str, String sep) {
         if (str.length() == 0) {
@@ -690,12 +767,13 @@ public class StringUtils {
     }
 
     /** 
-     * Remove everything and return the last value of a supplied String, and 
-     * everything after it from a String.
+     * <p>Remove everything and return the last value of a supplied String, and
+     * everything after it from a String.</p>
      *
      * @param str String to chomp from
      * @param sep String to chomp
      * @return String chomped
+     * @throws NullPointerException if str or sep is <code>null</code>
      */
     public static String getChomp(String str, String sep) {
         int idx = str.lastIndexOf(sep);
@@ -709,12 +787,13 @@ public class StringUtils {
     }
 
     /** 
-     * Remove the first value of a supplied String, and everything before it 
-     * from a String.
+     * <p>Remove the first value of a supplied String, and everything before it
+     * from a String.</p>
      *
      * @param str String to chomp from
      * @param sep String to chomp
      * @return String without chomped beginning
+     * @throws NullPointerException if str or sep is <code>null</code>
      */
     public static String prechomp(String str, String sep) {
         int idx = str.indexOf(sep);
@@ -726,12 +805,13 @@ public class StringUtils {
     }
 
     /** 
-     * Remove and return everything before the first value of a 
-     * supplied String from another String.
+     * <p>Remove and return everything before the first value of a
+     * supplied String from another String.</p>
      *
      * @param str String to chomp from
      * @param sep String to chomp
      * @return String prechomped
+     * @throws NullPointerException if str or sep is <code>null</code>
      */
     public static String getPrechomp(String str, String sep) {
         int idx = str.indexOf(sep);
@@ -746,11 +826,14 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Remove the last character from a String. If the String 
-     * ends in \r\n, then remove both of them.
+     * <p>Remove the last character from a String.</p>
+     *
+     * <p>If the String ends in <code>\r\n</code>, then remove both
+     * of them.</p>
      *
      * @param str String to chop last character from
      * @return String without last character
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String chop(String str) {
         if ("".equals(str)) {
@@ -771,24 +854,24 @@ public class StringUtils {
     }
 
     /**
-     * Remove \n from end of a String if it's there.
-     * If a \r precedes it, then remove that too.
+     * <p>Remove <code>\n</code> from end of a String if it's there.
+     * If a <code>\r</code> precedes it, then remove that too.</p>
      *
      * @param str String to chop a newline from
-     * @param String without newline on end
      * @return String without newline
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String chopNewline(String str) {
-        int lastIdx = str.length()-1;
+        int lastIdx = str.length() - 1;
         char last = str.charAt(lastIdx);
-        if(last == '\n') {
-            if(str.charAt(lastIdx-1) == '\r') {
-                lastIdx --;
+        if (last == '\n') {
+            if (str.charAt(lastIdx - 1) == '\r') {
+                lastIdx--;
             }
         } else {
             lastIdx++;
         }
-        return str.substring(0,lastIdx);
+        return str.substring(0, lastIdx);
     }
 
 
@@ -797,72 +880,71 @@ public class StringUtils {
     
     // spec 3.10.6
     /**
-     * Escapes any values it finds into their String form.
-     * So a tab becomes the characters '\\' and 't'.
+     * <p>Escapes any values it finds into their String form.</p>
+     *
+     * <p>So a tab becomes the characters <code>'\\'</code> and
+     * <code>'t'</code>.</p>
      *
      * @param str String to escape values in
-     *
      * @return String with escaped values
+     * @throws NullPointerException if str is <code>null</code>
      */
-    // improved with code from  cybertiger@cyberiantiger.org
-    // unicode from him, and defaul for < 32's.
     public static String escape(String str) {
+        // improved with code from  cybertiger@cyberiantiger.org
+        // unicode from him, and defaul for < 32's.
         int sz = str.length();
-        StringBuffer buffer = new StringBuffer(2*sz);
-        for(int i=0; i<sz; i++) {
+        StringBuffer buffer = new StringBuffer(2 * sz);
+        for (int i = 0; i < sz; i++) {
             char ch = str.charAt(i);
 
             // handle unicode
-            if(ch > 0xfff) {
-                buffer.append("\\u"+Integer.toHexString(ch));
-            } else 
-            if(ch > 0xff) {
-                buffer.append("\\u0"+Integer.toHexString(ch));
-            } else 
-            if(ch > 0x7f) {
-                buffer.append("\\u00"+Integer.toHexString(ch));
-            } else 
-            if(ch < 32) {
-                switch(ch) {
-                    case '\b' : 
+            if (ch > 0xfff) {
+                buffer.append("\\u" + Integer.toHexString(ch));
+            } else if (ch > 0xff) {
+                buffer.append("\\u0" + Integer.toHexString(ch));
+            } else if (ch > 0x7f) {
+                buffer.append("\\u00" + Integer.toHexString(ch));
+            } else if (ch < 32) {
+                switch (ch) {
+                    case '\b' :
                         buffer.append('\\');
                         buffer.append('b');
                         break;
-                    case '\n' : 
+                    case '\n' :
                         buffer.append('\\');
                         buffer.append('n');
                         break;
-                    case '\t' : 
+                    case '\t' :
                         buffer.append('\\');
                         buffer.append('t');
                         break;
-                    case '\f' : 
+                    case '\f' :
                         buffer.append('\\');
                         buffer.append('f');
                         break;
-                    case '\r' : 
+                    case '\r' :
                         buffer.append('\\');
                         buffer.append('r');
                         break;
                     default :
-                        if( ch > 0xf ) {
-                            buffer.append("\\u00"+Integer.toHexString(ch));
+                        if (ch > 0xf) {
+                            buffer.append("\\u00" + Integer.toHexString(ch));
                         } else {
-                            buffer.append("\\u000"+Integer.toHexString(ch));
+                            buffer.append("\\u000" + Integer.toHexString(ch));
                         }
                         break;
                 }
             } else {
-                switch(ch) {
-                    case '\'' : 
+                switch (ch) {
+                    case '\'' :
                         buffer.append('\\');
                         buffer.append('\'');
                         break;
-                    case '"' : 
+                    case '"' :
                         buffer.append('\\');
                         buffer.append('"');
                         break;
-                    case '\\' : 
+                    case '\\' :
                         buffer.append('\\');
                         buffer.append('\\');
                         break;
@@ -875,15 +957,89 @@ public class StringUtils {
         return buffer.toString();
     }
 
+    /**
+     * Unescapes any Java literals found in the String. For example, 
+     * it will turn a sequence of '\' and 'n' into a newline character, 
+     * unless the '\' is preceded by another '\'.
+     */
+    public static String unescape(String str) {
+        int sz = str.length();
+        StringBuffer buffer = new StringBuffer(sz);
+        StringBuffer unicode = new StringBuffer(4);
+        boolean hadSlash = false;
+        boolean inUnicode = false;
+        for (int i = 0; i < sz; i++) {
+            char ch = str.charAt(i);
+            if(inUnicode) {
+                // if in unicode, then we're reading unicode 
+                // values in somehow
+                if(unicode.length() == 4) {
+                    // unicode now contains the four hex digits 
+                    // which represents our unicode chacater
+                    try {
+                        int value = Integer.parseInt(unicode.toString(), 16);
+                        buffer.append( (char)value );
+                        unicode.setLength(0);
+                        unicode.setLength(4);
+                        inUnicode = false;
+                        hadSlash = false;
+                    } catch(NumberFormatException nfe) {
+                        throw new NestableRuntimeException("Unable to parse unicode value: "+unicode, nfe);
+                    }
+                } else {
+                    unicode.append(ch);
+                    continue;
+                }
+            }
+            if(hadSlash) {
+                // handle an escaped value
+                hadSlash = false;
+                switch(ch) {
+                    case '\\': buffer.append('\\'); break;
+                    case '\'': buffer.append('\''); break;
+                    case '\"': buffer.append('"'); break;
+                    case 'r':  buffer.append('\r'); break;
+                    case 'f':  buffer.append('\f'); break;
+                    case 't':  buffer.append('\t'); break;
+                    case 'n':  buffer.append('\n'); break;
+                    case 'b':  buffer.append('\b'); break;
+                    case 'u':  {
+                        // uh-oh, we're in unicode country....
+                        inUnicode=true;
+                        break;
+                    }
+                    default :
+                        buffer.append(ch);
+                        break;
+                }
+                continue;
+            } else
+            if(ch == '\\') {
+                hadSlash = true;
+                continue;
+            } 
+            buffer.append(ch);
+        }
+        if(hadSlash) {
+            // then we're in the weird case of a \ at the end of the 
+            // string, let's output it anyway.
+            buffer.append('\\');
+        }
+        return buffer.toString();
+    }
+
     // Padding
     //--------------------------------------------------------------------------
     
     /**
-     * Repeat a string n times to form a new string.
+     * <p>Repeat a String <code>n</code> times to form a
+     * new string.</p>
      *
-     * @param str  String to repeat
-     * @param repeat  int number of times to repeat
-     * @return String with repeated string
+     * @param str String to repeat
+     * @param repeat number of times to repeat str
+     * @return String with repeated String
+     * @throws NegativeArraySizeException if <code>repeat < 0</code>
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String repeat(String str, int repeat) {
         StringBuffer buffer = new StringBuffer(repeat * str.length());
@@ -894,22 +1050,30 @@ public class StringUtils {
     }
 
     /**
-     * Right pad a String with spaces. Pad to a size of n.
+     * <p>Right pad a String with spaces.</p>
+     *
+     * <p>The String is padded to the size of <code>n</code>.</p>
      * 
-     * @param str  String to repeat
-     * @param size  int number of times to repeat
-     * @return String with repeated string
+     * @param str String to repeat
+     * @param size number of times to repeat str
+     * @return right padded String
+     * @throws NullPointerException if str is <code>null</code>
      */
     public static String rightPad(String str, int size) {
         return rightPad(str, size, " ");
     }
     
     /**
-     * Right pad a String with a specified string. Pad to a size of n.
+     * <p>Right pad a String with a specified string.</p>
      *
-     * @param str  String to pad out
-     * @param size  int size to pad to
-     * @param delim  String to pad with
+     * <p>The String is padded to the size of <code>n</code>.</p>
+     *
+     * @param str String to pad out
+     * @param size size to pad to
+     * @param delim String to pad with
+     * @return right padded String
+     * @throws NullPointerException if str or delim is <code>null<code>
+     * @throws ArithmeticException if delim is the empty String
      */
     public static String rightPad(String str, int size, String delim) {
         size = (size - str.length()) / delim.length();
@@ -920,10 +1084,14 @@ public class StringUtils {
     }
 
     /**
-     * Left pad a String with spaces. Pad to a size of n.
+     * <p>Left pad a String with spaces.</p>
      *
-     * @param str  String to pad out
-     * @param size  int size to pad to
+     * <p>The String is padded to the size of <code>n<code>.</p>
+     *
+     * @param str String to pad out
+     * @param size size to pad to
+     * @return left padded String
+     * @throws NullPointerException if str or delim is <code>null<code>
      */
     public static String leftPad(String str, int size) {
         return leftPad(str, size, " ");
@@ -931,9 +1099,12 @@ public class StringUtils {
     /**
      * Left pad a String with a specified string. Pad to a size of n.
      *
-     * @param str  String to pad out
-     * @param size  int size to pad to
-     * @param delim  String to pad with
+     * @param str String to pad out
+     * @param size size to pad to
+     * @param delim String to pad with
+     * @return left padded String
+     * @throws NullPointerException if str or delim is null
+     * @throws ArithmeticException if delim is the empty string
      */
     public static String leftPad(String str, int size, String delim) {
         size = (size - str.length()) / delim.length();
@@ -947,22 +1118,24 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Remove whitespace from the front and back of a String.
+     * <p>Remove whitespace from the front and back of a String.</p>
      * 
-     * @param str  the string to remove whitespace from
-     * @return the stripped string
+     * @param str the String to remove whitespace from
+     * @return the stripped String
      */
     public static String strip(String str) {
         return strip(str, null);
     }
     /**
-     * Remove a specified String from the front and back of a 
-     * String. If Whitespace is wanted to be removed, used the 
-     * strip(String) method.
+     * <p>Remove a specified String from the front and back of a
+     * String.</p>
+     *
+     * <p>If whitespace is wanted to be removed, used the
+     * {@link #strip(java.lang.String)} method.</p>
      * 
-     * @param str  the string to remove a string from
-     * @param delim  the string to remove at start and end
-     * @return the stripped string
+     * @param str the String to remove a string from
+     * @param delim the String to remove at start and end
+     * @return the stripped String
      */
     public static String strip(String str, String delim) {
         str = stripStart(str, delim);
@@ -970,23 +1143,23 @@ public class StringUtils {
     }
 
     /**
-     * Strip whitespace from the front and back of every string
-     * in the array.
+     * <p>Strip whitespace from the front and back of every String
+     * in the array.</p>
      * 
-     * @param strs  the strings to remove whitespace from
-     * @return the stripped strings
+     * @param strs the Strings to remove whitespace from
+     * @return the stripped Strings
      */
     public static String[] stripAll(String[] strs) {
         return stripAll(strs, null);
     }
  
     /**
-     * Strip the specified delimiter from the front and back of
-     * every String in the array.
+     * <p>Strip the specified delimiter from the front and back of
+     * every String in the array.</p>
      * 
-     * @param strs  the strings to remove a string from
-     * @param delim  the string to remove at start and end
-     * @return the stripped strings
+     * @param strs the Strings to remove a String from
+     * @param delimiter the String to remove at start and end
+     * @return the stripped Strings
      */
     public static String[] stripAll(String[] strs, String delimiter) {
         if ((strs == null) || (strs.length == 0)) {
@@ -1001,12 +1174,14 @@ public class StringUtils {
     }   
 
     /**
-     * Strip any of a supplied string (first letter) from the end of a String..
-     * If the strip string is null, whitespace is stripped.
+     * <p>Strip any of a supplied String from the end of a String.</p>
+     *
+     * <p>If the strip String is <code>null</code>, whitespace is
+     * stripped.</p>
      * 
-     * @param str  the string to remove characters from
-     * @param strip  the string to remove
-     * @return the stripped string
+     * @param str the String to remove characters from
+     * @param strip the String to remove
+     * @return the stripped String
      */
     public static String stripEnd(String str, String strip) {
         if (str == null) {
@@ -1019,8 +1194,7 @@ public class StringUtils {
                 end--;
             }
         } else {
-            char chr = strip.charAt(0);
-            while ((end != 0) && (str.charAt(end - 1) == chr)) {
+            while ((end != 0) && (strip.indexOf(str.charAt(end - 1)) != -1)) {
                 end--;
             }
         }
@@ -1028,12 +1202,14 @@ public class StringUtils {
     }
 
     /**
-     * Strip any of a supplied string (first letter) from the start of a String.
-     * If the strip string is null, whitespace is stripped.
+     * <p>Strip any of a supplied String from the start of a String.</p>
+     *
+     * <p>If the strip String is <code>null</code>, whitespace is
+     * stripped.</p>
      * 
-     * @param str  the string to remove characters from
-     * @param strip  the string to remove
-     * @return the stripped string
+     * @param str the String to remove characters from
+     * @param strip the String to remove
+     * @return the stripped String
      */
     public static String stripStart(String str, String strip) {
         if (str == null) {
@@ -1049,8 +1225,7 @@ public class StringUtils {
                 start++;
             }
         } else {
-            char chr = strip.charAt(0);
-            while ((start != sz) && (str.charAt(start) == chr)) {
+            while ((start != sz) && (strip.indexOf(str.charAt(start)) != -1)) {
                 start++;
             }
         }
@@ -1061,10 +1236,11 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Convert a String to upper case, null string returns null.
+     * <p>Convert a String to upper case, <code>null</code> String
+     * returns <code>null</code>.</p>
      * 
-     * @param str  the string to uppercase
-     * @return the upper cased string
+     * @param str the String to uppercase
+     * @return the upper cased String
      */
     public static String upperCase(String str) {
         if (str == null) {
@@ -1074,10 +1250,11 @@ public class StringUtils {
     }
 
     /**
-     * Convert a String to lower case, null string returns null.
+     * <p>Convert a String to lower case, <code>null</code> String
+     * returns <code>null</code>.</p>
      * 
-     * @param str  the string to lowercase
-     * @return the lower cased string
+     * @param str the string to lowercase
+     * @return the lower cased String
      */
     public static String lowerCase(String str) {
         if (str == null) {
@@ -1087,11 +1264,13 @@ public class StringUtils {
     }
 
     /**
-     * Uncapitalise a string. That is, convert the first character into 
-     * lower-case. Null is returned as null.
+     * <p>Uncapitalise a String.</p>
      *
-     * @param str  the string to uncapitalise
-     * @return uncapitalised string
+     * <p>That is, convert the first character into lower-case.
+     * <code>null</code> is returned as <code>null</code>.</p>
+     *
+     * @param str the String to uncapitalise
+     * @return uncapitalised String
      */
     public static String uncapitalise(String str) {
         if (str == null) {
@@ -1107,11 +1286,13 @@ public class StringUtils {
     }
 
     /**
-     * Capitalise a string. That is, convert the first character into 
-     * title-case. Null is returned as null.
+     * <p>Capitalise a String.</p>
      *
-     * @param str  the string to capitalise
-     * @return capitalised string
+     * <p>That is, convert the first character into title-case.
+     * <code>null</code> is returned as <code>null</code>.</p>
+     *
+     * @param str the String to capitalise
+     * @return capitalised String
      */
     public static String capitalise(String str) {
         if (str == null) {
@@ -1127,12 +1308,15 @@ public class StringUtils {
     }
 
     /**
-     * Swaps the case of String. Properly looks after 
-     * making sure the start of words are Titlecase and not 
-     * Uppercase. Null is returned as null.
+     * <p>Swaps the case of String.</p>
+     *
+     * <p>Properly looks after making sure the start of words
+     * are Titlecase and not Uppercase.</p>
+     *
+     * <p><code>null</code> is returned as <code>null</code>.</p>
      * 
-     * @param str  the string to swap the case of
-     * @return the modified string
+     * @param str the String to swap the case of
+     * @return the modified String
      */
     public static String swapCase(String str) {
         if (str == null) {
@@ -1145,16 +1329,14 @@ public class StringUtils {
         char ch = 0;
         char tmp = 0;
 
-        for(int i=0; i<sz; i++) {
+        for (int i = 0; i < sz; i++) {
             ch = str.charAt(i);
-            if(Character.isUpperCase(ch)) {
+            if (Character.isUpperCase(ch)) {
                 tmp = Character.toLowerCase(ch);
-            } else
-            if(Character.isTitleCase(ch)) {
+            } else if (Character.isTitleCase(ch)) {
                 tmp = Character.toLowerCase(ch);
-            } else
-            if(Character.isLowerCase(ch)) {
-                if(whitespace) {
+            } else if (Character.isLowerCase(ch)) {
+                if (whitespace) {
                     tmp = Character.toTitleCase(ch);
                 } else {
                     tmp = Character.toUpperCase(ch);
@@ -1170,11 +1352,15 @@ public class StringUtils {
 
 
     /**
-     * Capitalise all the words in a string. Uses Character.isWhitespace 
-     * as a separator between words. Null will return null.
+     * <p>Capitalise all the words in a String.</p>
      *
-     * @param str  the string to capitalise
-     * @return capitalised string
+     * <p>Uses {@link Character#isWhitespace(char)} as a
+     * separator between words.</p>
+     *
+     * <p><code>null</code> will return <code>null</code>.</p>
+     *
+     * @param str the String to capitalise
+     * @return capitalised String
      */
     public static String capitaliseAllWords(String str) {
         if (str == null) {
@@ -1183,14 +1369,46 @@ public class StringUtils {
         int sz = str.length();
         StringBuffer buffer = new StringBuffer(sz);
         boolean space = true;
-        for(int i=0; i<sz; i++) {
+        for (int i = 0; i < sz; i++) {
             char ch = str.charAt(i);
-            if(Character.isWhitespace(ch)) {
+            if (Character.isWhitespace(ch)) {
                 buffer.append(ch);
                 space = true;
-            } else
-            if(space) {
+            } else if (space) {
                 buffer.append(Character.toTitleCase(ch));
+                space = false;
+            } else {
+                buffer.append(ch);
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * <p>Uncapitalise all the words in a string.</p>
+     *
+     * <p>Uses {@link Character#isWhitespace(char)} as a
+     * separator between words.</p>
+     *
+     * <p><code>null</code> will return <code>null</code>.</p>
+     *
+     * @param str  the string to uncapitalise
+     * @return uncapitalised string
+     */
+    public static String uncapitaliseAllWords(String str) {
+        if (str == null) {
+            return null;
+        }
+        int sz = str.length();
+        StringBuffer buffer = new StringBuffer(sz);
+        boolean space = true;
+        for (int i = 0; i < sz; i++) {
+            char ch = str.charAt(i);
+            if (Character.isWhitespace(ch)) {
+                buffer.append(ch);
+                space = true;
+            } else if (space) {
+                buffer.append(Character.toLowerCase(ch));
                 space = false;
             } else {
                 buffer.append(ch);
@@ -1203,24 +1421,29 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Get the String that is nested in between two instances of the 
-     * same String.
+     * <p>Get the String that is nested in between two instances of the
+     * same String.</p>
      *
-     * @param str  the string containing nested-string
-     * @param tag  the string before and after nested-string
-     * @return the string that was nested, or null
+     * <p>If <code>str</code> is <code>null</code>, will
+     * return <code>null</code>.</p>
+     *
+     * @param str the String containing nested-string
+     * @param tag the String before and after nested-string
+     * @return the String that was nested, or <code>null</code>
+     * @throws NullPointerException if tag is <code>null</code>
      */
     public static String getNestedString(String str, String tag) {
         return getNestedString(str, tag, tag);
     }
     
     /**
-     * Get the string that is nested in between two strings.
+     * <p>Get the String that is nested in between two Strings.</p>
      *
-     * @param str  the string containing nested-string
-     * @param open  the string before nested-string
-     * @param close  the string after nested-string
-     * @return the string that was nested, or null
+     * @param str the String containing nested-string
+     * @param open the String before nested-string
+     * @param close the String after nested-string
+     * @return the String that was nested, or <code>null</code>
+     * @throws NullPointerException if open or close is <code>null</code>
      */
     public static String getNestedString(String str, String open, String close) {
         if (str == null) {
@@ -1237,13 +1460,19 @@ public class StringUtils {
     }
 
     /**
-     * How many times is the substring in the larger string.
-     * Null returns 0.
+     * <p>How many times is the substring in the larger String.</p>
+     *
+     * <p><code>null</code> returns <code>0</code>.</p>
      * 
-     * @param str  the string to check
-     * @return the number of occurances, 0 if the string is null
+     * @param str the String to check
+     * @param sub the substring to count
+     * @return the number of occurances, 0 if the String is <code>null</code>
+     * @throws NullPointerException if sub is <code>null</code>
      */
     public static int countMatches(String str, String sub) {
+        if (sub.equals("")) {
+            return 0;
+        }
         if (str == null) {
             return 0;
         }
@@ -1260,11 +1489,13 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Checks if the string contains only unicode letters.
-     * Null will return null.
+     * <p>Checks if the String contains only unicode letters.</p>
+     *
+     * <p><code>null</code> will return <code>false</code>.
+     * An empty String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains letters, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains letters, and is non-null
      */
     public static boolean isAlpha(String str) {
         if (str == null) {
@@ -1280,11 +1511,37 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the string contains only unicode letters and space (' ').
-     * Null will return null.
+     * <p>Checks if the String contains only whitespace.</p>
+     *
+     * <p><code>null</code> will return <code>false</code>. An
+     * empty String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains letters and space, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains whitespace, and is non-null
+     */
+    public static boolean isWhitespace(String str) {
+        if (str == null) {
+            return false;
+        }
+        int sz = str.length();
+        for (int i = 0; i < sz; i++) {
+            if ((Character.isWhitespace(str.charAt(i)) == false) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * <p>Checks if the String contains only unicode letters and
+     * space (<code>' '</code>).</p>
+     *
+     * <p><code>null</code> will return <code>false</code>. An
+     * empty String will return <code>true</code>.</p>
+     * 
+     * @param str the String to check
+     * @return <code>true</code> if only contains letters and space,
+     *  and is non-null
      */
     public static boolean isAlphaSpace(String str) {
         if (str == null) {
@@ -1301,11 +1558,14 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the string contains only unicode letters or digits.
-     * Null will return null.
+     * <p>Checks if the String contains only unicode letters or digits.</p>
+     *
+     * <p><code>null</code> will return <code>false</code>. An empty
+     * String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains letters or digits, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains letters or digits,
+     *  and is non-null
      */
     public static boolean isAlphanumeric(String str) {
         if (str == null) {
@@ -1321,11 +1581,15 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the string contains only unicode letters, digits or space (' ').
-     * Null will return null.
+     * <p>Checks if the String contains only unicode letters, digits
+     * or space (<code>' '</code>).</p>
+     *
+     * <p><code>null</code> will return <code>false</code>. An empty
+     * String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains letters, digits or space, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains letters, digits or space,
+     *  and is non-null
      */
     public static boolean isAlphanumericSpace(String str) {
         if (str == null) {
@@ -1342,11 +1606,13 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the string contains only unicode digits.
-     * Null will return null.
+     * <p>Checks if the String contains only unicode digits.</p>
+     *
+     * <p><code>null</code> will return <code>false</code>.
+     * An empty String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains digits, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains digits, and is non-null
      */
     public static boolean isNumeric(String str) {
         if (str == null) {
@@ -1362,11 +1628,15 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the string contains only unicode digits or space (' ').
-     * Null will return null.
+     * <p>Checks if the String contains only unicode digits or space
+     * (<code>' '</code>).</p>
+     *
+     * <p><code>null</code> will return <code>false</code>. An empty
+     * String will return <code>true</code>.</p>
      * 
-     * @param str  the string to check
-     * @return true if only contains digits or space, and is non-null
+     * @param str the String to check
+     * @return <code>true</code> if only contains digits or space,
+     *  and is non-null
      */
     public static boolean isNumericSpace(String str) {
         if (str == null) {
@@ -1386,36 +1656,43 @@ public class StringUtils {
     //--------------------------------------------------------------------------
     
     /**
-     * Return either the passed in String, or if it is null, 
-     * then an empty String.
+     * <p>Returns either the passed in <code>Object</code> as a String,
+     * or, if the <code>Object</code> is <code>null</code>, an empty
+     * String.</p>
      * 
-     * @param str  the string to check
-     * @return the passed in string, or blank if it was null
+     * @param obj the Object to check
+     * @return the passed in Object's toString, or blank if it was
+     *  <code>null</code>
      */
-    public static String defaultString(String str) {
-        return defaultString(str, "");
+    public static String defaultString(Object obj) {
+        return defaultString(obj, "");
     }
 
     /**
-     * Return either the passed in String, or if it is null, 
-     * then a passed in default String.
+     * <p>Returns either the passed in <code>Object</code> as a String,
+     * or, if the <code>Object</code> is <code>null</code>, a passed
+     * in default String.</p>
      * 
-     * @param str  the string to check
-     * @param defaultString  the default string to return is str is null
-     * @return the passed in string, or the default if it was null
+     * @param obj the Object to check
+     * @param defaultString  the default String to return if str is
+     *  <code>null</code>
+     * @return the passed in string, or the default if it was
+     *  <code>null</code>
      */
-    public static String defaultString(String str, String defaultString) {
-        return (str == null) ? defaultString : str;
+    public static String defaultString(Object obj, String defaultString) {
+        return (obj == null) ? defaultString : obj.toString();
     }
 
     // Reversing
     //--------------------------------------------------------------------------
 
     /**
-     * Reverse a String, null string returns null.
+     * <p>Reverse a String.</p>
+     *
+     * <p><code>null</code> String returns <code>null</code>.</p>
      * 
-     * @param str  the string to reverse
-     * @return the reversed string
+     * @param str the String to reverse
+     * @return the reversed String
      */
     public static String reverse(String str) {
         if (str == null) {
@@ -1425,13 +1702,15 @@ public class StringUtils {
     }
 
     /**
-     * Reverses a string that is delimited by a specific character.
-     * The strings between the delimiters are not reversed.
-     * Thus java.lang.String becomes String.lang.java (if the delimiter is '.').
+     * <p>Reverses a String that is delimited by a specific character.</p>
+     *
+     * <p>The Strings between the delimiters are not reversed.
+     * Thus java.lang.String becomes String.lang.java (if the delimiter
+     * is <code>'.'</code>).</p>
      * 
-     * @param str  the string to reverse
-     * @param delimiter  the delimiter to use
-     * @return the reversed string
+     * @param str the String to reverse
+     * @param delimiter the delimiter to use
+     * @return the reversed String
      */
     public static String reverseDelimitedString(String str, String delimiter) {
         // could implement manually, but simple way is to reuse other, 
@@ -1442,8 +1721,11 @@ public class StringUtils {
     }
 
     /**
-     * Reverses an array. 
-     * TAKEN FROM CollectionsUtils.
+     * <p>Reverses an array.</p>
+     *
+     * <p>TAKEN FROM CollectionsUtils.</p>
+     *
+     * @param array  the array to reverse
      */
     private static void reverseArray(Object[] array) {
         int i = 0;
@@ -1462,37 +1744,20 @@ public class StringUtils {
 
     // Misc
     //--------------------------------------------------------------------------
-    
-    /**
-     * Get the stack trace from a Throwable as a String.
-     * <p>
-     * This method uses printStackTrace() internally to obtain the stack trace.
-     *
-     * @see java.lang.Throwable#printStackTrace()
-     * @param throwable  the throwable to extract a stack trace from
-     * @return the extracted stack trace, or null if an error occurs
-     */
-    public static String stackTrace(Throwable throwable) {
-        String trace = null;
-        try {
-            // And show the Error Screen.
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            throwable.printStackTrace( new PrintWriter(buf, true) );
-            trace = buf.toString();
-            
-        } catch (Exception ex) {
-            // ignore
-        }
-        return trace;
-    }
 
     /**
-     * Find the Levenshtein distance between two strings.
-     * This is the number of changes needed to change one string into 
-     * another. Where each change is a single character modification.
+     * <p>Find the Levenshtein distance between two Strings.</p>
      *
-     * This implemmentation of the levenshtein distance algorithm 
-     * is from http://www.merriampark.com/ld.htm
+     * <P>This is the number of changes needed to change one String into
+     * another. Where each change is a single character modification.</p>
+     *
+     * <p>This implemmentation of the levenshtein distance algorithm
+     * is from <a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a></p>
+     * 
+     * @param s the first String
+     * @param t the second String
+     * @return result distance
+     * @throws NullPointerException if s or t is <code>null</code>
      */
     public static int getLevenshteinDistance(String s, String t) {
         int d[][]; // matrix
@@ -1505,15 +1770,15 @@ public class StringUtils {
         int cost; // cost
 
         // Step 1
-        n = s.length ();
-        m = t.length ();
+        n = s.length();
+        m = t.length();
         if (n == 0) {
             return m;
         }
         if (m == 0) {
             return n;
         }
-        d = new int[n+1][m+1];
+        d = new int[n + 1][m + 1];
 
         // Step 2
         for (i = 0; i <= n; i++) {
@@ -1526,11 +1791,11 @@ public class StringUtils {
 
         // Step 3
         for (i = 1; i <= n; i++) {
-            s_i = s.charAt (i - 1);
+            s_i = s.charAt(i - 1);
 
             // Step 4
             for (j = 1; j <= m; j++) {
-                t_j = t.charAt (j - 1);
+                t_j = t.charAt(j - 1);
 
                 // Step 5
                 if (s_i == t_j) {
@@ -1540,7 +1805,7 @@ public class StringUtils {
                 }
 
                 // Step 6
-                d[i][j] = NumberUtils.minimum(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + cost);
+                d[i][j] = NumberUtils.minimum(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
             }
         }
 
@@ -1549,61 +1814,33 @@ public class StringUtils {
     }
 
     /**
-     * Convert a string from unicode to bytes in a native encoding.
-     * The string must be in unicode (as Java always expects this);
-     * {@link #convertNativeToUnicode(String, String)} will convert
-     * strings in native encodings into unicode.  This method is
-     * generally used to create a <code>String</code> for use as
-     * output, and is useful when dealing with I18N.
+     * <p>Checks if the String contains only certain chars.</p>
      *
-     * @param source String the unicode string to convert
-     * @param charset String the name of the charset into which to
-     * convert.
-     * @return The string given represented in the native encoding
-     * specified.
-     * @see #convertNativeToUnicode(String, String)
+     * @param str the String to check
+     * @param valid an array of valid chars
+     * @return true if it only contains valid chars and is non-null
      */
-    public static String convertUnicodeToNative(String source, String charset)
-            throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStreamWriter out = new OutputStreamWriter(baos, charset);
-        out.write(source);
-        out.close();
-        return baos.toString();
-    }
-
-    /**
-     * Convert a string from a native encoding to unicode.  This
-     * method is generally used to create a <code>String</code> for
-     * use as input, and is useful when dealing with I18N.
-     *
-     * @param input String the input to convert from native encoding
-     * to unicode.
-     * @param charset String the charset from which to convert.
-     * @return The string given represented in unicode rather than the
-     * specified native encoding.
-     */
-    public static String convertNativeToUnicode(String input, String charset)
-            throws IOException {
-        InputStreamReader in = new InputStreamReader
-            (new ByteArrayInputStream(input.getBytes()), charset);
-        StringBuffer output = new StringBuffer();
-        char[] buf = new char[CHAR_BUFFER_SIZE];
-        int count = 0;
-        while ((count = in.read(buf, 0, CHAR_BUFFER_SIZE)) > 0)
-        {
-            output.append(buf, 0, count);
+    public static boolean containsOnly(String str, char[] valid) {
+        if (str == null || valid == null) {
+            return false;
         }
-        in.close();
-        return output.toString();
+
+        int strSize = str.length();
+        int validSize = valid.length;
+
+        for (int i = 0; i < strSize; i++) {
+            boolean contains = false;
+            for (int j = 0; j < validSize; j++) {
+                if (valid[j] == str.charAt(i)) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (!contains) {
+                return false;
+            }
+        }
+
+        return true;
     }
-    
-// these are not really of use in the Java world. Only if you're a C afficionado
-//    public static String sprintf(String format, Object[] list);
-//    public static Object[] sscanf(String str, String format);
-//    public static String pack(String[] strs, String format);
-//    public static String[] unpack(String str, String format);
-
 }
-
-

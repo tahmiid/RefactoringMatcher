@@ -62,7 +62,7 @@ import junit.textui.TestRunner;
 /**
  * Test manager for the org.apache.commons.lang.exception classes.
  *
- * @author <a href="mailto:stevencaswell@yahoo.com">Steven Caswell</a>
+ * @author <a href="mailto:steven@caswell.name">Steven Caswell</a>
  */
 public class ExceptionTestSuite extends TestCase
 {
@@ -86,8 +86,10 @@ public class ExceptionTestSuite extends TestCase
     {
         TestSuite suite = new TestSuite();
         suite.addTest(NestableDelegateTestCase.suite());
+        suite.addTest(NestableErrorTestCase.suite());
         suite.addTest(NestableExceptionTestCase.suite());
         suite.addTest(NestableRuntimeExceptionTestCase.suite());
+        suite.addTest(ExceptionUtilsTestCase.suite());
         return suite;
     }
 }

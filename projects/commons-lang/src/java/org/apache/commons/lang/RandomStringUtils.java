@@ -1,5 +1,3 @@
-package org.apache.commons.lang;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,42 +51,45 @@ package org.apache.commons.lang;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.commons.lang;
 
 import java.util.Random;
 /**
  * <p>Common random <code>String</code> manipulation routines.</p>
  *
- * <p>Originally from 
- *  <a href="http://jakarta.apache.org/turbine/">Turbine</a> and the
- * GenerationJavaCore library.</p>
+ * <p>Originally from the GenerationJava Core library.</p>
  *
- * @author <a href="mailto:jon@latchkey.com">Jon S. Stevens</a>
- * @author <a href="mailto:dlr@finemaltcoding.com">Daniel Rall</a>
- * @author <a href="mailto:gcoladonato@yahoo.com">Greg Coladonato</a>
- * @author <a href="mailto:bayard@generationjava.com">Bayard</a>
- * @author <a href="mailto:ed@apache.org">Ed Korthof</a>
+ * @author <a href="mailto:bayard@generationjava.com">Henri Yandell</a>
  * @author <a href="mailto:steven@caswell.name">Steven Caswell</a>
- * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
- * @version $Id: RandomStringUtils.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @author Stephen Colebourne
+ * @since 1.0
+ * @version $Id: RandomStringUtils.java,v 1.7 2002/12/23 00:32:24 scolebourne Exp $
  */
 public class RandomStringUtils {
 
     /**
-     * Random object used by random method. This has to be not local 
+     * <p>Random object used by random method. This has to be not local
      * to the random method so as to not return the same value in the 
-     * same millisecond. 
+     * same millisecond.</p>
      */
     private static final Random RANDOM = new Random();
 
     /**
-     * Prevent construction of RandomStringUtils instances
+     * <p><code>RandomStringUtils</code> instances should NOT be constructed in
+     * standard programming. Instead, the class should be used as
+     * <code>RandomStringUtils.random(5);</code>.</p>
+     *
+     * <p>This constructor is public to permit tools that require a JavaBean instance
+     * to operate.</p>
      */
-    private RandomStringUtils() {
+    public RandomStringUtils() {
     }
 
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of all characters.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of all characters.</p>
      *
      * @param count length of random string to create
      * @return the random string
@@ -98,9 +99,11 @@ public class RandomStringUtils {
     }
 
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of characters whose
-     * ASCII value is between 32 and 127 .
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of characters whose
+     * ASCII value is between <code>32</code> and <code>127</code>.</p>
      *
      * @param count length of random string to create
      * @return the random string
@@ -110,9 +113,11 @@ public class RandomStringUtils {
     }
     
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of alphabetic
-     * characters.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of alphabetic
+     * characters.</p>
      *
      * @param count length of random string to create
      * @return the random string
@@ -122,9 +127,11 @@ public class RandomStringUtils {
     }
     
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of alpha-numeric
-     * characters.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <u>Characters will be chosen from the set of alpha-numeric
+     * characters.</p>
      *
      * @param count length of random string to create
      * @return the random string
@@ -134,9 +141,11 @@ public class RandomStringUtils {
     }
     
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of numeric
-     * characters.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of numeric
+     * characters.</p>
      *
      * @param count length of random string to create
      * @return the random string
@@ -146,15 +155,17 @@ public class RandomStringUtils {
     }
 
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of alpha-numeric
-     * characters as indicated by the arguments.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of alpha-numeric
+     * characters as indicated by the arguments.</p>
      *
      * @param count length of random string to create
      * @param letters if <code>true</code>, generated string will include
-     * alphabetic characters
+     *  alphabetic characters
      * @param numbers if <code>true</code>, generatd string will include
-     * numeric characters
+     *  numeric characters
      * @return the random string
      */
     public static String random(int count, boolean letters, boolean numbers) {
@@ -162,17 +173,19 @@ public class RandomStringUtils {
     }
     
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of alpha-numeric
-     * characters as indicated by the arguments.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
+     *
+     * <p>Characters will be chosen from the set of alpha-numeric
+     * characters as indicated by the arguments.</p>
      *
      * @param count length of random string to create
-     * @param start int position in set of chars to start at
-     * @param end int position in set of chars to end before
+     * @param start position in set of chars to start at
+     * @param end  position in set of chars to end before
      * @param letters if <code>true</code>, generated string will include
-     * alphabetic characters
-     * @param numbers if <code>true</code>, generatd string will include
-     * numeric characters
+     *  alphabetic characters
+     * @param numbers if <code>true</code>, generated string will include
+     *  numeric characters
      * @return the random string
      */
     public static String random(int count, int start, int end, boolean letters, boolean numbers) {
@@ -180,16 +193,27 @@ public class RandomStringUtils {
     }
     
     /**
-     * Creates a random string based on a variety of options.
+     * <p>Creates a random string based on a variety of options.</p>
      *
-     * @param count int length of random string to create
-     * @param start int position in set of chars to start at
-     * @param end int position in set of chars to end before
-     * @param letters boolean only allow letters?
-     * @param numbers boolean only allow numbers?
-     * @param set char[] set of chars to choose randoms from.
-     *        If null, then it will use the set of all chars.
+	 * <p>If start and end are both <code>0</code>, start and end are set
+     * to <code>' '</code> and <code>'z'</code>, the ASCII printable
+     * characters, will be used, unless letters and numbers are both
+	 * <code>false</code>, in which case, start and end are set to
+     * <code>0</code> and <code>Integer.MAX_VALUE</code>.
+     *
+	 * <p>If set is not <code>null</code>, characters between start and
+     * end are chosen.</p>
+     *
+     * @param count length of random string to create
+     * @param start position in set of chars to start at
+     * @param end position in set of chars to end before
+     * @param letters only allow letters?
+     * @param numbers only allow numbers?
+     * @param set set of chars to choose randoms from. If <code>null</code>,
+     *  then it will use the set of all chars.
      * @return the random string
+     * @throws ArrayIndexOutOfBoundsException if there are not
+     *  <code>(end - start) + 1</code> characters in the set array.
      */
     public static String random(int count, int start, int end, boolean letters, boolean numbers, char[] set) {
         if( (start == 0) && (end == 0) ) {
@@ -226,11 +250,13 @@ public class RandomStringUtils {
     }
 
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of characters
-     * specified.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
      *
-     * @param count int length of random string to create
+     * <p>Characters will be chosen from the set of characters
+     * specified.</p>
+     *
+     * @param count length of random string to create
      * @param set String containing the set of characters to use
      * @return the random string
      */
@@ -239,11 +265,12 @@ public class RandomStringUtils {
     }
 
     /**
-     * Creates a random string whose length is the number of characters
-     * specified. Characters will be chosen from the set of characters
-     * specified.
+     * <p>Creates a random string whose length is the number of characters
+     * specified.</p>
      *
-     * @param count int length of random string to create
+     * <p>Characters will be chosen from the set of characters specified.</p>
+     *
+     * @param count length of random string to create
      * @param set character array containing the set of characters to use
      * @return the random string
      */

@@ -67,7 +67,8 @@ import junit.textui.TestRunner;
  * @author <a href="mailto:bayard@generationjava.com">Henri Yandell</a>
  * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
  * @author <a href="mailto:ridesmet@users.sourceforge.net">Ringo De Smet</a>
- * @version $Id: StringUtilsTest.java,v 1.1 2002/07/19 03:35:55 bayard Exp $
+ * @author <a href="mailto:fredrik@westermarck.com>Fredrik Westermarck</a>
+ * @version $Id: StringUtilsTest.java,v 1.11 2002/12/07 21:50:30 bayard Exp $
  */
 public class StringUtilsTest extends TestCase
 {
@@ -80,7 +81,6 @@ public class StringUtilsTest extends TestCase
     private static final String FOO = "foo";
     private static final String BAR = "bar";
     private static final String CAP_FOO = "Foo";
-    private static final String UPPER_FOO = "FOO";
 
     private static final String SENTENCE = "foo bar baz";
 
@@ -122,6 +122,10 @@ public class StringUtilsTest extends TestCase
                      FOO, StringUtils.uncapitalise(CAP_FOO) );
         assertEquals("uncapitalise(empty-string) failed",
                      "", StringUtils.uncapitalise("") );
+        assertEquals("uncapitaliseAllWords(String) failed",
+                     SENTENCE, StringUtils.uncapitaliseAllWords("Foo Bar Baz") );
+        assertEquals("uncapitaliseAllWords(empty-string) failed",
+                     "", StringUtils.uncapitaliseAllWords("") );
 
         assertEquals("upperCase(String) failed",
                      "FOO TEST THING", StringUtils.upperCase("fOo test THING") );
@@ -142,6 +146,8 @@ public class StringUtilsTest extends TestCase
 
     public void testJoin()
     {
+        assertEquals("concatenate(Object[]) failed", 
+                     "foobarbaz", StringUtils.concatenate(ARRAY_LIST));
         assertEquals("join(Object[], String) failed", TEXT_LIST,
                      StringUtils.join(ARRAY_LIST, SEPARATOR));
         assertEquals("join(Iterator, String) failed", TEXT_LIST,
@@ -180,6 +186,11 @@ public class StringUtilsTest extends TestCase
             assertEquals("split(Object[], String, int) failed", expected[i],
                          result[i]);
         }
+
+        result = StringUtils.split("one two three four five six", null, 3);
+        assertEquals("split(Object[], null, int)[0] failed", "one", result[0]);
+        assertEquals("split(Object[], null, int)[1] failed", "two", result[1]);
+        assertEquals("split(Object[], null, int)[2] failed", "three four five six", result[2]);
     }
 
     public void testReplaceFunctions()
@@ -190,6 +201,8 @@ public class StringUtilsTest extends TestCase
                      "", StringUtils.replace(FOO + FOO + FOO, FOO, ""));
         assertEquals("replaceOnce(String, String, String) failed",
                      FOO, StringUtils.replaceOnce(FOO + FOO, FOO, ""));
+        assertEquals("carriage-return replace(String,String,String) failed",
+                     "test123", StringUtils.replace("test\r1\r2\r3", "\r", ""));
     }
 
     public void testOverlayString()
@@ -256,19 +269,6 @@ public class StringUtilsTest extends TestCase
                      "-+~123456", StringUtils.leftPad("123456", 9, "-+~") );
     }
 
-    public void testUnicodeFunctions() throws java.io.IOException
-    {
-        /* this test fails on my window box with an Sun english JDK 1.3.1
-           I think that the input string is not right
-        */
-/* Kept out for the moment.
-        String input = "これは日本楔譴離謄好箸任后#";
-        String unicode = StringUtils.convertNativeToUnicode(input, "iso-2022-jp");
-        String iso = StringUtils.convertUnicodeToNative(unicode, "iso-2022-jp");
-        assertEquals("Unicode conversions failed", input, iso);
-*/
-    }
-
     public void testReverseFunctions() {
         assertEquals("reverse(String) failed",
                      "sdrawkcab", StringUtils.reverse("backwards") );
@@ -317,6 +317,14 @@ public class StringUtilsTest extends TestCase
                      "\\u0234", StringUtils.escape("\u0234") );
         assertEquals("escape(String) failed",
                      "\\u00fd", StringUtils.escape("\u00fd") );
+        assertEquals("unescape(String) failed", 
+                     "", StringUtils.unescape("") );
+        assertEquals("unescape(String) failed", 
+                     "test", StringUtils.unescape("test") );
+        assertEquals("unescape(String) failed", 
+                     "\ntest\b", StringUtils.unescape("\\ntest\\b") );
+        assertEquals("unescape(String) failed", 
+                     "\u123425foo\ntest\b", StringUtils.unescape("\\u123425foo\\ntest\\b") );
     }
 
     public void testGetLevenshteinDistance() {
@@ -336,6 +344,32 @@ public class StringUtilsTest extends TestCase
                      7, StringUtils.getLevenshteinDistance("hippo", "elephant") );
         assertEquals("getLevenshteinDistance(String, String) failed",
                      1, StringUtils.getLevenshteinDistance("hello", "hallo") );
+    }
+
+    public void testContainsOnly() {
+        String str1 = "a";
+        String str2 = "b";
+        String str3 = "ab";
+        char[] chars1= {'b'};
+        char[] chars2= {'a'};
+        char[] chars3= {'a', 'b'};
+        char[] emptyChars = new char[0];
+        assertEquals("containsOnly(null, null) failed", false, StringUtils.containsOnly(null, null));
+        assertEquals("containsOnly(empty-string, null) failed", false, StringUtils.containsOnly("", null));
+        assertEquals("containsOnly(null, empty-string) failed", false, StringUtils.containsOnly(null, emptyChars));
+        assertEquals("containsOnly(str1, empty-char-array) failed", false, StringUtils.containsOnly(str1, emptyChars));
+        assertEquals("containsOnly(empty-string, empty-char-array) failed", true, StringUtils.containsOnly("", emptyChars));
+        assertEquals("containsOnly(empty-string, chars1) failed", true, StringUtils.containsOnly("", chars1));
+        assertEquals("containsOnly(str1, chars1) failed", false, StringUtils.containsOnly(str1, chars1));
+        assertEquals("containsOnly(str1, chars1) failed", false, StringUtils.containsOnly(str1, chars1));
+        assertEquals("containsOnly(str1, chars1) success", true, StringUtils.containsOnly(str1, chars2));
+        assertEquals("containsOnly(str1, chars1) success", true, StringUtils.containsOnly(str1, chars3));
+        assertEquals("containsOnly(str2, chars2) success", true, StringUtils.containsOnly(str2, chars1));
+        assertEquals("containsOnly(str2, chars2) failed", false, StringUtils.containsOnly(str2, chars2));
+        assertEquals("containsOnly(str2, chars2) success", true, StringUtils.containsOnly(str2, chars3));
+        assertEquals("containsOnly(String3, chars3) failed", false, StringUtils.containsOnly(str3, chars1));
+        assertEquals("containsOnly(String3, chars3) failed", false, StringUtils.containsOnly(str3, chars2));
+        assertEquals("containsOnly(String3, chars3) success", true, StringUtils.containsOnly(str3, chars3));
     }
 
 }

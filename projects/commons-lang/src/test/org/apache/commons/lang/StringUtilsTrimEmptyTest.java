@@ -63,7 +63,7 @@ import junit.textui.TestRunner;
  *
  * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
  * @author <a href="mailto:ridesmet@users.sourceforge.net">Ringo De Smet</a>
- * @version $Id: StringUtilsTrimEmptyTest.java,v 1.1 2002/07/19 03:35:55 bayard Exp $
+ * @version $Id: StringUtilsTrimEmptyTest.java,v 1.5 2002/09/27 06:08:16 bayard Exp $
  */
 public class StringUtilsTrimEmptyTest extends TestCase {
     private static final String FOO = "foo";
@@ -122,6 +122,28 @@ public class StringUtilsTrimEmptyTest extends TestCase {
         assertEquals(true, StringUtils.isEmpty(null));
     }
 
+    public void testDeleteSpace() {
+        assertEquals("deleteWhitespace(String) failed",
+                     "", StringUtils.deleteWhitespace(""));
+        assertEquals("deleteWhitespace(String) failed",
+                     "", StringUtils.deleteWhitespace("  \u000C  \t\t\u001F\n\n \u000B  "));
+        // Note: u-2007 and u-000A both cause problems in the source code
+        // it should ignore 2007 but delete 000A
+        assertEquals("deleteWhitespace(String) failed",
+                     "\u00A0\u202F", StringUtils.deleteWhitespace("  \u00A0  \t\t\n\n \u202F  "));
+        assertEquals("deleteWhitespace(String) failed",
+                     "\u00A0\u202F", StringUtils.deleteWhitespace("\u00A0\u202F"));
+        assertEquals("deleteWhitespace(String) failed",
+                     "test", StringUtils.deleteWhitespace("\u000Bt  \t\n\u0009e\rs\n\n   \tt"));
+
+        assertEquals("deleteSpaces(String) failed",
+                     "", StringUtils.deleteSpaces(""));
+        assertEquals("deleteSpaces(String) failed",
+                     "", StringUtils.deleteSpaces("    \t\t\n\n   "));
+        assertEquals("deleteSpaces(String) failed",
+                     "test", StringUtils.deleteSpaces("t  \t\ne\rs\n\n   \tt"));
+    }
+
     public void testStrip() {
         // it's important that foo2Space is fooLeftSpace and fooRightSpace 
         // merged together. So same number of spaces to left as fLS and same 
@@ -134,6 +156,7 @@ public class StringUtilsTrimEmptyTest extends TestCase {
         String fooRightDots = FOO+".........";
 
         assertEquals("", StringUtils.strip(""));
+        assertEquals("", StringUtils.strip("        "));
         assertEquals(FOO, StringUtils.strip(foo2Space));
         assertEquals(FOO, StringUtils.strip(foo2Dots, "."));
         assertEquals(FOO, StringUtils.strip(fooRightSpace));
@@ -156,6 +179,11 @@ public class StringUtilsTrimEmptyTest extends TestCase {
         assertEquals(FOO, StringUtils.stripEnd(fooRightDots, "."));
         assertEquals(fooLeftSpace, StringUtils.stripEnd(fooLeftSpace, " "));
         assertEquals(fooLeftDots, StringUtils.stripEnd(fooLeftDots, "."));
+
+        assertEquals(FOO, StringUtils.strip(". . . . ."+FOO+". . ", " ."));
+        assertEquals("-."+FOO, StringUtils.strip(". . . . -."+FOO+". . ", " ."));
+        assertEquals(FOO, StringUtils.strip("..  .."+FOO+".. ", " ."));
+        assertEquals(FOO, StringUtils.strip("..  .."+FOO+".. ", "+= ."));
 
         // test stripAll method, merely an array version of the above strip
         String[] empty = new String[0];

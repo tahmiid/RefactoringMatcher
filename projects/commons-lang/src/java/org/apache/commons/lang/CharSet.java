@@ -1,5 +1,3 @@
-package org.apache.commons.lang;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,24 +51,33 @@ package org.apache.commons.lang;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.commons.lang;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
 /**
- * A set of characters. You can iterate over the characters in the 
- * set. 
+ * <p>A set of characters. You can iterate over the characters in the
+ * set.</p>
  *
  * @author <a href="bayard@generationjava.com">Henri Yandell</a>
- * @author <a href="mailto:scolebourne@joda.org">Stephen Colebourne</a>
- * @version $Id: CharSet.java,v 1.1 2002/07/19 03:35:54 bayard Exp $
+ * @author Stephen Colebourne
+ * @since 1.0
+ * @version $Id: CharSet.java,v 1.7 2002/12/23 00:32:24 scolebourne Exp $
  */
 public class CharSet {
 
-    private LinkedList set = new LinkedList();
+    private List set = new LinkedList();
 
     /**
-     * Restricted consructor. Use the factory method evaluateSet().
+     * <p>Restricted constructor.</p>
+     *
+     * <p>Use the factory method
+     * {@link CharSetUtils#evaluateSet(java.lang.String[])}.</p>
+     *
+     * @throws NullPointerException if any of set[i] is <code>null</code>
+     *  or if set is <code>null</code>
      */
     protected CharSet(String[] set) {
         int sz = set.length;
@@ -80,10 +87,12 @@ public class CharSet {
     }
 
     /**
-     * Does the set contain the character specified
+     * <p>Does the <code>CharSet</code> contain the specified
+     * character <code>ch</code>.</p>
      * 
      * @param ch  the character to check for
-     * @return true if it does contain it
+     * @return <code>true</code> if it does contain the character
+     *  <code>ch</code>
      */
     public boolean contains(char ch) {
         Iterator iterator = set.iterator();
@@ -104,16 +113,17 @@ public class CharSet {
     }
 
     /**
-     * Add a set definition string to the set
+     * <p>Add a set definition string to the <code>CharSet</code>.</p>
      * 
      * @param str  set definition string
+     * @throws NullPointerException if <code>str</code> is <code>null</code>
      */
     protected void add(String str) {
         int sz = str.length();
         CharRange range = null;
 
         if("-".equals(str)) {
-            range = new CharRange('_');
+            range = new CharRange('-');
             set.add(range);
             return;
         } 
@@ -141,7 +151,7 @@ public class CharSet {
     }
 
     /**
-     * Returns a string representation of the set
+     * <p>Returns a string representation of the set.</p>
      * 
      * @return string representation
      */
