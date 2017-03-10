@@ -1,0 +1,92 @@
+
+package ca.concordia.refactoringmatcher;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.refactoringminer.api.RefactoringType;
+
+public class RefactoringData implements Serializable {	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String name;
+	private RefactoringType type;
+	private Code beforeCode;
+	private Code afterCode;
+	private String projectName;
+	
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public RefactoringData(String name, RefactoringType type, Code beforeCode, Code afterCode, String projectName) {
+		this.name = name;
+		this.type = type;
+		this.beforeCode = beforeCode;
+		this.afterCode = afterCode;
+		this.projectName = projectName;
+	}
+	
+	public String getBeforeCodeBody() {
+		return beforeCode.getMethodBody();
+	}
+	
+
+	public String getBeforeCodeText() {
+		return beforeCode.getText();
+	}
+	
+	public Code getBeforeCode() {
+		return beforeCode;
+	}
+	
+	public String getAfterCodeText() {
+		return afterCode.getText();
+	}
+	
+	public String getAfterCodeBody() {
+		return afterCode.getMethodBody();
+	}
+	
+	public Code getAfterCode() {
+		return afterCode;
+	}
+	
+	public String toDetailString()
+	{
+		return beforeCode.getMethodName() + " in " + beforeCode.getFileName() + "\t(Refactoring:" + name + ")" + " (" + afterCode.getCommit() + ")\n"+
+			   afterCode.getMethodName() + " in " + afterCode.getFileName();
+	}
+	
+	public String toString()
+	{
+		return getName() + " at " + getCommit();
+	}
+	
+	public RefactoringType getType()
+	{
+		return type;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public Commit getCommit()
+	{
+		return afterCode.getCommit();
+	}
+	
+	public String getCommitShort()
+	{
+		return afterCode.getCommitShort();
+	}
+	
+	public Date getCommitTime()
+	{
+		return afterCode.getCommit().getTime();
+	}
+}
