@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -19,7 +18,6 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jgit.lib.Repository;
 import org.refactoringminer.api.GitService;
-import org.refactoringminer.util.GitServiceImpl;
 
 import gr.uom.java.xmi.decomposition.ASTInformation;
 
@@ -34,7 +32,7 @@ public class Code implements Serializable {
 	private int length;
 	private String text;
 	private String methodName;
-	private MethodDeclaration methodDeclaration;
+	
 
 	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
 			Repository repository) throws Exception {
@@ -46,24 +44,42 @@ public class Code implements Serializable {
 	}
 
 	private String extractText(GitService gitService, Repository repository) throws Exception {
-		String text;
-		if(!repository.getFullBranch().equals(commit.getId()))
-			gitService.checkout2(repository, commit.getId());
-		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
+		String wholeText = getWholeTextFromFile(gitService, repository);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(wholeText.toCharArray());
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-		methodDeclaration = (MethodDeclaration) block.getParent();
+		MethodDeclaration methodDeclaration = (MethodDeclaration) block.getParent();
 		this.methodName = extractMethodSignature(methodDeclaration);
-		startOffset = methodDeclaration.getName().getStartPosition();
-		length = methodDeclaration.getLength() + (methodDeclaration.getStartPosition() - startOffset);
-		text = wholeText.subSequence(startOffset, startOffset + length).toString() + "\n";
+		int absoluteStartOffset = methodDeclaration.getName().getStartPosition();
+		int absoluteLength = methodDeclaration.getLength() + (methodDeclaration.getStartPosition() - absoluteStartOffset);
+		String text = wholeText.subSequence(absoluteStartOffset, absoluteStartOffset + absoluteLength).toString() + "\n";
 		return text;
 	}
 
+
+	public MethodDeclaration getMethodDeclaration(GitService gitService, Repository repository) throws IOException, Exception {
+		String wholeText = getWholeTextFromFile(gitService, repository);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(wholeText.toCharArray());
+		parser.setResolveBindings(true);
+		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
+		MethodDeclaration methodDeclaration = (MethodDeclaration) block.getParent();
+		return methodDeclaration;
+	}
+	
+
+	private String getWholeTextFromFile(GitService gitService, Repository repository) throws IOException, Exception {
+		if(!repository.getFullBranch().equals(commit.getId()))
+			gitService.checkout(repository, commit.getId());
+		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
+		return wholeText;
+	}
+	
 	private String extractMethodSignature(MethodDeclaration parent) {
 		String methodName = parent.getReturnType2() + " ";
 		methodName += parent.getName().toString();
@@ -139,21 +155,5 @@ public class Code implements Serializable {
 
 	public String toString(){
 		return methodName + " in " + getFileName();
-	}
-
-	public MethodDeclaration getMethodDeclaration(GitService gitService, Repository repository) throws IOException, Exception {
-//		String text;
-//		if(!repository.getFullBranch().equals(commit.getId()))
-//			gitService.checkout2(repository, commit.getId());
-//		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
-//		ASTParser parser = ASTParser.newParser(AST.JLS8);
-//		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-//		parser.setSource(wholeText.toCharArray());
-//		parser.setResolveBindings(true);
-//		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-//		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-//		System.out.println(block.getNodeType());
-//		MethodDeclaration methodDeclaration = (MethodDeclaration) block.getParent();
-		return methodDeclaration;
 	}
 }

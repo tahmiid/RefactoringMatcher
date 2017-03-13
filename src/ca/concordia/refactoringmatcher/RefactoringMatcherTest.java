@@ -110,20 +110,20 @@ public class RefactoringMatcherTest {
 			// "https://github.com/alibaba/dubbo.git",
 			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
 			// "https://github.com/alibaba/fastjson.git",
-			 "https://github.com/jfeinstein10/SlidingMenu.git",
+//			 "https://github.com/jfeinstein10/SlidingMenu.git",
 			// "https://github.com/JakeWharton/ViewPagerIndicator.git",
 			// "https://github.com/square/retrofit.git",
 			// "https://github.com/square/okhttp.git",
 			// "https://github.com/zxing/zxing.git",
-			// "https://github.com/google/guava.git",
+//			 "https://github.com/google/guava.git",
 
 //			"https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
-//			 "https://github.com/jfree/jfreechart.git",
-			// "https://github.com/apache/commons-lang.git",
+			 "https://github.com/jfree/jfreechart.git",
+//			 "https://github.com/apache/commons-lang.git",
 			// "https://github.com/apache/nifi-minifi.git",
 			// "https://github.com/apache/knox.git",
 			// "https://github.com/apache/zeppelin.git",
@@ -169,6 +169,8 @@ public class RefactoringMatcherTest {
 			if (methodDeclaration != null) {
 				System.out.println(methodDeclaration.toString());
 				CFG cfg = getCFG(methodDeclaration);
+				
+				System.out.println(cfg);
 			}
 		}
 

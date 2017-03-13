@@ -148,7 +148,7 @@ public class Project {
 	private List<RefactoringData> loadRefactoringsFromFile(GitService gitService) throws Exception {
 		List<RefactoringData> refactorings;
 		String outputPathString = outputDirectory + "/" + name;
-		/*if (Files.exists(Paths.get(outputPathString))) {
+		if (Files.exists(Paths.get(outputPathString))) {
 			FileInputStream fis = new FileInputStream(outputPathString);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			try {
@@ -158,7 +158,7 @@ public class Project {
 				writeToFile(refactorings);
 			}
 			ois.close();
-		} else */{
+		} else {
 			refactorings = getAllRefactorings(gitService);
 			writeToFile(refactorings);
 		}
