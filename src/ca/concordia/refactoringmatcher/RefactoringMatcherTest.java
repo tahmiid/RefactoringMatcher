@@ -112,13 +112,13 @@ public class RefactoringMatcherTest {
 
 			// "https://github.com/iluwatar/java-design-patterns.git",
 			// "https://github.com/JakeWharton/ActionBarSherlock.git",
-			// "https://github.com/alibaba/dubbo.git",
+//			 "https://github.com/alibaba/dubbo.git",
 			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
-			// "https://github.com/alibaba/fastjson.git",
+//			 "https://github.com/alibaba/fastjson.git",
 //			 "https://github.com/jfeinstein10/SlidingMenu.git",
 			// "https://github.com/JakeWharton/ViewPagerIndicator.git",
-			// "https://github.com/square/retrofit.git",
-			// "https://github.com/square/okhttp.git",
+//			 "https://github.com/square/retrofit.git",
+//			 "https://github.com/square/okhttp.git",
 			// "https://github.com/zxing/zxing.git",
 //			 "https://github.com/google/guava.git",
 
@@ -174,12 +174,9 @@ public class RefactoringMatcherTest {
 			if (methodDeclaration != null) {
 				System.out.println(methodDeclaration.toString());
 				CFG cfg = getCFG(methodDeclaration);
-				
-				IFile file = null;
-				IProgressMonitor pm = null;
-				Set<FieldObject> set = new HashSet<FieldObject>();
-				
-//				PDG pdg = new PDG(cfg, file, set, pm);
+				PDG pdg = new PDG(cfg);
+				System.out.println(pdg.getNodes().size());
+				System.out.println("Done");
 			}
 		}
 

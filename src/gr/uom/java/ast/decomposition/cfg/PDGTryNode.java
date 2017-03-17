@@ -11,9 +11,9 @@ import gr.uom.java.ast.decomposition.CatchClauseObject;
 import gr.uom.java.ast.decomposition.TryStatementObject;
 
 public class PDGTryNode extends PDGBlockNode {
-	public PDGTryNode(CFGTryNode cfgTryNode, Set<VariableDeclarationObject> variableDeclarationsInMethod,
-			Set<FieldObject> fieldsAccessedInMethod) {
-		super(cfgTryNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+	public PDGTryNode(CFGTryNode cfgTryNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
+			Set<FieldObject> fieldsAccessedInMethod*/) {
+		super(cfgTryNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 		this.controlParent = cfgTryNode.getControlParent();
 		determineDefinedAndUsedVariables();
 	}

@@ -17,9 +17,9 @@ import java.util.Set;
 public class PDGBlockNode extends PDGNode {
 	protected CFGNode controlParent;
 
-	public PDGBlockNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod,
-			Set<FieldObject> fieldsAccessedInMethod) {
-		super(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+	public PDGBlockNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
+			Set<FieldObject> fieldsAccessedInMethod*/) {
+		super(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 	}
 
 	public PDGNode getControlDependenceParent() {

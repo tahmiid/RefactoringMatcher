@@ -360,7 +360,8 @@ public abstract class AbstractMethodFragment {
 //				String qualifiedName = methodBinding.getReturnType().getQualifiedName();
 //				TypeObject returnType = TypeObject.extractTypeObject(qualifiedName);
 //				MethodInvocationObject methodInvocationObject = new MethodInvocationObject(originClassTypeObject, methodInvocationName, returnType);
-				MethodInvocationObject methodInvocationObject = new MethodInvocationObject();
+				String methodInvocationName = methodInvocation.getName().getFullyQualifiedName();
+				MethodInvocationObject methodInvocationObject = new MethodInvocationObject(methodInvocationName);
 				methodInvocationObject.setMethodInvocation(methodInvocation);
 /*				ITypeBinding[] parameterTypes = methodBinding.getParameterTypes();
 				for(ITypeBinding parameterType : parameterTypes) {
@@ -423,7 +424,8 @@ public abstract class AbstractMethodFragment {
 //				String qualifiedName = methodBinding.getReturnType().getQualifiedName();
 //				TypeObject returnType = TypeObject.extractTypeObject(qualifiedName);
 //				SuperMethodInvocationObject superMethodInvocationObject = new SuperMethodInvocationObject(originClassTypeObject, methodInvocationName, returnType);
-				SuperMethodInvocationObject superMethodInvocationObject = new SuperMethodInvocationObject();
+				String qualifiedName = superMethodInvocation.getName().getFullyQualifiedName();
+				SuperMethodInvocationObject superMethodInvocationObject = new SuperMethodInvocationObject(qualifiedName);
 				superMethodInvocationObject.setSuperMethodInvocation(superMethodInvocation);
 				/*ITypeBinding[] parameterTypes = methodBinding.getParameterTypes();
 				for(ITypeBinding parameterType : parameterTypes) {

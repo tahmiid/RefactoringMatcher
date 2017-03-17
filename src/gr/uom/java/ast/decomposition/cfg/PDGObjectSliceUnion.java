@@ -17,7 +17,6 @@ public class PDGObjectSliceUnion {
 	private BasicBlock boundaryBlock;
 	private Set<PDGNode> allNodeCriteria;
 	private AbstractVariable objectReference;
-	private IFile iFile;
 	private int methodSize;
 	private PDGSlice subgraph;
 	private Set<PDGNode> sliceNodes;
@@ -33,7 +32,6 @@ public class PDGObjectSliceUnion {
 			sliceNodes.addAll(subgraph.computeSlice(nodeCriterion));
 		}
 		this.method = pdg.getMethod();
-		this.iFile = pdg.getIFile();
 		this.methodSize = pdg.getTotalNumberOfStatements();
 		this.boundaryBlock = boundaryBlock;
 		this.allNodeCriteria = allNodeCriteria;
@@ -206,16 +204,12 @@ public class PDGObjectSliceUnion {
 		return throwNodes;
 	}
 
-	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
-		return pdg.getVariableDeclarationsAndAccessedFieldsInMethod();
-	}
+//	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
+//		return pdg.getVariableDeclarationsAndAccessedFieldsInMethod();
+//	}
 
 	public AbstractMethodDeclaration getMethod() {
 		return method;
-	}
-
-	public IFile getIFile() {
-		return iFile;
 	}
 
 	public int getMethodSize() {

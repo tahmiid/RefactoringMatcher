@@ -16,9 +16,9 @@ import gr.uom.java.ast.decomposition.CompositeStatementObject;
 
 public class PDGControlPredicateNode extends PDGNode {
 	
-	public PDGControlPredicateNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod,
-			Set<FieldObject> fieldsAccessedInMethod) {
-		super(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+	public PDGControlPredicateNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
+			Set<FieldObject> fieldsAccessedInMethod*/) {
+		super(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 		determineDefinedAndUsedVariables();
 	}
 

@@ -34,7 +34,11 @@ public abstract class AbstractMethodInvocationObject {
         this._static = false;
     }
     
-    public AbstractMethodInvocationObject() {
+    public AbstractMethodInvocationObject(String methodName) {
+        this.parameterList = new ArrayList<TypeObject>();
+        this.thrownExceptions = new LinkedHashSet<String>();
+    	this.methodName = methodName;
+        this._static = false;
     }
 
     public boolean addParameter(TypeObject parameterType) {
@@ -111,11 +115,17 @@ public abstract class AbstractMethodInvocationObject {
     public int hashCode() {
     	if(hashCode == 0) {
     		int result = 17;
-    		result = 37*result + originClassType.hashCode();
+    		if(originClassType!= null){
+    			result = 37*result + originClassType.hashCode();
+    		}
     		result = 37*result + methodName.hashCode();
-    		result = 37*result + returnType.hashCode();
-    		for(TypeObject parameter : parameterList)
-    			result = 37*result + parameter.hashCode();
+    		if(returnType!= null){
+    			result = 37*result + returnType.hashCode();
+    		}
+    		if(parameterList!= null){
+    			for(TypeObject parameter : parameterList)
+    				result = 37*result + parameter.hashCode();
+    		}
     		hashCode = result;
     	}
     	return hashCode;

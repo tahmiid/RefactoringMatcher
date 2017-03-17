@@ -747,8 +747,10 @@ public class MethodObject implements AbstractMethodDeclaration {
     public int hashCode() {
     	if(hashCode == 0) {
     		int result = 17;
-    		result = 37*result + returnType.hashCode();
-    		result = 37*result + constructorObject.hashCode();
+    		if (returnType!= null) {
+				result = 37 * result + returnType.hashCode();
+			}
+			result = 37*result + constructorObject.hashCode();
     		hashCode = result;
     	}
     	return hashCode;

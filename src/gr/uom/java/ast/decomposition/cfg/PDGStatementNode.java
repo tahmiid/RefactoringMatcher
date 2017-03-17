@@ -15,9 +15,9 @@ import gr.uom.java.ast.decomposition.StatementObject;
 
 public class PDGStatementNode extends PDGNode {
 	
-	public PDGStatementNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod,
-			Set<FieldObject> fieldsAccessedInMethod) {
-		super(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+	public PDGStatementNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
+			Set<FieldObject> fieldsAccessedInMethod*/) {
+		super(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 		determineDefinedAndUsedVariables();
 	}
 
@@ -107,11 +107,11 @@ public class PDGStatementNode extends PDGNode {
 			}
 			for(MethodInvocationObject methodInvocationObject : statement.getInvokedMethodsThroughThisReference()) {
 				thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-				processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
+				//TODO pdg creation			processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
 			}
 			for(MethodInvocationObject methodInvocationObject : statement.getInvokedStaticMethods()) {
 				thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-				processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
+				//TODO pdg creation		processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
 			}
 			List<SuperMethodInvocationObject> superMethodInvocations = statement.getSuperMethodInvocations();
 			for(SuperMethodInvocationObject superMethodInvocationObject : superMethodInvocations) {

@@ -14,8 +14,8 @@ public class SuperMethodInvocationObject extends AbstractMethodInvocationObject 
         super(originClassType, methodName, returnType, parameterList);
     }
 
-    public SuperMethodInvocationObject() {
-		super();
+    public SuperMethodInvocationObject(String methodName) {
+		super(methodName);
 	}
 
 	public void setSuperMethodInvocation(SuperMethodInvocation superMethodInvocation) {

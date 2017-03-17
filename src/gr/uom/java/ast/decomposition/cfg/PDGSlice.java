@@ -23,14 +23,12 @@ public class PDGSlice extends Graph {
 	private Set<PDGNode> indispensableNodes;
 	private Set<PDGNode> removableNodes;
 	private Set<AbstractVariable> returnedVariablesInOriginalMethod;
-	private IFile iFile;
 	private int methodSize;
 	
 	public PDGSlice(PDG pdg, BasicBlock boundaryBlock) {
 		super();
 		this.pdg = pdg;
 		this.method = pdg.getMethod();
-		this.iFile = pdg.getIFile();
 		this.methodSize = pdg.getTotalNumberOfStatements();
 		this.returnedVariablesInOriginalMethod = pdg.getReturnedVariables();
 		this.boundaryBlock = boundaryBlock;
@@ -143,16 +141,12 @@ public class PDGSlice extends Graph {
 		}
 	}
 
-	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
-		return pdg.getVariableDeclarationsAndAccessedFieldsInMethod();
-	}
+//	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
+//		return pdg.getVariableDeclarationsAndAccessedFieldsInMethod();
+//	}
 
 	public AbstractMethodDeclaration getMethod() {
 		return method;
-	}
-
-	public IFile getIFile() {
-		return iFile;
 	}
 
 	public int getMethodSize() {

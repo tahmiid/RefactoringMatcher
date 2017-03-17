@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -23,6 +24,7 @@ import gr.uom.java.ast.ClassInstanceCreationObject;
 import gr.uom.java.ast.CreationObject;
 import gr.uom.java.ast.FieldObject;
 import gr.uom.java.ast.MethodInvocationObject;
+import gr.uom.java.ast.MethodObject;
 import gr.uom.java.ast.VariableDeclarationObject;
 import gr.uom.java.ast.decomposition.AbstractStatement;
 import gr.uom.java.ast.util.ExpressionExtractor;
@@ -35,7 +37,7 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	protected Set<CreationObject> createdTypes;
 	protected Set<String> thrownExceptionTypes;
 	protected Set<VariableDeclarationObject> variableDeclarationsInMethod;
-	protected Set<FieldObject> fieldsAccessedInMethod;
+//	protected Set<FieldObject> fieldsAccessedInMethod;
 	private Set<AbstractVariable> originalDefinedVariables;
 	private Set<AbstractVariable> originalUsedVariables;
 	//TODO pdg generation	private MethodCallAnalyzer methodCallAnalyzer;
@@ -49,12 +51,12 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		this.thrownExceptionTypes = new LinkedHashSet<String>();
 	}
 	
-	public PDGNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod,
-			Set<FieldObject> fieldsAccessedInMethod) {
+	public PDGNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
+			Set<FieldObject> fieldsAccessedInMethod*/) {
 		super();
 		this.cfgNode = cfgNode;
 		this.variableDeclarationsInMethod = variableDeclarationsInMethod;
-		this.fieldsAccessedInMethod = fieldsAccessedInMethod;
+//		this.fieldsAccessedInMethod = fieldsAccessedInMethod;
 		this.id = cfgNode.id;
 		cfgNode.setPDGNode(this);
 		this.declaredVariables = new LinkedHashSet<AbstractVariable>();
@@ -292,20 +294,20 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	}
 
 	protected void processArgumentsOfInternalMethodInvocation(MethodInvocationObject methodInvocationObject, AbstractVariable variable) {
-/*		SystemObject systemObject = ASTReader.getSystemObject();
-		MethodInvocation methodInvocation = methodInvocationObject.getMethodInvocation();
-		IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
-		ClassObject classObject = systemObject.getClassObject(methodInvocationObject.getOriginClassName());
-		MethodObject methodObject = null;
-		if(classObject != null) {
-			methodObject = classObject.getMethod(methodInvocationObject);
-		}
-		if(classObject == null || methodObject != null) {
+//		SystemObject systemObject = ASTReader.getSystemObject();
+//		MethodInvocation methodInvocation = methodInvocationObject.getMethodInvocation();
+//		IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
+//		ClassObject classObject = systemObject.getClassObject(methodInvocationObject.getOriginClassName());
+//		MethodObject methodObject = null;
+//		if(classObject != null) {
+//			methodObject = classObject.getMethod(methodInvocationObject);
+//		}
+//		if(classObject == null || methodObject != null) {
 			//classObject == null => external method call
 			//methodObject != null => the internal method might not exist, in the case of built-in enumeration methods, such as values() and valueOf()
 //			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, methodObject, methodInvocation.arguments(), methodBinding, variable);
-		}*/
-		throw new NullPointerException();
+//		}
+//		throw new NullPointerException();
 	}
 
 	protected void processArgumentsOfInternalClassInstanceCreation(ClassInstanceCreationObject classInstanceCreationObject, AbstractVariable variable) {
@@ -322,13 +324,13 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 			//constructorObject != null => the internal constructor might not exist, in the case the default constructor is called
 //			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, constructorObject, classInstanceCreation.arguments(), methodBinding, variable);
 		}*/
-		throw new NullPointerException();
+//		throw new NullPointerException();
 	}
 
 	public void updateReachingAliasSet(ReachingAliasSet reachingAliasSet) {
 		Set<VariableDeclarationObject> variableDeclarations = new LinkedHashSet<VariableDeclarationObject>();
 		variableDeclarations.addAll(variableDeclarationsInMethod);
-		variableDeclarations.addAll(fieldsAccessedInMethod);
+//		variableDeclarations.addAll(fieldsAccessedInMethod);
 		Statement statement = getASTStatement();
 		if(statement instanceof VariableDeclarationStatement) {
 			VariableDeclarationStatement vDStatement = (VariableDeclarationStatement)statement;
@@ -477,7 +479,7 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		Map<VariableDeclaration, ClassInstanceCreation> classInstantiationMap = new LinkedHashMap<VariableDeclaration, ClassInstanceCreation>();
 		Set<VariableDeclarationObject> variableDeclarations = new LinkedHashSet<VariableDeclarationObject>();
 		variableDeclarations.addAll(variableDeclarationsInMethod);
-		variableDeclarations.addAll(fieldsAccessedInMethod);
+//		variableDeclarations.addAll(fieldsAccessedInMethod);
 		Statement statement = getASTStatement();
 		if(statement instanceof VariableDeclarationStatement) {
 			VariableDeclarationStatement vDStatement = (VariableDeclarationStatement)statement;

@@ -31,17 +31,11 @@ public class PDG extends Graph {
 	private PDGMethodEntryNode entryNode;
 	private Map<CFGBranchNode, Set<CFGNode>> nestingMap;
 	private Set<VariableDeclarationObject> variableDeclarationsInMethod;
-	private Set<FieldObject> fieldsAccessedInMethod;
+//	private Set<FieldObject> fieldsAccessedInMethod;
 	private Map<PDGNode, Set<BasicBlock>> dominatedBlockMap;
-	private IFile iFile;
-	private IProgressMonitor monitor;
 	
-	public PDG(CFG cfg, IFile iFile, Set<FieldObject> accessedFields, IProgressMonitor monitor) {
+	public PDG(CFG cfg) {
 		this.cfg = cfg;
-		this.iFile = iFile;
-		this.monitor = monitor;
-		if(monitor != null)
-			monitor.beginTask("Constructing program dependence graph", cfg.nodes.size());
 		this.entryNode = new PDGMethodEntryNode(cfg.getMethod());
 		this.nestingMap = new LinkedHashMap<CFGBranchNode, Set<CFGNode>>();
 		for(GraphNode node : cfg.nodes) {
@@ -52,10 +46,7 @@ public class PDG extends Graph {
 			}
 		}
 		this.variableDeclarationsInMethod = new LinkedHashSet<VariableDeclarationObject>();
-		this.fieldsAccessedInMethod = new LinkedHashSet<FieldObject>();
-		for(FieldObject field : accessedFields) {
-			this.fieldsAccessedInMethod.add(field);
-		}
+//		this.fieldsAccessedInMethod = new LinkedHashSet<FieldObject>();
 		ListIterator<ParameterObject> parameterIterator = cfg.getMethod().getParameterListIterator();
 		while(parameterIterator.hasNext()) {
 			ParameterObject parameter = parameterIterator.next();
@@ -77,8 +68,6 @@ public class PDG extends Graph {
 		handleSwitchCaseNodes();
 		handleJumpNodes();
 		handleThrowExceptionNodes();
-		if(monitor != null)
-			monitor.done();
 	}
 
 	public PDGMethodEntryNode getEntryNode() {
@@ -87,10 +76,6 @@ public class PDG extends Graph {
 
 	public AbstractMethodDeclaration getMethod() {
 		return cfg.getMethod();
-	}
-
-	public IFile getIFile() {
-		return iFile;
 	}
 
 	public Set<VariableDeclarationObject> getVariableDeclarationObjectsInMethod() {
@@ -105,13 +90,13 @@ public class PDG extends Graph {
 		return variableDeclarations;
 	}
 
-	public Set<VariableDeclaration> getFieldsAccessedInMethod() {
-		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
-		for(FieldObject field : fieldsAccessedInMethod) {
-			variableDeclarations.add(field.getVariableDeclaration());
-		}
-		return variableDeclarations;
-	}
+//	public Set<VariableDeclaration> getFieldsAccessedInMethod() {
+//		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
+//		for(FieldObject field : fieldsAccessedInMethod) {
+//			variableDeclarations.add(field.getVariableDeclaration());
+//		}
+//		return variableDeclarations;
+//	}
 
 	public PDGBlockNode isDirectlyNestedWithinBlockNode(PDGNode node) {
 		Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
@@ -148,12 +133,12 @@ public class PDG extends Graph {
 		return directlyNestedPDGNodes;
 	}
 
-	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
-		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
-		variableDeclarations.addAll(getVariableDeclarationsInMethod());
-		variableDeclarations.addAll(getFieldsAccessedInMethod());
-		return variableDeclarations;
-	}
+//	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
+//		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
+//		variableDeclarations.addAll(getVariableDeclarationsInMethod());
+//		variableDeclarations.addAll(getFieldsAccessedInMethod());
+//		return variableDeclarations;
+//	}
 
 	public Set<PlainVariable> getVariablesWithMethodBodyScope() {
 		Set<PlainVariable> variables = new LinkedHashSet<PlainVariable>();
@@ -476,11 +461,11 @@ public class PDG extends Graph {
 				PDGBlockNode pdgBlockNode = null;
 				if(blockNode instanceof CFGTryNode) {
 					CFGTryNode tryNode = (CFGTryNode)blockNode;
-					pdgBlockNode = new PDGTryNode(tryNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+					pdgBlockNode = new PDGTryNode(tryNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 				}
 				else if(blockNode instanceof CFGSynchronizedNode) {
 					CFGSynchronizedNode synchronizedNode = (CFGSynchronizedNode)blockNode;
-					pdgBlockNode = new PDGSynchronizedNode(synchronizedNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+					pdgBlockNode = new PDGSynchronizedNode(synchronizedNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 				}
 				if(pdgBlockNode != null) {
 					nodes.add(pdgBlockNode);
@@ -529,10 +514,8 @@ public class PDG extends Graph {
 
 	private void processCFGNode(PDGNode previousNode, CFGNode cfgNode, boolean controlType) {
 		if(cfgNode instanceof CFGBranchNode) {
-			PDGControlPredicateNode predicateNode = new PDGControlPredicateNode(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+			PDGControlPredicateNode predicateNode = new PDGControlPredicateNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 			nodes.add(predicateNode);
-			if(monitor != null)
-				monitor.worked(1);
 			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, predicateNode, controlType);
 			edges.add(controlDependence);
 			processControlPredicate(predicateNode);
@@ -540,16 +523,14 @@ public class PDG extends Graph {
 		else {
 			PDGNode pdgNode = null;
 			if(cfgNode instanceof CFGExitNode)
-				pdgNode = new PDGExitNode(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+				pdgNode = new PDGExitNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 			else if(cfgNode instanceof CFGTryNode)
-				pdgNode = new PDGTryNode((CFGTryNode)cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+				pdgNode = new PDGTryNode((CFGTryNode)cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 			else if(cfgNode instanceof CFGSynchronizedNode)
-				pdgNode = new PDGSynchronizedNode((CFGSynchronizedNode)cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+				pdgNode = new PDGSynchronizedNode((CFGSynchronizedNode)cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 			else
-				pdgNode = new PDGStatementNode(cfgNode, variableDeclarationsInMethod, fieldsAccessedInMethod);
+				pdgNode = new PDGStatementNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
 			nodes.add(pdgNode);
-			if(monitor != null)
-				monitor.worked(1);
 			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, pdgNode, controlType);
 			edges.add(controlDependence);
 		}
