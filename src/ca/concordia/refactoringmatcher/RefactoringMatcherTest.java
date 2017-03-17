@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
@@ -32,12 +34,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -57,6 +62,7 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 import org.eclipse.jgit.gitrepo.RepoCommand;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
@@ -67,17 +73,16 @@ import org.refactoringminer.util.GitServiceImpl;
 import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
 import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
 import gr.uom.java.ast.Access;
-import gr.uom.java.ast.AnonymousClassDeclarationObject;
-import gr.uom.java.ast.CommentObject;
-import gr.uom.java.ast.CompilationUnitCache;
 import gr.uom.java.ast.ConstructorObject;
-import gr.uom.java.ast.FieldInstructionObject;
-import gr.uom.java.ast.MethodInvocationObject;
+import gr.uom.java.ast.FieldObject;
 import gr.uom.java.ast.MethodObject;
-import gr.uom.java.ast.ParameterObject;
-import gr.uom.java.ast.TypeObject;
 import gr.uom.java.ast.decomposition.MethodBodyObject;
+import gr.uom.java.ast.decomposition.cfg.BasicBlock;
+import gr.uom.java.ast.decomposition.cfg.BasicBlockCFG;
 import gr.uom.java.ast.decomposition.cfg.CFG;
+import gr.uom.java.ast.decomposition.cfg.CFGBranchNode;
+import gr.uom.java.ast.decomposition.cfg.CFGNode;
+import gr.uom.java.ast.decomposition.cfg.PDG;
 
 public class RefactoringMatcherTest {
 
@@ -170,19 +175,28 @@ public class RefactoringMatcherTest {
 				System.out.println(methodDeclaration.toString());
 				CFG cfg = getCFG(methodDeclaration);
 				
-				System.out.println(cfg);
+				IFile file = null;
+				IProgressMonitor pm = null;
+				Set<FieldObject> set = new HashSet<FieldObject>();
+				
+//				PDG pdg = new PDG(cfg, file, set, pm);
 			}
 		}
 
-//		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
-//		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
-//		printReport(refactoringSets);
+//		findSimilarRefactorings(outputDirectory, refactorings);
 
-//		createTreeView(refactoringSets);
+//		readFromDeckardOutput();
+		
+//		countUnusedOpportunities(projectsDirectory, gitService, project,refactoringSets);
+	}
 
-		// readFromDeckardOutput();
-		// countUnusedOpportunities(projectsDirectory, gitService, project,
-		// refactoringSets);
+	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
+			throws IOException, InterruptedException, ParseException {
+		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
+		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
+		printReport(refactoringSets);
+
+		createTreeView(refactoringSets);
 	}
 
 	private void readFromDeckardOutput() throws IOException {
@@ -218,8 +232,8 @@ public class RefactoringMatcherTest {
 		constructorObject.setMethodDeclaration(methodDeclaration);
 		constructorObject.setName(methodName);
 		// constructorObject.setClassName(classObject.getName());
-		int methodDeclarationStartPosition = methodDeclaration.getStartPosition();
-		int methodDeclarationEndPosition = methodDeclarationStartPosition + methodDeclaration.getLength();
+//		int methodDeclarationStartPosition = methodDeclaration.getStartPosition();
+//		int methodDeclarationEndPosition = methodDeclarationStartPosition + methodDeclaration.getLength();
 
 		int methodModifiers = methodDeclaration.getModifiers();
 		if ((methodModifiers & Modifier.PUBLIC) != 0)
@@ -253,12 +267,12 @@ public class RefactoringMatcherTest {
 			constructorObject.setMethodBody(methodBodyObject);
 		}
 
-		if (methodDeclaration.isConstructor()) {
-			// classObject.addConstructor(constructorObject);
+	/*	if (methodDeclaration.isConstructor()) {
+			 classObject.addConstructor(constructorObject);
 			return null;
-		} else {
+		} else {*/
 			MethodObject methodObject = new MethodObject(constructorObject);
-			List<IExtendedModifier> extendedModifiers = methodDeclaration.modifiers();
+/*			List<IExtendedModifier> extendedModifiers = methodDeclaration.modifiers();
 			for (IExtendedModifier extendedModifier : extendedModifiers) {
 				if (extendedModifier.isAnnotation()) {
 					Annotation annotation = (Annotation) extendedModifier;
@@ -267,8 +281,14 @@ public class RefactoringMatcherTest {
 						break;
 					}
 				}
-			}
+			}*/
 
+		/*	Type returnType = methodDeclaration.getReturnType2();
+			ITypeBinding binding = returnType.resolveBinding();
+			String qualifiedName = binding.getQualifiedName();
+			TypeObject typeObject2 = TypeObject.extractTypeObject(qualifiedName);
+			methodObject.setReturnType(TypeObject);*/
+			
 			if ((methodModifiers & Modifier.ABSTRACT) != 0)
 				methodObject.setAbstract(true);
 			if ((methodModifiers & Modifier.STATIC) != 0)
@@ -279,7 +299,7 @@ public class RefactoringMatcherTest {
 				methodObject.setNative(true);
 
 			return new CFG(methodObject);
-		}
+//		}
 	}
 
 	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
