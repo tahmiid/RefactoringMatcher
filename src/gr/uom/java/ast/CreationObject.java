@@ -8,10 +8,6 @@ public abstract class CreationObject {
 		this.type = type;
 	}
 
-	public CreationObject() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public TypeObject getType() {
 		return type;
 	}

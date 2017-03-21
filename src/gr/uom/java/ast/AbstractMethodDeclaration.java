@@ -31,15 +31,15 @@ public interface AbstractMethodDeclaration {
 
     public ParameterObject getParameter(int position);
 
-    public List<MethodInvocationObject> getMethodInvocations();
+/*    public List<MethodInvocationObject> getMethodInvocations();
 
     public List<SuperMethodInvocationObject> getSuperMethodInvocations();
 
-    public List<ConstructorInvocationObject> getConstructorInvocations();
+    public List<ConstructorInvocationObject> getConstructorInvocations();*/
 
-    public List<FieldInstructionObject> getFieldInstructions();
+  /*  public List<FieldInstructionObject> getFieldInstructions();
 
-    public List<SuperFieldInstructionObject> getSuperFieldInstructions();
+    public List<SuperFieldInstructionObject> getSuperFieldInstructions();*/
 
     public List<LocalVariableDeclarationObject> getLocalVariableDeclarations();
     
@@ -55,11 +55,11 @@ public interface AbstractMethodDeclaration {
 	
 	public Set<String> getExceptionsInJavaDocThrows();
 
-    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation);
+//    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation);
 
-    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction);
+//    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction);
 
-    public boolean containsSuperMethodInvocation(SuperMethodInvocationObject superMethodInvocation);
+ /*   public boolean containsSuperMethodInvocation(SuperMethodInvocationObject superMethodInvocation);
 
 	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughFields();
 
@@ -69,15 +69,15 @@ public interface AbstractMethodDeclaration {
 
 	public Map<AbstractVariable, ArrayList<MethodInvocationObject>> getNonDistinctInvokedMethodsThroughParameters();
 
-	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughLocalVariables();
+	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughLocalVariables();*/
 
-	public Set<MethodInvocationObject> getInvokedMethodsThroughThisReference();
+/*	public Set<MethodInvocationObject> getInvokedMethodsThroughThisReference();
 
 	public List<MethodInvocationObject> getNonDistinctInvokedMethodsThroughThisReference();
 
-	public Set<MethodInvocationObject> getInvokedStaticMethods();
+	public Set<MethodInvocationObject> getInvokedStaticMethods();*/
 
-	public Set<AbstractVariable> getDefinedFieldsThroughFields();
+	/*public Set<AbstractVariable> getDefinedFieldsThroughFields();
 
 	public Set<AbstractVariable> getUsedFieldsThroughFields();
 
@@ -103,7 +103,7 @@ public interface AbstractMethodDeclaration {
 
 	public Set<PlainVariable> getUsedFieldsThroughThisReference();
 
-	public List<PlainVariable> getNonDistinctUsedFieldsThroughThisReference();
+	public List<PlainVariable> getNonDistinctUsedFieldsThroughThisReference();*/
 
 	public Set<PlainVariable> getDeclaredLocalVariables();
 
@@ -111,13 +111,13 @@ public interface AbstractMethodDeclaration {
 
 	public Set<PlainVariable> getUsedLocalVariables();
 
-	public Map<PlainVariable, LinkedHashSet<MethodInvocationObject>> getParametersPassedAsArgumentsInMethodInvocations();
+/*	public Map<PlainVariable, LinkedHashSet<MethodInvocationObject>> getParametersPassedAsArgumentsInMethodInvocations();
 
 	public Map<PlainVariable, LinkedHashSet<SuperMethodInvocationObject>> getParametersPassedAsArgumentsInSuperMethodInvocations();
 
 	public Map<PlainVariable, LinkedHashSet<ConstructorInvocationObject>> getParametersPassedAsArgumentsInConstructorInvocations();
 
-    public boolean containsSuperMethodInvocation();
+    public boolean containsSuperMethodInvocation();*/
 
     public boolean containsSuperFieldAccess();
 

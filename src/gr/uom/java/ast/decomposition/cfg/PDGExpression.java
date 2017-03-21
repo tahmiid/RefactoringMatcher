@@ -88,7 +88,7 @@ public class PDGExpression {
 		for(PlainVariable variable : expression.getUsedLocalVariables()) {
 			usedVariables.add(variable);
 		}
-		Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = expression.getInvokedMethodsThroughLocalVariables();
+/*		Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = expression.getInvokedMethodsThroughLocalVariables();
 		for(AbstractVariable variable : invokedMethodsThroughLocalVariables.keySet()) {
 			LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughLocalVariables.get(variable);
 			for(MethodInvocationObject methodInvocationObject : methodInvocations) {
@@ -103,9 +103,9 @@ public class PDGExpression {
 				thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
 				processArgumentsOfInternalMethodInvocation(methodInvocationObject, variable);
 			}
-		}
+		}*/
 		
-		for(PlainVariable field : expression.getDefinedFieldsThroughThisReference()) {
+/*		for(PlainVariable field : expression.getDefinedFieldsThroughThisReference()) {
 			definedVariables.add(field);
 		}
 		for(PlainVariable field : expression.getUsedFieldsThroughThisReference()) {
@@ -128,8 +128,8 @@ public class PDGExpression {
 		}
 		for(AbstractVariable field : expression.getUsedFieldsThroughLocalVariables()) {
 			usedVariables.add(field);
-		}
-		Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughFields = expression.getInvokedMethodsThroughFields();
+		}*/
+/*		Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughFields = expression.getInvokedMethodsThroughFields();
 		for(AbstractVariable variable : invokedMethodsThroughFields.keySet()) {
 			LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughFields.get(variable);
 			for(MethodInvocationObject methodInvocationObject : methodInvocations) {
@@ -152,7 +152,7 @@ public class PDGExpression {
 		List<MethodInvocationObject> methodInvocations = expression.getMethodInvocations();
 		for(MethodInvocationObject methodInvocationObject : methodInvocations) {
 			thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-		}
+		}*/
 	}
 
 	private void processArgumentsOfInternalMethodInvocation(MethodInvocationObject methodInvocationObject, AbstractVariable variable) {

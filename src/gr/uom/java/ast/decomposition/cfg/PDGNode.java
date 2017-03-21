@@ -546,7 +546,7 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		for(AbstractVariable abstractVariable : definedVariables) {
 			if(abstractVariable instanceof CompositeVariable) {
 				CompositeVariable compositeVariable = (CompositeVariable)abstractVariable;
-				if(variableDeclaration.resolveBinding().getKey().equals(compositeVariable.getVariableBindingKey()))
+				if(variableDeclaration.equals(compositeVariable))
 					return true;
 			}
 		}
@@ -557,7 +557,7 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		for(AbstractVariable abstractVariable : usedVariables) {
 			if(abstractVariable instanceof PlainVariable) {
 				PlainVariable plainVariable = (PlainVariable)abstractVariable;
-				if(variableDeclaration.resolveBinding().getKey().equals(plainVariable.getVariableBindingKey()))
+				if(variableDeclaration.equals(plainVariable))
 					return true;
 			}
 		}

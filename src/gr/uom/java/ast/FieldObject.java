@@ -17,7 +17,6 @@ public class FieldObject extends VariableDeclarationObject {
     private boolean _static;
     private Access access;
     private String className;
-    //private VariableDeclarationFragment fragment;
     private ASTInformation fragment;
     private volatile int hashCode = 0;
 
@@ -30,13 +29,10 @@ public class FieldObject extends VariableDeclarationObject {
     }
 
     public void setVariableDeclarationFragment(VariableDeclarationFragment fragment) {
-    	//this.fragment = fragment;
-    	this.variableBindingKey = fragment.resolveBinding().getKey();
     	this.fragment = ASTInformationGenerator.generateASTInformation(fragment);
     }
 
     public VariableDeclarationFragment getVariableDeclarationFragment() {
-    	//return this.fragment;
     	ASTNode node = this.fragment.recoverASTNode();
     	if(node instanceof SimpleName) {
     		return (VariableDeclarationFragment)node.getParent();
@@ -83,7 +79,7 @@ public class FieldObject extends VariableDeclarationObject {
     }
 
     public FieldInstructionObject generateFieldInstruction() {
-    	FieldInstructionObject fieldInstruction = new FieldInstructionObject(this.className, this.type, this.name, this.variableBindingKey);
+    	FieldInstructionObject fieldInstruction = new FieldInstructionObject(this.className, this.type, this.name/*, this.variableBindingKey*/);
     	fieldInstruction.setStatic(this._static);
     	return fieldInstruction;
     }
@@ -96,8 +92,8 @@ public class FieldObject extends VariableDeclarationObject {
         if (o instanceof FieldObject) {
             FieldObject fieldObject = (FieldObject)o;
             return this.className.equals(fieldObject.className) &&
-            	this.name.equals(fieldObject.name) && this.type.equals(fieldObject.type) &&
-            	this.variableBindingKey.equals(fieldObject.variableBindingKey);
+            	this.name.equals(fieldObject.name) /*&& this.type.equals(fieldObject.type)*//* &&
+            	this.variableBindingKey.equals(fieldObject.variableBindingKey)*/;
         }
         return false;
     }
@@ -111,8 +107,8 @@ public class FieldObject extends VariableDeclarationObject {
     }
 
     public boolean equals(FieldInstructionObject fio) {
-        return this.className.equals(fio.getOwnerClass()) &&
-        this.name.equals(fio.getName()) && this.type.equals(fio.getType()) && this.variableBindingKey.equals(fio.getVariableBindingKey());
+        return /*this.className.equals(fio.getOwnerClass()) &&*/
+        this.name.equals(fio.getName()) /*&& this.type.equals(fio.getType())*/ /*&& this.variableBindingKey.equals(fio.getVariableBindingKey())*/;
     }
 
     public int hashCode() {
@@ -121,7 +117,6 @@ public class FieldObject extends VariableDeclarationObject {
     		result = 37*result + className.hashCode();
     		result = 37*result + name.hashCode();
     		result = 37*result + type.hashCode();
-    		result = 37*result + variableBindingKey.hashCode();
     		hashCode = result;
     	}
     	return hashCode;

@@ -28,7 +28,7 @@ public class PDGControlPredicateNode extends PDGNode {
 			CompositeStatementObject composite = (CompositeStatementObject)cfgNode.getStatement();
 			List<AbstractExpression> expressions = composite.getExpressions();
 			for(AbstractExpression expression : expressions) {
-				List<CreationObject> creations = expression.getCreations();
+				/*List<CreationObject> creations = expression.getCreations();
 				for(CreationObject creation : creations) {
 					createdTypes.add(creation);
 					if(creation instanceof ClassInstanceCreationObject) {
@@ -47,7 +47,7 @@ public class PDGControlPredicateNode extends PDGNode {
 						}
 						thrownExceptionTypes.addAll(classInstanceCreation.getThrownExceptions());
 					}
-				}
+				}*/
 				for(PlainVariable variable : expression.getDeclaredLocalVariables()) {
 					declaredVariables.add(variable);
 					definedVariables.add(variable);
@@ -58,7 +58,7 @@ public class PDGControlPredicateNode extends PDGNode {
 				for(PlainVariable variable : expression.getUsedLocalVariables()) {
 					usedVariables.add(variable);
 				}
-				Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = expression.getInvokedMethodsThroughLocalVariables();
+/*				Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = expression.getInvokedMethodsThroughLocalVariables();
 				for(AbstractVariable variable : invokedMethodsThroughLocalVariables.keySet()) {
 					LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughLocalVariables.get(variable);
 					for(MethodInvocationObject methodInvocationObject : methodInvocations) {
@@ -73,9 +73,9 @@ public class PDGControlPredicateNode extends PDGNode {
 						thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
 						processArgumentsOfInternalMethodInvocation(methodInvocationObject, variable);
 					}
-				}
+				}*/
 				
-				for(PlainVariable field : expression.getDefinedFieldsThroughThisReference()) {
+/*				for(PlainVariable field : expression.getDefinedFieldsThroughThisReference()) {
 					definedVariables.add(field);
 				}
 				for(PlainVariable field : expression.getUsedFieldsThroughThisReference()) {
@@ -98,8 +98,8 @@ public class PDGControlPredicateNode extends PDGNode {
 				}
 				for(AbstractVariable field : expression.getUsedFieldsThroughLocalVariables()) {
 					usedVariables.add(field);
-				}
-				Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughFields = expression.getInvokedMethodsThroughFields();
+				}*/
+/*				Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughFields = expression.getInvokedMethodsThroughFields();
 				for(AbstractVariable variable : invokedMethodsThroughFields.keySet()) {
 					LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughFields.get(variable);
 					for(MethodInvocationObject methodInvocationObject : methodInvocations) {
@@ -122,7 +122,7 @@ public class PDGControlPredicateNode extends PDGNode {
 				List<MethodInvocationObject> methodInvocations = expression.getMethodInvocations();
 				for(MethodInvocationObject methodInvocationObject : methodInvocations) {
 					thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-				}
+				}*/
 			}
 		}
 	}

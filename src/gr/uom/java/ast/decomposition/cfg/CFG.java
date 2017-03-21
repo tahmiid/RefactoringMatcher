@@ -350,10 +350,6 @@ public class CFG extends Graph {
 			if (parent != null) {
 				if (isLoop(parent) || parent.getType().equals(StatementType.DO))
 					action = PUSH_NEW_LIST;
-				/*
-				 * else if(parent.getType().equals(StatementType.DoStatement) action
-				 * = PLACE_NEW_LIST_SECOND_FROM_TOP;
-				 */
 			}
 		} else if (statements.size() > 1) {
 			AbstractStatement previousStatement = null;
@@ -409,12 +405,6 @@ public class CFG extends Graph {
 					action = PLACE_NEW_LIST_SECOND_FROM_TOP;
 				else {
 					action = PUSH_NEW_LIST;
-					/*
-					 * if(parent != null && parent.getStatement() instanceof
-					 * DoStatement && statements.get(0).getStatement()
-					 * instanceof IfStatement) action =
-					 * PLACE_NEW_LIST_SECOND_FROM_TOP;
-					 */
 				}
 			}
 		}

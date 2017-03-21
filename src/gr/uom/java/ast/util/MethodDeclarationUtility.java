@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class MethodDeclarationUtility {
 
@@ -178,9 +179,9 @@ public class MethodDeclarationUtility {
 			IVariableBinding variableBinding = (IVariableBinding)binding;
 			AbstractVariable currentVariable = null;
 			if(rightPart == null)
-				currentVariable = new PlainVariable(variableBinding);
+				currentVariable = new PlainVariable((VariableDeclaration)simpleName.getParent());
 			else
-				currentVariable = new CompositeVariable(variableBinding, rightPart);
+				currentVariable = new CompositeVariable((VariableDeclaration)simpleName.getParent(), rightPart);
 			
 			if(simpleName.getParent() instanceof QualifiedName) {
 				QualifiedName qualifiedName = (QualifiedName)simpleName.getParent();

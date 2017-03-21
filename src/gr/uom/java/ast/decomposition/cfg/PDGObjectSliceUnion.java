@@ -103,7 +103,7 @@ public class PDGObjectSliceUnion {
 				if(remainingNodes.contains(srcPDGNode) && sliceNodes.contains(dstPDGNode))
 					passedParameters.add(dataDependence.getData());
 				if(sliceNodes.contains(srcPDGNode) && remainingNodes.contains(dstPDGNode) &&
-						!dataDependence.getData().equals(objectReference) && !dataDependence.getData().isField())
+						!dataDependence.getData().equals(objectReference)/* && !dataDependence.getData().isField()*/)
 					nDD.add(srcPDGNode);
 			}
 			else if(dependence instanceof PDGControlDependence) {
@@ -168,7 +168,7 @@ public class PDGObjectSliceUnion {
 		for(PDGNode node : sliceNodes) {
 			if(!(node instanceof PDGTryNode)) {
 				if(node.declaresLocalVariable(objectReference) ||
-						((objectReference.isField() || objectReference.isParameter()) &&
+						(/*(objectReference.isField() || objectReference.isParameter()) &&*/
 								node.instantiatesLocalVariable(objectReference) && node.definesLocalVariable(objectReference))) {
 					removableNodes.add(node);
 					indispensableNodes.remove(node);
@@ -403,11 +403,11 @@ public class PDGObjectSliceUnion {
 					if(!sliceContainsDeclaration(plainVariable))
 						return true;
 				}
-				else if(stateChangingVariable instanceof PlainVariable) {
+		/*		else if(stateChangingVariable instanceof PlainVariable) {
 					PlainVariable plainVariable = stateChangingVariable.getInitialVariable();
 					if(plainVariable.isField())
 						return true;
-				}
+				}*/
 			}
 		}
 		return false;

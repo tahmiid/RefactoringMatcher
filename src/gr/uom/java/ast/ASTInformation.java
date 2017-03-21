@@ -2,8 +2,6 @@ package gr.uom.java.ast;
 
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.NodeFinder;
 
 public class ASTInformation {
 

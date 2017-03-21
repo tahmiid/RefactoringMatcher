@@ -112,23 +112,23 @@ public class RefactoringMatcherTest {
 
 			// "https://github.com/iluwatar/java-design-patterns.git",
 			// "https://github.com/JakeWharton/ActionBarSherlock.git",
-//			 "https://github.com/alibaba/dubbo.git",
+			// "https://github.com/alibaba/dubbo.git",
 			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
-//			 "https://github.com/alibaba/fastjson.git",
-//			 "https://github.com/jfeinstein10/SlidingMenu.git",
+			// "https://github.com/alibaba/fastjson.git",
+			// "https://github.com/jfeinstein10/SlidingMenu.git",
 			// "https://github.com/JakeWharton/ViewPagerIndicator.git",
-//			 "https://github.com/square/retrofit.git",
-//			 "https://github.com/square/okhttp.git",
+			// "https://github.com/square/retrofit.git",
+			// "https://github.com/square/okhttp.git",
 			// "https://github.com/zxing/zxing.git",
-//			 "https://github.com/google/guava.git",
+			// "https://github.com/google/guava.git",
 
-//			"https://github.com/danilofes/refactoring-toy-example.git",
+			// "https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
-			 "https://github.com/jfree/jfreechart.git",
-//			 "https://github.com/apache/commons-lang.git",
+			"https://github.com/jfree/jfreechart.git",
+			// "https://github.com/apache/commons-lang.git",
 			// "https://github.com/apache/nifi-minifi.git",
 			// "https://github.com/apache/knox.git",
 			// "https://github.com/apache/zeppelin.git",
@@ -173,18 +173,21 @@ public class RefactoringMatcherTest {
 			MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
 			if (methodDeclaration != null) {
 				System.out.println(methodDeclaration.toString());
-				CFG cfg = getCFG(methodDeclaration);
+				MethodObject methodObject = createMethodObject(methodDeclaration);
+				CFG cfg = new CFG(methodObject);
 				PDG pdg = new PDG(cfg);
+
 				System.out.println(pdg.getNodes().size());
 				System.out.println("Done");
 			}
 		}
 
-//		findSimilarRefactorings(outputDirectory, refactorings);
+		// findSimilarRefactorings(outputDirectory, refactorings);
 
-//		readFromDeckardOutput();
-		
-//		countUnusedOpportunities(projectsDirectory, gitService, project,refactoringSets);
+		// readFromDeckardOutput();
+
+		// countUnusedOpportunities(projectsDirectory, gitService,
+		// project,refactoringSets);
 	}
 
 	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
@@ -223,80 +226,13 @@ public class RefactoringMatcherTest {
 		}
 	}
 
-	private CFG getCFG(MethodDeclaration methodDeclaration) {
-		String methodName = methodDeclaration.getName().getIdentifier();
-		final ConstructorObject constructorObject = new ConstructorObject();
-		constructorObject.setMethodDeclaration(methodDeclaration);
-		constructorObject.setName(methodName);
-		// constructorObject.setClassName(classObject.getName());
-//		int methodDeclarationStartPosition = methodDeclaration.getStartPosition();
-//		int methodDeclarationEndPosition = methodDeclarationStartPosition + methodDeclaration.getLength();
+	private MethodObject createMethodObject(MethodDeclaration methodDeclaration) {
 
-		int methodModifiers = methodDeclaration.getModifiers();
-		if ((methodModifiers & Modifier.PUBLIC) != 0)
-			constructorObject.setAccess(Access.PUBLIC);
-		else if ((methodModifiers & Modifier.PROTECTED) != 0)
-			constructorObject.setAccess(Access.PROTECTED);
-		else if ((methodModifiers & Modifier.PRIVATE) != 0)
-			constructorObject.setAccess(Access.PRIVATE);
-		else
-			constructorObject.setAccess(Access.NONE);
+		final ConstructorObject constructorObject = new ConstructorObject(methodDeclaration);
 
-//		List<SingleVariableDeclaration> parameters = methodDeclaration.parameters();
-//		for (SingleVariableDeclaration parameter : parameters) {
-//			Type parameterType = parameter.getType();
-//			ITypeBinding binding = parameterType.resolveBinding();
-//			String qualifiedName = binding.getQualifiedName();
-//			TypeObject typeObject = TypeObject.extractTypeObject(qualifiedName);
-//			typeObject.setArrayDimension(typeObject.getArrayDimension() + parameter.getExtraDimensions());
-//			if (parameter.isVarargs()) {
-//				typeObject.setArrayDimension(1);
-//			}
-//			ParameterObject parameterObject = new ParameterObject(typeObject, parameter.getName().getIdentifier(),
-//					parameter.isVarargs());
-//			parameterObject.setSingleVariableDeclaration(parameter);
-//			constructorObject.addParameter(parameterObject);
-//		}
+		MethodObject methodObject = new MethodObject(constructorObject);
 
-		Block methodBody = methodDeclaration.getBody();
-		if (methodBody != null) {
-			MethodBodyObject methodBodyObject = new MethodBodyObject(methodBody);
-			constructorObject.setMethodBody(methodBodyObject);
-		}
-
-	/*	if (methodDeclaration.isConstructor()) {
-			 classObject.addConstructor(constructorObject);
-			return null;
-		} else {*/
-			MethodObject methodObject = new MethodObject(constructorObject);
-/*			List<IExtendedModifier> extendedModifiers = methodDeclaration.modifiers();
-			for (IExtendedModifier extendedModifier : extendedModifiers) {
-				if (extendedModifier.isAnnotation()) {
-					Annotation annotation = (Annotation) extendedModifier;
-					if (annotation.getTypeName().getFullyQualifiedName().equals("Test")) {
-						methodObject.setTestAnnotation(true);
-						break;
-					}
-				}
-			}*/
-
-		/*	Type returnType = methodDeclaration.getReturnType2();
-			ITypeBinding binding = returnType.resolveBinding();
-			String qualifiedName = binding.getQualifiedName();
-			TypeObject typeObject2 = TypeObject.extractTypeObject(qualifiedName);
-			methodObject.setReturnType(TypeObject);*/
-			
-			if ((methodModifiers & Modifier.ABSTRACT) != 0)
-				methodObject.setAbstract(true);
-			if ((methodModifiers & Modifier.STATIC) != 0)
-				methodObject.setStatic(true);
-			if ((methodModifiers & Modifier.SYNCHRONIZED) != 0)
-				methodObject.setSynchronized(true);
-			if ((methodModifiers & Modifier.NATIVE) != 0)
-				methodObject.setNative(true);
-
-			return new CFG(methodObject);
-//		}
+		return methodObject;
 	}
 
 	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,

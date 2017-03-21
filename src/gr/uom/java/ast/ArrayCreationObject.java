@@ -8,10 +8,6 @@ public class ArrayCreationObject extends CreationObject {
 		super(type);
 	}
 
-	public ArrayCreationObject() {
-		super();
-	}
-
 	public ArrayCreation getArrayCreation() {
 		return (ArrayCreation)this.creation.recoverASTNode();
 	}

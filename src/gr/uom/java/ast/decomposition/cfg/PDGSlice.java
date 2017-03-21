@@ -100,7 +100,7 @@ public class PDGSlice extends Graph {
 				if(remainingNodes.contains(srcPDGNode) && sliceNodes.contains(dstPDGNode))
 					passedParameters.add(dataDependence.getData());
 				if(sliceNodes.contains(srcPDGNode) && remainingNodes.contains(dstPDGNode) &&
-						!dataDependence.getData().equals(localVariableCriterion) && !dataDependence.getData().isField())
+						!dataDependence.getData().equals(localVariableCriterion) /*&& !dataDependence.getData().isField()*/)
 					nDD.add(srcPDGNode);
 			}
 			else if(dependence instanceof PDGControlDependence) {
@@ -409,11 +409,11 @@ public class PDGSlice extends Graph {
 					if(!sliceContainsDeclaration(plainVariable))
 						return true;
 				}
-				else if(stateChangingVariable instanceof PlainVariable) {
+			/*	else if(stateChangingVariable instanceof PlainVariable) {
 					PlainVariable plainVariable = stateChangingVariable.getInitialVariable();
 					if(plainVariable.isField())
 						return true;
-				}
+				}*/
 			}
 		}
 		return false;

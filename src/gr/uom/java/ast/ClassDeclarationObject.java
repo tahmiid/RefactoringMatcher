@@ -87,29 +87,6 @@ public abstract class ClassDeclarationObject {
 		return false;
 	}
 
-	public boolean containsMethodWithTestAnnotation() {
-    	for(MethodObject method : methodList) {
-    		if(method.hasTestAnnotation())
-    			return true;
-    	}
-    	return false;
-    }
-
-    public boolean extendsTestCase() {
-    	TypeObject superclass = this.getSuperclass();
-    	if(superclass == null)
-    		return false;
-    	else if(superclass.getClassType().equals("junit.framework.TestCase"))
-    		return true;
-    	else {
-/*    		ClassObject superClassObject = ASTReader.getSystemObject().getClassObject(superclass.getClassType());
-    		if(superClassObject != null)
-    			return superClassObject.extendsTestCase();*/
-    		throw new NullPointerException();
-    	}
-//    	return false;
-    }
-
     public MethodObject getMethod(MethodInvocationObject mio) {
         ListIterator<MethodObject> mi = getMethodIterator();
         while(mi.hasNext()) {
@@ -130,23 +107,23 @@ public abstract class ClassDeclarationObject {
         return null;
     }
 
-    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation) {
+/*    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation) {
     	for(MethodObject method : methodList) {
     		if(method.containsMethodInvocation(methodInvocation))
     			return true;
     	}
     	return false;
-    }
+    }*/
 
-    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction) {
+/*    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction) {
     	for(MethodObject method : methodList) {
     		if(method.containsFieldInstruction(fieldInstruction))
     			return true;
     	}
     	return false;
-    }
+    }*/
 
-    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation, MethodObject excludedMethod) {
+/*    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation, MethodObject excludedMethod) {
     	for(MethodObject method : methodList) {
     		if(!method.equals(excludedMethod) && method.containsMethodInvocation(methodInvocation))
     			return true;
@@ -160,7 +137,7 @@ public abstract class ClassDeclarationObject {
     			return true;
     	}
     	return false;
-    }
+    }*/
 
     public boolean hasFieldType(String className) {
         ListIterator<FieldObject> fi = getFieldIterator();
@@ -171,7 +148,7 @@ public abstract class ClassDeclarationObject {
         }
         return false;
     }
-
+/*
 	public Set<FieldObject> getFieldsAccessedInsideMethod(AbstractMethodDeclaration method) {
 		Set<FieldObject> fields = new LinkedHashSet<FieldObject>();
 		for(FieldInstructionObject fieldInstruction : method.getFieldInstructions()) {
@@ -204,7 +181,7 @@ public abstract class ClassDeclarationObject {
 		return fields;
 	}
 
-	public FieldObject getField(FieldInstructionObject fieldInstruction) {
+*/	public FieldObject getField(FieldInstructionObject fieldInstruction) {
 		for(FieldObject field : fieldList) {
 			if(field.equals(fieldInstruction)) {
 				return field;

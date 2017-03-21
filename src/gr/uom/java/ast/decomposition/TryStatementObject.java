@@ -104,7 +104,7 @@ public class TryStatementObject extends CompositeStatementObject {
 	
 	public boolean hasFinallyClauseClosingVariable(AbstractVariable variable) {
 		if(finallyClause != null) {
-			Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = 
+		/*	Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughLocalVariables = 
 					finallyClause.getInvokedMethodsThroughLocalVariables();
 			for(AbstractVariable key : invokedMethodsThroughLocalVariables.keySet()) {
 				if(key.equals(variable)) {
@@ -139,7 +139,7 @@ public class TryStatementObject extends CompositeStatementObject {
 						}
 					}
 				}
-			}
+			}*/
 		}
 		return false;
 	}

@@ -31,7 +31,6 @@ public class PDG extends Graph {
 	private PDGMethodEntryNode entryNode;
 	private Map<CFGBranchNode, Set<CFGNode>> nestingMap;
 	private Set<VariableDeclarationObject> variableDeclarationsInMethod;
-//	private Set<FieldObject> fieldsAccessedInMethod;
 	private Map<PDGNode, Set<BasicBlock>> dominatedBlockMap;
 	
 	public PDG(CFG cfg) {
@@ -56,13 +55,7 @@ public class PDG extends Graph {
 			variableDeclarationsInMethod.add(localVariableDeclaration);
 		}
 		createControlDependenciesFromEntryNode();
-		if(!nodes.isEmpty()) {
-			//TODO PDGCreation	IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			//TODO PDGCreation	boolean enabledAliasAnalysis = store.getBoolean(PreferenceConstants.P_ENABLE_ALIAS_ANALYSIS);
-			//TODO PDGCreation	if(enabledAliasAnalysis)
-			//TODO PDGCreation	performAliasAnalysis();
-			//TODO PDGCreation  createDataDependencies();
-		}
+
 		this.dominatedBlockMap = new LinkedHashMap<PDGNode, Set<BasicBlock>>();
 		GraphNode.resetNodeNum();
 		handleSwitchCaseNodes();
@@ -89,14 +82,6 @@ public class PDG extends Graph {
 		}
 		return variableDeclarations;
 	}
-
-//	public Set<VariableDeclaration> getFieldsAccessedInMethod() {
-//		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
-//		for(FieldObject field : fieldsAccessedInMethod) {
-//			variableDeclarations.add(field.getVariableDeclaration());
-//		}
-//		return variableDeclarations;
-//	}
 
 	public PDGBlockNode isDirectlyNestedWithinBlockNode(PDGNode node) {
 		Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
@@ -132,13 +117,6 @@ public class PDG extends Graph {
 		}
 		return directlyNestedPDGNodes;
 	}
-
-//	public Set<VariableDeclaration> getVariableDeclarationsAndAccessedFieldsInMethod() {
-//		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
-//		variableDeclarations.addAll(getVariableDeclarationsInMethod());
-//		variableDeclarations.addAll(getFieldsAccessedInMethod());
-//		return variableDeclarations;
-//	}
 
 	public Set<PlainVariable> getVariablesWithMethodBodyScope() {
 		Set<PlainVariable> variables = new LinkedHashSet<PlainVariable>();
@@ -183,7 +161,7 @@ public class PDG extends Graph {
 			for(AbstractVariable definedVariable : pdgNode.definedVariables) {
 				if(definedVariable instanceof CompositeVariable) {
 					CompositeVariable compositeVariable = (CompositeVariable)definedVariable;
-					if(compositeVariable.getVariableBindingKey().equals(reference.getVariableBindingKey())) {
+					if(compositeVariable.equals(reference)) {
 						if(definedPropertiesMap.containsKey(compositeVariable)) {
 							LinkedHashSet<PDGNode> nodeCriteria = definedPropertiesMap.get(compositeVariable);
 							nodeCriteria.add(pdgNode);

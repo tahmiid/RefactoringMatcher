@@ -12,18 +12,12 @@ public class CompositeVariable extends AbstractVariable {
 		this.rightPart = rightPart;
 	}
 
-	public CompositeVariable(IVariableBinding referenceBinding, AbstractVariable rightPart) {
-		super(referenceBinding);
-		this.rightPart = rightPart;
-	}
-
 	public CompositeVariable(AbstractVariable argument, AbstractVariable rightPart) {
-		this(argument.getVariableBindingKey(), argument.getVariableName(),
-				argument.getVariableType(), argument.isField(), argument.isParameter(), argument.isStatic(), rightPart);
+		this(argument.getVariableName(), argument.getVariableType(), rightPart);
 	}
 
-	private CompositeVariable(String variableBindingKey, String variableName, String variableType, boolean isField, boolean isParameter, boolean isStatic, AbstractVariable rightPart) {
-		super(variableBindingKey, variableName, variableType, isField, isParameter, isStatic);
+	private CompositeVariable(String variableName, String variableType, AbstractVariable rightPart) {
+		super(variableName, variableType);
 		this.rightPart = rightPart;
 	}
 
@@ -35,11 +29,11 @@ public class CompositeVariable extends AbstractVariable {
 	//if composite variable is "one.two.three" then left part is "one.two"
 	public AbstractVariable getLeftPart() {
 		if(rightPart instanceof PlainVariable) {
-			return new PlainVariable(variableBindingKey, variableName, variableType, isField, isParameter, isStatic);
+			return new PlainVariable(variableName, variableType);
 		}
 		else {
 			CompositeVariable compositeVariable = (CompositeVariable)rightPart;
-			return new CompositeVariable(variableBindingKey, variableName, variableType, isField, isParameter, isStatic, compositeVariable.getLeftPart());
+			return new CompositeVariable(variableName, variableType, compositeVariable.getLeftPart());
 		}
 	}
 
@@ -55,11 +49,11 @@ public class CompositeVariable extends AbstractVariable {
 
 	//if composite variable is "one.two.three" then initial variable is "one"
 	public PlainVariable getInitialVariable() {
-		return new PlainVariable(variableBindingKey, variableName, variableType, isField, isParameter, isStatic);
+		return new PlainVariable(variableName, variableType);
 	}
 
 	public boolean containsPlainVariable(PlainVariable variable) {
-		if(this.variableBindingKey.equals(variable.variableBindingKey))
+		if(this.equals(variable))
 			return true;
 		return rightPart.containsPlainVariable(variable);
 	}
@@ -99,7 +93,7 @@ public class CompositeVariable extends AbstractVariable {
 		}
 		if(o instanceof CompositeVariable) {
 			CompositeVariable composite = (CompositeVariable)o;
-			return this.variableBindingKey.equals(composite.variableBindingKey) &&
+			return this.equals(composite) &&
 			this.rightPart.equals(composite.rightPart);
 		}
 		return false;
@@ -108,7 +102,6 @@ public class CompositeVariable extends AbstractVariable {
 	public int hashCode() {
 		if(hashCode == 0) {
 			int result = 17;
-			result = 31*result + variableBindingKey.hashCode();
 			result = 31*result + rightPart.hashCode();
 			hashCode = result;
 		}

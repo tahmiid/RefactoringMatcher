@@ -12,7 +12,11 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 
 public class ConstructorObject implements AbstractMethodDeclaration {
 
@@ -34,13 +38,51 @@ public class ConstructorObject implements AbstractMethodDeclaration {
         this.access = Access.NONE;
     }
 
-    public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
-    	//this.methodDeclaration = methodDeclaration;
+    public ConstructorObject(MethodDeclaration methodDeclaration) {
+		this.methodDeclaration = ASTInformationGenerator.generateASTInformation(methodDeclaration);
+		this.name = methodDeclaration.getName().getIdentifier();
+    	this.parameterList = new ArrayList<ParameterObject>();
+		this.commentList = new ArrayList<CommentObject>();
+		this.exceptionsInJavaDocThrows = new LinkedHashSet<String>();
+		
+		int methodModifiers = methodDeclaration.getModifiers();
+		if ((methodModifiers & Modifier.PUBLIC) != 0)
+			this.access = Access.PUBLIC;
+		else if ((methodModifiers & Modifier.PROTECTED) != 0)
+			this.access = Access.PROTECTED;
+		else if ((methodModifiers & Modifier.PRIVATE) != 0)
+			this.access = Access.PRIVATE;
+		else
+			this.access = Access.NONE;
+		
+		Block methodBody = methodDeclaration.getBody();
+		if (methodBody != null) {
+			this.methodBody = new MethodBodyObject(methodBody);
+		}
+		
+		// constructorObject.setClassName(classObject.getName());
+
+		List<SingleVariableDeclaration> parameters = methodDeclaration.parameters();
+		for (SingleVariableDeclaration parameter : parameters) {
+			Type parameterType = parameter.getType();
+//			ITypeBinding binding = parameterType.resolveBinding();
+//			String qualifiedName = binding.getQualifiedName();
+			TypeObject typeObject = TypeObject.extractTypeObject(parameterType.toString());
+			typeObject.setArrayDimension(typeObject.getArrayDimension() + parameter.getExtraDimensions());
+			if (parameter.isVarargs()) {
+				typeObject.setArrayDimension(1);
+			}
+			ParameterObject parameterObject = new ParameterObject(typeObject, parameter.getName().getIdentifier(), parameter.isVarargs());
+			parameterObject.setSingleVariableDeclaration(parameter);
+			parameterList.add(parameterObject);
+		}
+	}
+
+	public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
     	this.methodDeclaration = ASTInformationGenerator.generateASTInformation(methodDeclaration);
     }
 
     public MethodDeclaration getMethodDeclaration() {
-    	//return this.methodDeclaration;
     	return (MethodDeclaration)this.methodDeclaration.recoverASTNode();
     }
 
@@ -114,7 +156,7 @@ public class ConstructorObject implements AbstractMethodDeclaration {
     		return null;
     }
 
-	public List<MethodInvocationObject> getMethodInvocations() {
+/*	public List<MethodInvocationObject> getMethodInvocations() {
 		if(methodBody != null)
 			return methodBody.getMethodInvocations();
 		else
@@ -133,9 +175,9 @@ public class ConstructorObject implements AbstractMethodDeclaration {
 			return methodBody.getConstructorInvocations();
 		else
 			return new ArrayList<ConstructorInvocationObject>();
-	}
+	}*/
 
-    public List<FieldInstructionObject> getFieldInstructions() {
+/*    public List<FieldInstructionObject> getFieldInstructions() {
     	if(methodBody != null)
     		return methodBody.getFieldInstructions();
     	else
@@ -147,7 +189,7 @@ public class ConstructorObject implements AbstractMethodDeclaration {
     		return methodBody.getSuperFieldInstructions();
     	else
     		return new ArrayList<SuperFieldInstructionObject>();
-    }
+    }*/
 
     public List<LocalVariableDeclarationObject> getLocalVariableDeclarations() {
     	if(methodBody != null)
@@ -191,21 +233,21 @@ public class ConstructorObject implements AbstractMethodDeclaration {
 			return new LinkedHashSet<String>();
     }
 
-    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation) {
+/*    public boolean containsMethodInvocation(MethodInvocationObject methodInvocation) {
     	if(methodBody != null)
     		return methodBody.containsMethodInvocation(methodInvocation);
     	else
     		return false;
-    }
+    }*/
 
-    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction) {
+/*    public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction) {
     	if(methodBody != null)
     		return methodBody.containsFieldInstruction(fieldInstruction);
     	else
     		return false;
-    }
+    }*/
 
-    public boolean containsSuperMethodInvocation(SuperMethodInvocationObject superMethodInvocation) {
+ /*   public boolean containsSuperMethodInvocation(SuperMethodInvocationObject superMethodInvocation) {
     	if(methodBody != null)
     		return methodBody.containsSuperMethodInvocation(superMethodInvocation);
     	else
@@ -267,8 +309,8 @@ public class ConstructorObject implements AbstractMethodDeclaration {
 		else
 			return new LinkedHashSet<MethodInvocationObject>();
 	}
-
-	public Set<AbstractVariable> getDefinedFieldsThroughFields() {
+*/
+/*	public Set<AbstractVariable> getDefinedFieldsThroughFields() {
 		if(methodBody != null)
 			return methodBody.getDefinedFieldsThroughFields();
 		else
@@ -364,7 +406,7 @@ public class ConstructorObject implements AbstractMethodDeclaration {
 			return methodBody.getNonDistinctUsedFieldsThroughThisReference();
 		else
 			return new ArrayList<PlainVariable>();
-	}
+	}*/
 
 	public Set<PlainVariable> getDeclaredLocalVariables() {
 		if(methodBody != null)
@@ -499,8 +541,6 @@ public class ConstructorObject implements AbstractMethodDeclaration {
             sb.append(parameterList.get(parameterList.size()-1).toString());
         }
         sb.append(")");
-        /*if(methodBody != null)
-        	sb.append("\n").append(methodBody.toString());*/
         return sb.toString();
     }
 

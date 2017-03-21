@@ -7,13 +7,15 @@ import org.eclipse.jdt.core.dom.SimpleName;
 public class LocalVariableInstructionObject {
 	private TypeObject type;
     private String name;
-    //private SimpleName simpleName;
     private ASTInformation simpleName;
     private volatile int hashCode = 0;
-    private String variableBindingKey;
 
     public LocalVariableInstructionObject(TypeObject type, String name) {
         this.type = type;
+        this.name = name;
+    }
+
+    public LocalVariableInstructionObject(String name) {
         this.name = name;
     }
 
@@ -24,19 +26,12 @@ public class LocalVariableInstructionObject {
     public String getName() {
         return name;
     }
-
-    public String getVariableBindingKey() {
-		return variableBindingKey;
-	}
-
+    
 	public void setSimpleName(SimpleName simpleName) {
-    	//this.simpleName = simpleName;
-    	this.variableBindingKey = simpleName.resolveBinding().getKey();
     	this.simpleName = ASTInformationGenerator.generateASTInformation(simpleName);
     }
 
     public SimpleName getSimpleName() {
-    	//return this.simpleName;
     	ASTNode node = this.simpleName.recoverASTNode();
     	if(node instanceof QualifiedName) {
     		return ((QualifiedName)node).getName();
@@ -53,18 +48,17 @@ public class LocalVariableInstructionObject {
 
         if (o instanceof LocalVariableInstructionObject) {
         	LocalVariableInstructionObject lvio = (LocalVariableInstructionObject)o;
-            return this.name.equals(lvio.name) && this.type.equals(lvio.type) &&
-            		this.variableBindingKey.equals(lvio.variableBindingKey);
+            return this.name.equals(lvio.name) /*&& this.type.equals(lvio.type)*/;
         }
         return false;
     }
 
     public boolean equals(LocalVariableDeclarationObject lvdo) {
-    	return this.name.equals(lvdo.getName()) && this.type.equals(lvdo.getType()) && this.variableBindingKey.equals(lvdo.getVariableBindingKey());
+    	return this.name.equals(lvdo.getName()) /*&& this.type.equals(lvdo.getType())*/;
     }
 
     public boolean equals(ParameterObject parameter) {
-    	return this.name.equals(parameter.getName()) && this.type.equals(parameter.getType()) && this.variableBindingKey.equals(parameter.getVariableBindingKey());
+    	return this.name.equals(parameter.getName()) /*&& this.type.equals(parameter.getType())*/;
     }
 
     public int hashCode() {
@@ -72,7 +66,6 @@ public class LocalVariableInstructionObject {
     		int result = 17;
     		result = 37*result + type.hashCode();
     		result = 37*result + name.hashCode();
-    		result = 37*result + variableBindingKey.hashCode();
     		hashCode = result;
     	}
     	return hashCode;

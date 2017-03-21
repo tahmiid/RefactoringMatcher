@@ -49,7 +49,6 @@ public class CompositeStatementObject extends AbstractStatement {
 
 	public void addStatement(AbstractStatement statement) {
 		statementList.add(statement);
-		//statement.setParent(this);
 	}
 
 	public List<AbstractStatement> getStatements() {
@@ -58,14 +57,13 @@ public class CompositeStatementObject extends AbstractStatement {
 
 	public void addExpression(AbstractExpression expression) {
 		expressionList.add(expression);
-		//expression.setParent(this);
 	}
 
 	public List<AbstractExpression> getExpressions() {
 		return expressionList;
 	}
 
-	public List<FieldInstructionObject> getFieldInstructionsInExpressions() {
+/*	public List<FieldInstructionObject> getFieldInstructionsInExpressions() {
 		List<FieldInstructionObject> fieldInstructions = new ArrayList<FieldInstructionObject>();
 		for(AbstractExpression expression : expressionList) {
 			fieldInstructions.addAll(expression.getFieldInstructions());
@@ -79,7 +77,7 @@ public class CompositeStatementObject extends AbstractStatement {
 			superFieldInstructions.addAll(expression.getSuperFieldInstructions());
 		}
 		return superFieldInstructions;
-	}
+	}*/
 
 	public List<LocalVariableDeclarationObject> getLocalVariableDeclarationsInExpressions() {
 		List<LocalVariableDeclarationObject> localVariableDeclarations = new ArrayList<LocalVariableDeclarationObject>();
@@ -97,21 +95,21 @@ public class CompositeStatementObject extends AbstractStatement {
 		return localVariableInstructions;
 	}
 
-	public List<MethodInvocationObject> getMethodInvocationsInExpressions() {
+/*	public List<MethodInvocationObject> getMethodInvocationsInExpressions() {
 		List<MethodInvocationObject> methodInvocations = new ArrayList<MethodInvocationObject>();
 		for(AbstractExpression expression : expressionList) {
 			methodInvocations.addAll(expression.getMethodInvocations());
 		}
 		return methodInvocations;
-	}
+	}*/
 
-	public List<SuperMethodInvocationObject> getSuperMethodInvocationsInExpressions() {
+/*	public List<SuperMethodInvocationObject> getSuperMethodInvocationsInExpressions() {
 		List<SuperMethodInvocationObject> superMethodInvocations = new ArrayList<SuperMethodInvocationObject>();
 		for(AbstractExpression expression : expressionList) {
 			superMethodInvocations.addAll(expression.getSuperMethodInvocations());
 		}
 		return superMethodInvocations;
-	}
+	}*/
 
 	public List<CreationObject> getCreationsInExpressions() {
 		List<CreationObject> creations = new ArrayList<CreationObject>();
@@ -153,15 +151,15 @@ public class CompositeStatementObject extends AbstractStatement {
 		return anonymousClassDeclarations;
 	}
 
-	public Set<MethodInvocationObject> getInvokedStaticMethodsInExpressions() {
+/*	public Set<MethodInvocationObject> getInvokedStaticMethodsInExpressions() {
 		Set<MethodInvocationObject> staticMethodInvocations = new LinkedHashSet<MethodInvocationObject>();
 		for(AbstractExpression expression : expressionList) {
 			staticMethodInvocations.addAll(expression.getInvokedStaticMethods());
 		}
 		return staticMethodInvocations;
-	}
+	}*/
 
-	public Set<PlainVariable> getUsedFieldsThroughThisReferenceInExpressions() {
+/*	public Set<PlainVariable> getUsedFieldsThroughThisReferenceInExpressions() {
 		Set<PlainVariable> usedFieldsThroughThisReference = new LinkedHashSet<PlainVariable>();
 		for(AbstractExpression expression : expressionList) {
 			usedFieldsThroughThisReference.addAll(expression.getUsedFieldsThroughThisReference());
@@ -175,9 +173,9 @@ public class CompositeStatementObject extends AbstractStatement {
 			definedFieldsThroughThisReference.addAll(expression.getDefinedFieldsThroughThisReference());
 		}
 		return definedFieldsThroughThisReference;
-	}
+	}*/
 
-	public Set<MethodInvocationObject> getInvokedMethodsThroughThisReferenceInExpressions() {
+/*	public Set<MethodInvocationObject> getInvokedMethodsThroughThisReferenceInExpressions() {
 		Set<MethodInvocationObject> invokedMethodsThroughThisReference = new LinkedHashSet<MethodInvocationObject>();
 		for(AbstractExpression expression : expressionList) {
 			invokedMethodsThroughThisReference.addAll(expression.getInvokedMethodsThroughThisReference());
@@ -199,9 +197,9 @@ public class CompositeStatementObject extends AbstractStatement {
 			staticMethodInvocations.addAll(expression.getNonDistinctInvokedStaticMethods());
 		}
 		return staticMethodInvocations;
-	}
+	}*/
 
-	public List<PlainVariable> getNonDistinctDefinedFieldsThroughThisReferenceInExpressions() {
+/*	public List<PlainVariable> getNonDistinctDefinedFieldsThroughThisReferenceInExpressions() {
 		List<PlainVariable> nonDistinctDefinedFieldsThroughThisReference = new ArrayList<PlainVariable>();
 		for(AbstractExpression expression : expressionList) {
 			nonDistinctDefinedFieldsThroughThisReference.addAll(expression.getNonDistinctDefinedFieldsThroughThisReference());
@@ -215,7 +213,7 @@ public class CompositeStatementObject extends AbstractStatement {
 			nonDistinctUsedFieldsThroughThisReference.addAll(expression.getNonDistinctUsedFieldsThroughThisReference());
 		}
 		return nonDistinctUsedFieldsThroughThisReference;
-	}
+	}*/
 
 	public Map<PlainVariable, LinkedHashSet<MethodInvocationObject>> getParametersPassedAsArgumentsInMethodInvocationsInExpressions() {
 		Map<PlainVariable, LinkedHashSet<MethodInvocationObject>> parametersPassedAsArgumentsInMethodInvocations =
