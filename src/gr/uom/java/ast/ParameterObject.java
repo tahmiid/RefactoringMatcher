@@ -1,6 +1,7 @@
 package gr.uom.java.ast;
 
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class ParameterObject extends VariableDeclarationObject {
@@ -10,10 +11,16 @@ public class ParameterObject extends VariableDeclarationObject {
 	private ASTInformation singleVariableDeclaration;
 	private volatile int hashCode = 0;
 
-	public ParameterObject(TypeObject type, String name, boolean varargs) {
-		this.type = type;
-		this.name = name;
-		this.varargs = varargs;
+	public ParameterObject(SingleVariableDeclaration parameter) {
+		Type parameterType = parameter.getType();
+		this.type = TypeObject.extractTypeObject(parameterType.toString());
+		type.setArrayDimension(type.getArrayDimension() + parameter.getExtraDimensions());
+		if (parameter.isVarargs()) {
+			type.setArrayDimension(1);
+		}
+		this.name = parameter.getName().getIdentifier();
+		this.varargs = parameter.isVarargs();
+		this.singleVariableDeclaration = ASTInformationGenerator.generateASTInformation(parameter);
 	}
 
 	public TypeObject getType() {
@@ -28,10 +35,6 @@ public class ParameterObject extends VariableDeclarationObject {
 		return varargs;
 	}
 
-	public void setSingleVariableDeclaration(SingleVariableDeclaration singleVariableDeclaration) {
-		this.singleVariableDeclaration = ASTInformationGenerator.generateASTInformation(singleVariableDeclaration);
-	}
-
 	public SingleVariableDeclaration getSingleVariableDeclaration() {
 		return (SingleVariableDeclaration)this.singleVariableDeclaration.recoverASTNode();
 	}
@@ -43,8 +46,7 @@ public class ParameterObject extends VariableDeclarationObject {
 
         if (o instanceof ParameterObject) {
             ParameterObject parameterObject = (ParameterObject)o;
-            return /*this.type.equals(parameterObject.type) &&*/ this.name.equals(parameterObject.name)/* &&
-            		this.varargs == parameterObject.varargs*/ ;//&& this.variableBindingKey.equals(parameterObject.variableBindingKey);
+            return this.hashCode() == parameterObject.hashCode();
         }
         
         return false;
@@ -55,7 +57,8 @@ public class ParameterObject extends VariableDeclarationObject {
 			int result = 17;
 			result = 37*result + name.hashCode();
 			result = 37*result + type.hashCode();
-			result = 37*result + (varargs ? 1 : 0);
+			result = 37*result + (varargs?result:0);
+			result = 37*result + singleVariableDeclaration.hashCode();
 			hashCode = result;
 		}
 		return hashCode;

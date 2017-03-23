@@ -1,25 +1,6 @@
 package gr.uom.java.ast.decomposition;
 
-import gr.uom.java.ast.AnonymousClassDeclarationObject;
-import gr.uom.java.ast.ConstructorInvocationObject;
-import gr.uom.java.ast.CreationObject;
-import gr.uom.java.ast.FieldInstructionObject;
-import gr.uom.java.ast.LiteralObject;
-import gr.uom.java.ast.LocalVariableDeclarationObject;
-import gr.uom.java.ast.LocalVariableInstructionObject;
-import gr.uom.java.ast.MethodInvocationObject;
-import gr.uom.java.ast.SuperFieldInstructionObject;
-import gr.uom.java.ast.SuperMethodInvocationObject;
-import gr.uom.java.ast.decomposition.cfg.AbstractVariable;
-import gr.uom.java.ast.decomposition.cfg.PlainVariable;
-import gr.uom.java.ast.util.ExpressionExtractor;
-import gr.uom.java.ast.util.StatementExtractor;
-import gr.uom.java.jdeodorant.refactoring.manipulators.TypeCheckElimination;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.AssertStatement;
@@ -51,12 +32,23 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import gr.uom.java.ast.AnonymousClassDeclarationObject;
+import gr.uom.java.ast.CreationObject;
+import gr.uom.java.ast.LiteralObject;
+import gr.uom.java.ast.LocalVariableDeclarationObject;
+import gr.uom.java.ast.LocalVariableInstructionObject;
+import gr.uom.java.ast.ParameterObject;
+import gr.uom.java.ast.decomposition.cfg.PlainVariable;
+import gr.uom.java.ast.util.ExpressionExtractor;
+
 public class MethodBodyObject {
 	
 	private CompositeStatementObject compositeStatement;
+	private List<ParameterObject> parameters;
 	
-	public MethodBodyObject(Block methodBody) {
-		this.compositeStatement = new CompositeStatementObject(methodBody, StatementType.BLOCK, null);
+	public MethodBodyObject(Block methodBody, List<ParameterObject> parameterList) {
+		this.parameters = parameterList;
+		this.compositeStatement = new CompositeStatementObject(methodBody, parameters, StatementType.BLOCK, null);
         List<Statement> statements = methodBody.statements();
 		for(Statement statement : statements) {
 			processStatement(compositeStatement, statement);
@@ -67,147 +59,6 @@ public class MethodBodyObject {
 		return compositeStatement;
 	}
 
-	public List<TypeCheckElimination> generateTypeCheckEliminations() {
-		List<TypeCheckElimination> typeCheckEliminations = new ArrayList<TypeCheckElimination>();
-		StatementExtractor statementExtractor = new StatementExtractor();
-		List<Statement> switchStatements = statementExtractor.getSwitchStatements(compositeStatement.getStatement());
-		List<CompositeStatementObject> switchCompositeStatements = compositeStatement.getSwitchStatements();
-		for(Statement statement : switchStatements) {
-			SwitchStatement switchStatement = (SwitchStatement)statement;
-			TypeCheckElimination typeCheckElimination = new TypeCheckElimination();
-			typeCheckElimination.setTypeCheckCodeFragment(switchStatement);
-			List<Statement> statements = switchStatement.statements();
-			Expression switchCaseExpression = null;
-			boolean isDefaultCase = false;
-			Set<Expression> switchCaseExpressions = new LinkedHashSet<Expression>();
-			for(Statement statement2 : statements) {
-				if(statement2 instanceof SwitchCase) {
-					SwitchCase switchCase = (SwitchCase)statement2;
-					switchCaseExpression = switchCase.getExpression();
-					isDefaultCase = switchCase.isDefault();
-					if(!isDefaultCase)
-						switchCaseExpressions.add(switchCaseExpression);
-				}
-				else {
-					if(statement2 instanceof Block) {
-						Block block = (Block)statement2;
-						List<Statement> blockStatements = block.statements();
-						for(Statement blockStatement : blockStatements) {
-							if(!(blockStatement instanceof BreakStatement)) {
-								for(Expression expression : switchCaseExpressions) {
-									typeCheckElimination.addTypeCheck(expression, blockStatement);
-								}
-								if(isDefaultCase) {
-									typeCheckElimination.addDefaultCaseStatement(blockStatement);
-								}
-							}
-						}
-						List<Statement> branchingStatements = statementExtractor.getBranchingStatements(statement2);
-						if(branchingStatements.size() > 0) {
-							for(Expression expression : switchCaseExpressions) {
-								if(!typeCheckElimination.containsTypeCheckExpression(expression))
-									typeCheckElimination.addEmptyTypeCheck(expression);
-							}
-							switchCaseExpressions.clear();
-						}
-					}
-					else {
-						if(!(statement2 instanceof BreakStatement)) {
-							for(Expression expression : switchCaseExpressions) {
-								typeCheckElimination.addTypeCheck(expression, statement2);
-							}
-							if(isDefaultCase) {
-								typeCheckElimination.addDefaultCaseStatement(statement2);
-							}
-						}
-						List<Statement> branchingStatements = statementExtractor.getBranchingStatements(statement2);
-						if(statement2 instanceof BreakStatement || statement2 instanceof ReturnStatement || branchingStatements.size() > 0) {
-							for(Expression expression : switchCaseExpressions) {
-								if(!typeCheckElimination.containsTypeCheckExpression(expression))
-									typeCheckElimination.addEmptyTypeCheck(expression);
-							}
-							switchCaseExpressions.clear();
-						}
-					}
-				}
-			}
-			typeCheckEliminations.add(typeCheckElimination);
-			for(CompositeStatementObject composite : switchCompositeStatements) {
-				if(composite.getStatement().toString().equals(switchStatement.toString())) {
-					typeCheckElimination.setTypeCheckCompositeStatement(composite);
-					break;
-				}
-			}
-		}
-		
-		List<Statement> ifStatements = statementExtractor.getIfStatements(compositeStatement.getStatement());
-		List<CompositeStatementObject> ifCompositeStatements = compositeStatement.getIfStatements();
-		TypeCheckElimination typeCheckElimination = new TypeCheckElimination();
-		int i = 0;
-		for(Statement statement : ifStatements) {
-			IfStatement ifStatement = (IfStatement)statement;
-			Expression ifExpression = ifStatement.getExpression();
-			Statement thenStatement = ifStatement.getThenStatement();
-			if(thenStatement instanceof Block) {
-				Block block = (Block)thenStatement;
-				List<Statement> statements = block.statements();
-				for(Statement statement2 : statements) {
-					typeCheckElimination.addTypeCheck(ifExpression, statement2);
-				}
-			}
-			else {
-				typeCheckElimination.addTypeCheck(ifExpression, thenStatement);
-			}
-			Statement elseStatement = ifStatement.getElseStatement();
-			if(elseStatement != null) {
-				if(elseStatement instanceof Block) {
-					Block block = (Block)elseStatement;
-					List<Statement> statements = block.statements();
-					for(Statement statement2 : statements) {
-						typeCheckElimination.addDefaultCaseStatement(statement2);
-					}
-				}
-				else if(!(elseStatement instanceof IfStatement)) {
-					typeCheckElimination.addDefaultCaseStatement(elseStatement);
-				}
-			}
-			if(ifStatements.size()-1 > i) {
-				IfStatement nextIfStatement = (IfStatement)ifStatements.get(i+1);
-				if(!ifStatement.getParent().equals(nextIfStatement)) {
-					typeCheckElimination.setTypeCheckCodeFragment(ifStatement);
-					typeCheckEliminations.add(typeCheckElimination);
-					for(CompositeStatementObject composite : ifCompositeStatements) {
-						if(composite.getStatement().toString().equals(ifStatement.toString())) {
-							typeCheckElimination.setTypeCheckCompositeStatement(composite);
-							break;
-						}
-					}
-					typeCheckElimination = new TypeCheckElimination();
-				}
-			}
-			else {
-				typeCheckElimination.setTypeCheckCodeFragment(ifStatement);
-				typeCheckEliminations.add(typeCheckElimination);
-				for(CompositeStatementObject composite : ifCompositeStatements) {
-					if(composite.getStatement().toString().equals(ifStatement.toString())) {
-						typeCheckElimination.setTypeCheckCompositeStatement(composite);
-						break;
-					}
-				}
-			}
-			i++;
-		}
-		return typeCheckEliminations;
-	}
-
-/*	public List<FieldInstructionObject> getFieldInstructions() {
-		return compositeStatement.getFieldInstructions();
-	}
-
-	public List<SuperFieldInstructionObject> getSuperFieldInstructions() {
-		return compositeStatement.getSuperFieldInstructions();
-	}*/
-
 	public List<LocalVariableDeclarationObject> getLocalVariableDeclarations() {
 		return compositeStatement.getLocalVariableDeclarations();
 	}
@@ -215,18 +66,6 @@ public class MethodBodyObject {
 	public List<LocalVariableInstructionObject> getLocalVariableInstructions() {
 		return compositeStatement.getLocalVariableInstructions();
 	}
-
-/*	public List<MethodInvocationObject> getMethodInvocations() {
-		return compositeStatement.getMethodInvocations();
-	}
-
-	public List<SuperMethodInvocationObject> getSuperMethodInvocations() {
-		return compositeStatement.getSuperMethodInvocations();
-	}
-
-	public List<ConstructorInvocationObject> getConstructorInvocations() {
-		return compositeStatement.getConstructorInvocations();
-	}*/
 
 	public List<CreationObject> getCreations() {
 		return compositeStatement.getCreations();
@@ -244,106 +83,6 @@ public class MethodBodyObject {
 		return compositeStatement.getExceptionsInThrowStatements();
 	}
 
-/*	public boolean containsMethodInvocation(MethodInvocationObject methodInvocation) {
-		return compositeStatement.containsMethodInvocation(methodInvocation);
-	}*/
-
-/*	public boolean containsFieldInstruction(FieldInstructionObject fieldInstruction) {
-		return compositeStatement.containsFieldInstruction(fieldInstruction);
-	}*/
-
-/*	public boolean containsSuperMethodInvocation(SuperMethodInvocationObject superMethodInvocation) {
-		return compositeStatement.containsSuperMethodInvocation(superMethodInvocation);
-	}
-
-	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughFields() {
-		return compositeStatement.getInvokedMethodsThroughFields();
-	}
-
-	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughParameters() {
-		return compositeStatement.getInvokedMethodsThroughParameters();
-	}
-
-	public Map<AbstractVariable, ArrayList<MethodInvocationObject>> getNonDistinctInvokedMethodsThroughFields() {
-		return compositeStatement.getNonDistinctInvokedMethodsThroughFields();
-	}
-
-	public Map<AbstractVariable, ArrayList<MethodInvocationObject>> getNonDistinctInvokedMethodsThroughParameters() {
-		return compositeStatement.getNonDistinctInvokedMethodsThroughParameters();
-	}
-
-	public Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> getInvokedMethodsThroughLocalVariables() {
-		return compositeStatement.getInvokedMethodsThroughLocalVariables();
-	}
-
-	public Set<MethodInvocationObject> getInvokedMethodsThroughThisReference() {
-		return compositeStatement.getInvokedMethodsThroughThisReference();
-	}
-
-	public List<MethodInvocationObject> getNonDistinctInvokedMethodsThroughThisReference() {
-		return compositeStatement.getNonDistinctInvokedMethodsThroughThisReference();
-	}
-
-	public Set<MethodInvocationObject> getInvokedStaticMethods() {
-		return compositeStatement.getInvokedStaticMethods();
-	}
-*/
-/*	public Set<AbstractVariable> getDefinedFieldsThroughFields() {
-		return compositeStatement.getDefinedFieldsThroughFields();
-	}
-
-	public Set<AbstractVariable> getUsedFieldsThroughFields() {
-		return compositeStatement.getUsedFieldsThroughFields();
-	}
-
-	public List<AbstractVariable> getNonDistinctDefinedFieldsThroughFields() {
-		return compositeStatement.getNonDistinctDefinedFieldsThroughFields();
-	}
-
-	public List<AbstractVariable> getNonDistinctUsedFieldsThroughFields() {
-		return compositeStatement.getNonDistinctUsedFieldsThroughFields();
-	}
-
-	public Set<AbstractVariable> getDefinedFieldsThroughParameters() {
-		return compositeStatement.getDefinedFieldsThroughParameters();
-	}
-
-	public Set<AbstractVariable> getUsedFieldsThroughParameters() {
-		return compositeStatement.getUsedFieldsThroughParameters();
-	}
-
-	public List<AbstractVariable> getNonDistinctDefinedFieldsThroughParameters() {
-		return compositeStatement.getNonDistinctDefinedFieldsThroughParameters();
-	}
-
-	public List<AbstractVariable> getNonDistinctUsedFieldsThroughParameters() {
-		return compositeStatement.getNonDistinctUsedFieldsThroughParameters();
-	}
-
-	public Set<AbstractVariable> getDefinedFieldsThroughLocalVariables() {
-		return compositeStatement.getDefinedFieldsThroughLocalVariables();
-	}
-
-	public Set<AbstractVariable> getUsedFieldsThroughLocalVariables() {
-		return compositeStatement.getUsedFieldsThroughLocalVariables();
-	}
-
-	public Set<PlainVariable> getDefinedFieldsThroughThisReference() {
-		return compositeStatement.getDefinedFieldsThroughThisReference();
-	}
-
-	public List<PlainVariable> getNonDistinctDefinedFieldsThroughThisReference() {
-		return compositeStatement.getNonDistinctDefinedFieldsThroughThisReference();
-	}
-
-	public Set<PlainVariable> getUsedFieldsThroughThisReference() {
-		return compositeStatement.getUsedFieldsThroughThisReference();
-	}
-
-	public List<PlainVariable> getNonDistinctUsedFieldsThroughThisReference() {
-		return compositeStatement.getNonDistinctUsedFieldsThroughThisReference();
-	}*/
-
 	public Set<PlainVariable> getDeclaredLocalVariables() {
 		return compositeStatement.getDeclaredLocalVariables();
 	}
@@ -354,18 +93,6 @@ public class MethodBodyObject {
 
 	public Set<PlainVariable> getUsedLocalVariables() {
 		return compositeStatement.getUsedLocalVariables();
-	}
-
-	public Map<PlainVariable, LinkedHashSet<MethodInvocationObject>> getParametersPassedAsArgumentsInMethodInvocations() {
-		return compositeStatement.getParametersPassedAsArgumentsInMethodInvocations();
-	}
-
-	public Map<PlainVariable, LinkedHashSet<SuperMethodInvocationObject>> getParametersPassedAsArgumentsInSuperMethodInvocations() {
-		return compositeStatement.getParametersPassedAsArgumentsInSuperMethodInvocations();
-	}
-
-	public Map<PlainVariable, LinkedHashSet<ConstructorInvocationObject>> getParametersPassedAsArgumentsInConstructorInvocations() {
-		return compositeStatement.getParametersPassedAsArgumentsInConstructorInvocations();
 	}
 
 	public boolean containsSuperMethodInvocation() {
@@ -390,7 +117,7 @@ public class MethodBodyObject {
 		if(statement instanceof Block) {
 			Block block = (Block)statement;
 			List<Statement> blockStatements = block.statements();
-			CompositeStatementObject child = new CompositeStatementObject(block, StatementType.BLOCK, parent);
+			CompositeStatementObject child = new CompositeStatementObject(block, parameters, StatementType.BLOCK, parent);
 			parent.addStatement(child);
 			for(Statement blockStatement : blockStatements) {
 				processStatement(child, blockStatement);
@@ -398,8 +125,8 @@ public class MethodBodyObject {
 		}
 		else if(statement instanceof IfStatement) {
 			IfStatement ifStatement = (IfStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(ifStatement, StatementType.IF, parent);
-			AbstractExpression abstractExpression = new AbstractExpression(ifStatement.getExpression(), child);
+			CompositeStatementObject child = new CompositeStatementObject(ifStatement, parameters, StatementType.IF, parent);
+			AbstractExpression abstractExpression = new AbstractExpression(ifStatement.getExpression(), parameters, child);
 			child.addExpression(abstractExpression);
 			parent.addStatement(child);
 			processStatement(child, ifStatement.getThenStatement());
@@ -409,20 +136,20 @@ public class MethodBodyObject {
 		}
 		else if(statement instanceof ForStatement) {
 			ForStatement forStatement = (ForStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(forStatement, StatementType.FOR, parent);
+			CompositeStatementObject child = new CompositeStatementObject(forStatement, parameters, StatementType.FOR, parent);
 			List<Expression> initializers = forStatement.initializers();
 			for(Expression initializer : initializers) {
-				AbstractExpression abstractExpression = new AbstractExpression(initializer, child);
+				AbstractExpression abstractExpression = new AbstractExpression(initializer, parameters, child);
 				child.addExpression(abstractExpression);
 			}
 			Expression expression = forStatement.getExpression();
 			if(expression != null) {
-				AbstractExpression abstractExpression = new AbstractExpression(expression, child);
+				AbstractExpression abstractExpression = new AbstractExpression(expression, parameters, child);
 				child.addExpression(abstractExpression);
 			}
 			List<Expression> updaters = forStatement.updaters();
 			for(Expression updater : updaters) {
-				AbstractExpression abstractExpression = new AbstractExpression(updater, child);
+				AbstractExpression abstractExpression = new AbstractExpression(updater, parameters, child);
 				child.addExpression(abstractExpression);
 			}
 			parent.addStatement(child);
@@ -430,44 +157,44 @@ public class MethodBodyObject {
 		}
 		else if(statement instanceof EnhancedForStatement) {
 			EnhancedForStatement enhancedForStatement = (EnhancedForStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(enhancedForStatement, StatementType.ENHANCED_FOR, parent);
+			CompositeStatementObject child = new CompositeStatementObject(enhancedForStatement, parameters, StatementType.ENHANCED_FOR, parent);
 			SingleVariableDeclaration variableDeclaration = enhancedForStatement.getParameter();
-			AbstractExpression variableDeclarationName = new AbstractExpression(variableDeclaration.getName(), child);
+			AbstractExpression variableDeclarationName = new AbstractExpression(variableDeclaration.getName(), parameters, child);
 			child.addExpression(variableDeclarationName);
 			if(variableDeclaration.getInitializer() != null) {
-				AbstractExpression variableDeclarationInitializer = new AbstractExpression(variableDeclaration.getInitializer(), child);
+				AbstractExpression variableDeclarationInitializer = new AbstractExpression(variableDeclaration.getInitializer(), parameters, child);
 				child.addExpression(variableDeclarationInitializer);
 			}
-			AbstractExpression abstractExpression = new AbstractExpression(enhancedForStatement.getExpression(), child);
+			AbstractExpression abstractExpression = new AbstractExpression(enhancedForStatement.getExpression(), parameters, child);
 			child.addExpression(abstractExpression);
 			parent.addStatement(child);
 			processStatement(child, enhancedForStatement.getBody());
 		}
 		else if(statement instanceof WhileStatement) {
 			WhileStatement whileStatement = (WhileStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(whileStatement, StatementType.WHILE, parent);
-			AbstractExpression abstractExpression = new AbstractExpression(whileStatement.getExpression(), child);
+			CompositeStatementObject child = new CompositeStatementObject(whileStatement, parameters, StatementType.WHILE, parent);
+			AbstractExpression abstractExpression = new AbstractExpression(whileStatement.getExpression(), parameters, child);
 			child.addExpression(abstractExpression);
 			parent.addStatement(child);
 			processStatement(child, whileStatement.getBody());
 		}
 		else if(statement instanceof DoStatement) {
 			DoStatement doStatement = (DoStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(doStatement, StatementType.DO, parent);
-			AbstractExpression abstractExpression = new AbstractExpression(doStatement.getExpression(), child);
+			CompositeStatementObject child = new CompositeStatementObject(doStatement, parameters, StatementType.DO, parent);
+			AbstractExpression abstractExpression = new AbstractExpression(doStatement.getExpression(), parameters, child);
 			child.addExpression(abstractExpression);
 			parent.addStatement(child);
 			processStatement(child, doStatement.getBody());
 		}
 		else if(statement instanceof ExpressionStatement) {
 			ExpressionStatement expressionStatement = (ExpressionStatement)statement;
-			StatementObject child = new StatementObject(expressionStatement, StatementType.EXPRESSION, parent);
+			StatementObject child = new StatementObject(expressionStatement, parameters, StatementType.EXPRESSION, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof SwitchStatement) {
 			SwitchStatement switchStatement = (SwitchStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(switchStatement, StatementType.SWITCH, parent);
-			AbstractExpression abstractExpression = new AbstractExpression(switchStatement.getExpression(), child);
+			CompositeStatementObject child = new CompositeStatementObject(switchStatement, parameters, StatementType.SWITCH, parent);
+			AbstractExpression abstractExpression = new AbstractExpression(switchStatement.getExpression(), parameters, child);
 			child.addExpression(abstractExpression);
 			parent.addStatement(child);
 			List<Statement> switchStatements = switchStatement.statements();
@@ -476,42 +203,42 @@ public class MethodBodyObject {
 		}
 		else if(statement instanceof SwitchCase) {
 			SwitchCase switchCase = (SwitchCase)statement;
-			StatementObject child = new StatementObject(switchCase, StatementType.SWITCH_CASE, parent);
+			StatementObject child = new StatementObject(switchCase, parameters, StatementType.SWITCH_CASE, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof AssertStatement) {
 			AssertStatement assertStatement = (AssertStatement)statement;
-			StatementObject child = new StatementObject(assertStatement, StatementType.ASSERT, parent);
+			StatementObject child = new StatementObject(assertStatement, parameters, StatementType.ASSERT, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof LabeledStatement) {
 			LabeledStatement labeledStatement = (LabeledStatement)statement;
-			CompositeStatementObject child = new CompositeStatementObject(labeledStatement, StatementType.LABELED, parent);
+			CompositeStatementObject child = new CompositeStatementObject(labeledStatement, parameters, StatementType.LABELED, parent);
 			parent.addStatement(child);
 			processStatement(child, labeledStatement.getBody());
 		}
 		else if(statement instanceof ReturnStatement) {
 			ReturnStatement returnStatement = (ReturnStatement)statement;
-			StatementObject child = new StatementObject(returnStatement, StatementType.RETURN, parent);
+			StatementObject child = new StatementObject(returnStatement, parameters, StatementType.RETURN, parent);
 			parent.addStatement(child);	
 		}
 		else if(statement instanceof SynchronizedStatement) {
 			SynchronizedStatement synchronizedStatement = (SynchronizedStatement)statement;
-			SynchronizedStatementObject child = new SynchronizedStatementObject(synchronizedStatement, parent);
+			SynchronizedStatementObject child = new SynchronizedStatementObject(synchronizedStatement, parameters, parent);
 			parent.addStatement(child);
 			processStatement(child, synchronizedStatement.getBody());
 		}
 		else if(statement instanceof ThrowStatement) {
 			ThrowStatement throwStatement = (ThrowStatement)statement;
-			StatementObject child = new StatementObject(throwStatement, StatementType.THROW, parent);
+			StatementObject child = new StatementObject(throwStatement, parameters, StatementType.THROW, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof TryStatement) {
 			TryStatement tryStatement = (TryStatement)statement;
-			TryStatementObject child = new TryStatementObject(tryStatement, parent);
+			TryStatementObject child = new TryStatementObject(tryStatement, parameters, parent);
 			List<VariableDeclarationExpression> resources = tryStatement.resources();
 			for(VariableDeclarationExpression expression : resources) {
-				AbstractExpression variableDeclarationExpression = new AbstractExpression(expression, child);
+				AbstractExpression variableDeclarationExpression = new AbstractExpression(expression, parameters, child);
 				child.addExpression(variableDeclarationExpression);
 			}
 			parent.addStatement(child);
@@ -520,7 +247,7 @@ public class MethodBodyObject {
 			for(CatchClause catchClause : catchClauses) {
 				CatchClauseObject catchClauseObject = new CatchClauseObject();
 				Block catchClauseBody = catchClause.getBody();
-				CompositeStatementObject catchClauseStatementObject = new CompositeStatementObject(catchClauseBody, StatementType.BLOCK, null);
+				CompositeStatementObject catchClauseStatementObject = new CompositeStatementObject(catchClauseBody, parameters, StatementType.BLOCK, null);
 				SingleVariableDeclaration variableDeclaration = catchClause.getException();
 				Type variableDeclarationType = variableDeclaration.getType();
 				if(variableDeclarationType instanceof UnionType) {
@@ -533,10 +260,10 @@ public class MethodBodyObject {
 				else {
 					catchClauseObject.addExceptionType(variableDeclarationType.toString());
 				}
-				AbstractExpression variableDeclarationName = new AbstractExpression(variableDeclaration.getName(), child);
+				AbstractExpression variableDeclarationName = new AbstractExpression(variableDeclaration.getName(), parameters, child);
 				catchClauseObject.addExpression(variableDeclarationName);
 				if(variableDeclaration.getInitializer() != null) {
-					AbstractExpression variableDeclarationInitializer = new AbstractExpression(variableDeclaration.getInitializer(), child);
+					AbstractExpression variableDeclarationInitializer = new AbstractExpression(variableDeclaration.getInitializer(), parameters, child);
 					catchClauseObject.addExpression(variableDeclarationInitializer);
 				}
 				List<Statement> blockStatements = catchClauseBody.statements();
@@ -548,7 +275,7 @@ public class MethodBodyObject {
 			}
 			Block finallyBlock = tryStatement.getFinally();
 			if(finallyBlock != null) {
-				CompositeStatementObject finallyClauseStatementObject = new CompositeStatementObject(finallyBlock, StatementType.BLOCK, null);
+				CompositeStatementObject finallyClauseStatementObject = new CompositeStatementObject(finallyBlock, parameters, StatementType.BLOCK, null);
 				List<Statement> blockStatements = finallyBlock.statements();
 				for(Statement blockStatement : blockStatements) {
 					processStatement(finallyClauseStatementObject, blockStatement);
@@ -558,32 +285,32 @@ public class MethodBodyObject {
 		}
 		else if(statement instanceof VariableDeclarationStatement) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement)statement;
-			StatementObject child = new StatementObject(variableDeclarationStatement, StatementType.VARIABLE_DECLARATION, parent);
+			StatementObject child = new StatementObject(variableDeclarationStatement, parameters, StatementType.VARIABLE_DECLARATION, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof ConstructorInvocation) {
 			ConstructorInvocation constructorInvocation = (ConstructorInvocation)statement;
-			StatementObject child = new StatementObject(constructorInvocation, StatementType.CONSTRUCTOR_INVOCATION, parent);
+			StatementObject child = new StatementObject(constructorInvocation, parameters, StatementType.CONSTRUCTOR_INVOCATION, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof SuperConstructorInvocation) {
 			SuperConstructorInvocation superConstructorInvocation = (SuperConstructorInvocation)statement;
-			StatementObject child = new StatementObject(superConstructorInvocation, StatementType.SUPER_CONSTRUCTOR_INVOCATION, parent);
+			StatementObject child = new StatementObject(superConstructorInvocation, parameters, StatementType.SUPER_CONSTRUCTOR_INVOCATION, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof BreakStatement) {
 			BreakStatement breakStatement = (BreakStatement)statement;
-			StatementObject child = new StatementObject(breakStatement, StatementType.BREAK, parent);
+			StatementObject child = new StatementObject(breakStatement, parameters, StatementType.BREAK, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof ContinueStatement) {
 			ContinueStatement continueStatement = (ContinueStatement)statement;
-			StatementObject child = new StatementObject(continueStatement, StatementType.CONTINUE, parent);
+			StatementObject child = new StatementObject(continueStatement, parameters, StatementType.CONTINUE, parent);
 			parent.addStatement(child);
 		}
 		else if(statement instanceof EmptyStatement) {
 			EmptyStatement emptyStatement = (EmptyStatement)statement;
-			StatementObject child = new StatementObject(emptyStatement, StatementType.EMPTY, parent);
+			StatementObject child = new StatementObject(emptyStatement, parameters, StatementType.EMPTY, parent);
 			parent.addStatement(child);
 		}
 	}

@@ -82,7 +82,9 @@ import gr.uom.java.ast.decomposition.cfg.BasicBlockCFG;
 import gr.uom.java.ast.decomposition.cfg.CFG;
 import gr.uom.java.ast.decomposition.cfg.CFGBranchNode;
 import gr.uom.java.ast.decomposition.cfg.CFGNode;
+import gr.uom.java.ast.decomposition.cfg.GraphNode;
 import gr.uom.java.ast.decomposition.cfg.PDG;
+import gr.uom.java.ast.decomposition.cfg.PDGNode;
 
 public class RefactoringMatcherTest {
 
@@ -128,7 +130,7 @@ public class RefactoringMatcherTest {
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
 			"https://github.com/jfree/jfreechart.git",
-			// "https://github.com/apache/commons-lang.git",
+//			 "https://github.com/apache/commons-lang.git",
 			// "https://github.com/apache/nifi-minifi.git",
 			// "https://github.com/apache/knox.git",
 			// "https://github.com/apache/zeppelin.git",
@@ -161,6 +163,10 @@ public class RefactoringMatcherTest {
 		for (Project project : projects) {
 			refactorings.addAll(project.getRefactorings());
 		}
+		
+		RefactoringData ref = refactorings.get(6);
+		refactorings.clear();
+		refactorings.add(ref);
 
 		for (RefactoringData refactoringData : refactorings) {
 			Repository repo = projects.get(0).getRepository();
@@ -176,7 +182,7 @@ public class RefactoringMatcherTest {
 				MethodObject methodObject = createMethodObject(methodDeclaration);
 				CFG cfg = new CFG(methodObject);
 				PDG pdg = new PDG(cfg);
-
+				
 				System.out.println(pdg.getNodes().size());
 				System.out.println("Done");
 			}

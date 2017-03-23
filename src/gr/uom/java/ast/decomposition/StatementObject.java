@@ -1,14 +1,14 @@
 package gr.uom.java.ast.decomposition;
 
-import gr.uom.java.ast.util.ExpressionExtractor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+
+import gr.uom.java.ast.ParameterObject;
+import gr.uom.java.ast.util.ExpressionExtractor;
 
 /*
  * StatementObject represents the following AST Statement subclasses:
@@ -27,25 +27,19 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 
 public class StatementObject extends AbstractStatement {
 	
-	public StatementObject(Statement statement, StatementType type, AbstractMethodFragment parent) {
-		super(statement, type, parent);
+	public StatementObject(Statement statement, List<ParameterObject> parameters, StatementType type, AbstractMethodFragment parent) {
+		super(statement, parameters, type, parent);
 		
 		ExpressionExtractor expressionExtractor = new ExpressionExtractor();
         List<Expression> assignments = expressionExtractor.getAssignments(statement);
         List<Expression> postfixExpressions = expressionExtractor.getPostfixExpressions(statement);
         List<Expression> prefixExpressions = expressionExtractor.getPrefixExpressions(statement);
         processVariablesWithoutBindingInfo(expressionExtractor.getVariableInstructions(statement), assignments, postfixExpressions, prefixExpressions);
-//        processVariables(expressionExtractor.getVariableInstructions(statement), assignments, postfixExpressions, prefixExpressions);
-//		processMethodInvocations(expressionExtractor.getMethodInvocations(statement));
-//		processClassInstanceCreations(expressionExtractor.getClassInstanceCreations(statement));
 		processArrayCreations(expressionExtractor.getArrayCreations(statement));
 		processLiterals(expressionExtractor.getLiterals(statement));
 		if(statement instanceof ThrowStatement) {
 			processThrowStatement((ThrowStatement)statement);
 		}
-/*		if(statement instanceof ConstructorInvocation) {
-			processConstructorInvocation((ConstructorInvocation)statement);
-		}*/
 	}
 
 	public String toString() {

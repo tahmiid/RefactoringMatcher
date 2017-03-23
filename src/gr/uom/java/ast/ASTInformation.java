@@ -45,7 +45,8 @@ public class ASTInformation {
 		
 		if(o instanceof ASTInformation) {
 			ASTInformation astInformation = (ASTInformation)o;
-			return this.iTypeRoot.equals(astInformation.iTypeRoot) &&
+			return 
+					this.iTypeRoot.equals(astInformation.iTypeRoot) &&
 					this.startPosition == astInformation.startPosition &&
 					this.length == astInformation.length &&
 					this.nodeType == astInformation.nodeType;
@@ -56,10 +57,12 @@ public class ASTInformation {
 	public int hashCode() {
 		if(hashCode == 0) {
 			int result = 17;
-			result = 37*result + iTypeRoot.hashCode();
+//			result = 37*result + iTypeRoot.hashCode();
 			result = 37*result + startPosition;
 			result = 37*result + length;
 			result = 37*result + nodeType;
+			result = 37*result + astNode.hashCode();
+			hashCode = result;
 		}
 		return hashCode;
 	}

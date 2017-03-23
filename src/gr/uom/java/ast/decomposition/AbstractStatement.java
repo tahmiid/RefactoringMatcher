@@ -4,6 +4,7 @@ import java.util.List;
 
 import gr.uom.java.ast.ASTInformation;
 import gr.uom.java.ast.ASTInformationGenerator;
+import gr.uom.java.ast.ParameterObject;
 
 import org.eclipse.jdt.core.dom.Statement;
 
@@ -12,8 +13,8 @@ public abstract class AbstractStatement extends AbstractMethodFragment {
 	private ASTInformation statement;
 	private StatementType type;
 	
-    public AbstractStatement(Statement statement, StatementType type, AbstractMethodFragment parent) {
-    	super(parent);
+    public AbstractStatement(Statement statement, List<ParameterObject> parameters, StatementType type, AbstractMethodFragment parent) {
+    	super(parent, parameters);
     	this.type = type;
     	this.statement = ASTInformationGenerator.generateASTInformation(statement);
     }

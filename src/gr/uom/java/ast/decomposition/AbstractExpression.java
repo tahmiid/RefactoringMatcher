@@ -4,6 +4,7 @@ import java.util.List;
 
 import gr.uom.java.ast.ASTInformation;
 import gr.uom.java.ast.ASTInformationGenerator;
+import gr.uom.java.ast.ParameterObject;
 import gr.uom.java.ast.util.ExpressionExtractor;
 
 import org.eclipse.jdt.core.dom.Expression;
@@ -12,14 +13,14 @@ public class AbstractExpression extends AbstractMethodFragment {
 
 	private ASTInformation expression;
 	
-	public AbstractExpression(Expression expression) {
+/*	public AbstractExpression(Expression expression) {
 		super(null);
 		this.expression = ASTInformationGenerator.generateASTInformation(expression);
 		processExpression(expression);
-	}
+	}*/
 
-	public AbstractExpression(Expression expression, AbstractMethodFragment parent) {
-		super(parent);
+	public AbstractExpression(Expression expression, List<ParameterObject> parameters, AbstractMethodFragment parent) {
+		super(parent, parameters);
 		this.expression = ASTInformationGenerator.generateASTInformation(expression);
 		processExpression(expression);
 	}
@@ -29,10 +30,7 @@ public class AbstractExpression extends AbstractMethodFragment {
         List<Expression> assignments = expressionExtractor.getAssignments(expression);
         List<Expression> postfixExpressions = expressionExtractor.getPostfixExpressions(expression);
         List<Expression> prefixExpressions = expressionExtractor.getPrefixExpressions(expression);
-//        processVariables(expressionExtractor.getVariableInstructions(expression), assignments, postfixExpressions, prefixExpressions);
 		processVariablesWithoutBindingInfo(expressionExtractor.getVariableInstructions(expression), assignments, postfixExpressions, prefixExpressions);
-//        processMethodInvocations(expressionExtractor.getMethodInvocations(expression));
-//		processClassInstanceCreations(expressionExtractor.getClassInstanceCreations(expression));
 		processArrayCreations(expressionExtractor.getArrayCreations(expression));
 		processLiterals(expressionExtractor.getLiterals(expression));
 	}

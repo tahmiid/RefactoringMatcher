@@ -1,25 +1,26 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
+
+import gr.uom.java.ast.TypeObject;
 
 public class CompositeVariable extends AbstractVariable {
 	private AbstractVariable rightPart;
 	private volatile int hashCode = 0;
 	
-	public CompositeVariable(VariableDeclaration referenceName, AbstractVariable rightPart) {
-		super(referenceName);
+	public CompositeVariable(VariableDeclaration variableDeclaration, AbstractVariable rightPart) {
+		super(variableDeclaration);
 		this.rightPart = rightPart;
 	}
+/*
+	public CompositeVariable(AbstractVariable leftPart, AbstractVariable rightPart) {
+		this(leftPart.getVariableName(), leftPart.getVariableType(), rightPart);
+	}*/
 
-	public CompositeVariable(AbstractVariable argument, AbstractVariable rightPart) {
-		this(argument.getVariableName(), argument.getVariableType(), rightPart);
-	}
-
-	private CompositeVariable(String variableName, String variableType, AbstractVariable rightPart) {
+/*	private CompositeVariable(String variableName, String variableType, AbstractVariable rightPart) {
 		super(variableName, variableType);
 		this.rightPart = rightPart;
-	}
+	}*/
 
 	//if composite variable is "one.two.three" then right part is "two.three"
 	public AbstractVariable getRightPart() {
@@ -28,12 +29,18 @@ public class CompositeVariable extends AbstractVariable {
 
 	//if composite variable is "one.two.three" then left part is "one.two"
 	public AbstractVariable getLeftPart() {
+		PlainVariable leftPart;
+		if(variableDeclaration!=null)
+			leftPart = new PlainVariable(getVariableDeclaration());
+		else
+			leftPart = new PlainVariable(variableName);
+		
 		if(rightPart instanceof PlainVariable) {
-			return new PlainVariable(variableName, variableType);
+			return leftPart;
 		}
 		else {
 			CompositeVariable compositeVariable = (CompositeVariable)rightPart;
-			return new CompositeVariable(variableName, variableType, compositeVariable.getLeftPart());
+			return new CompositeVariable(leftPart.getVariableDeclaration(), compositeVariable.getLeftPart());
 		}
 	}
 
@@ -49,7 +56,12 @@ public class CompositeVariable extends AbstractVariable {
 
 	//if composite variable is "one.two.three" then initial variable is "one"
 	public PlainVariable getInitialVariable() {
-		return new PlainVariable(variableName, variableType);
+		PlainVariable initialVariable;
+		if(variableDeclaration!=null)
+			initialVariable = new PlainVariable(getVariableDeclaration());
+		else
+			initialVariable = new PlainVariable(variableName);
+		return initialVariable;
 	}
 
 	public boolean containsPlainVariable(PlainVariable variable) {
@@ -93,8 +105,10 @@ public class CompositeVariable extends AbstractVariable {
 		}
 		if(o instanceof CompositeVariable) {
 			CompositeVariable composite = (CompositeVariable)o;
-			return this.equals(composite) &&
-			this.rightPart.equals(composite.rightPart);
+/*			if(this.variableType != null && composite.variableType != null)
+				return this.hashCode() ==  composite.hashCode();
+			else*/
+				return this.variableName.equals(composite.variableName);
 		}
 		return false;
 	}
@@ -102,6 +116,7 @@ public class CompositeVariable extends AbstractVariable {
 	public int hashCode() {
 		if(hashCode == 0) {
 			int result = 17;
+			result = 31*result + super.hashCode();
 			result = 31*result + rightPart.hashCode();
 			hashCode = result;
 		}

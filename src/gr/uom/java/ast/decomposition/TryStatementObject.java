@@ -1,21 +1,19 @@
 package gr.uom.java.ast.decomposition;
 
-import gr.uom.java.ast.MethodInvocationObject;
-import gr.uom.java.ast.decomposition.cfg.AbstractVariable;
-
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.core.dom.Statement;
+
+import gr.uom.java.ast.ParameterObject;
+import gr.uom.java.ast.decomposition.cfg.AbstractVariable;
 
 public class TryStatementObject extends CompositeStatementObject {
 	private List<CatchClauseObject> catchClauses;
 	private CompositeStatementObject finallyClause;
 	
-	public TryStatementObject(Statement statement, AbstractMethodFragment parent) {
-		super(statement, StatementType.TRY, parent);
+	public TryStatementObject(Statement statement, List<ParameterObject> parameters, AbstractMethodFragment parent) {
+		super(statement, parameters, StatementType.TRY, parent);
 		this.catchClauses = new ArrayList<CatchClauseObject>();
 	}
 

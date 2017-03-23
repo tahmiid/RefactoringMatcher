@@ -1,5 +1,6 @@
 package gr.uom.java.ast.decomposition.cfg;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,7 +14,6 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -22,9 +22,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import gr.uom.java.ast.ClassInstanceCreationObject;
 import gr.uom.java.ast.CreationObject;
-import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.MethodInvocationObject;
-import gr.uom.java.ast.MethodObject;
+import gr.uom.java.ast.TypeObject;
 import gr.uom.java.ast.VariableDeclarationObject;
 import gr.uom.java.ast.decomposition.AbstractStatement;
 import gr.uom.java.ast.util.ExpressionExtractor;
@@ -37,10 +35,8 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	protected Set<CreationObject> createdTypes;
 	protected Set<String> thrownExceptionTypes;
 	protected Set<VariableDeclarationObject> variableDeclarationsInMethod;
-//	protected Set<FieldObject> fieldsAccessedInMethod;
 	private Set<AbstractVariable> originalDefinedVariables;
 	private Set<AbstractVariable> originalUsedVariables;
-	//TODO pdg generation	private MethodCallAnalyzer methodCallAnalyzer;
 	
 	public PDGNode() {
 		super();
@@ -51,12 +47,10 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		this.thrownExceptionTypes = new LinkedHashSet<String>();
 	}
 	
-	public PDGNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
-			Set<FieldObject> fieldsAccessedInMethod*/) {
+	public PDGNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod) {
 		super();
 		this.cfgNode = cfgNode;
 		this.variableDeclarationsInMethod = variableDeclarationsInMethod;
-//		this.fieldsAccessedInMethod = fieldsAccessedInMethod;
 		this.id = cfgNode.id;
 		cfgNode.setPDGNode(this);
 		this.declaredVariables = new LinkedHashSet<AbstractVariable>();
@@ -64,7 +58,6 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		this.usedVariables = new LinkedHashSet<AbstractVariable>();
 		this.createdTypes = new LinkedHashSet<CreationObject>();
 		this.thrownExceptionTypes = new LinkedHashSet<String>();
-		//TODO pdg generation		this.methodCallAnalyzer = new MethodCallAnalyzer(definedVariables, usedVariables, thrownExceptionTypes, this.variableDeclarationsInMethod);
 	}
 
 	public Iterator<AbstractVariable> getDeclaredVariableIterator() {
@@ -206,35 +199,37 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	}
 
 	public boolean declaresLocalVariable(AbstractVariable variable) {
+/*		for (AbstractVariable var : declaredVariables) {
+			if(var.variableName.equals(variable.variableName))
+			{
+				return true;
+			}
+		}
+		return false;*/
 		return declaredVariables.contains(variable);
 	}
 
 	public boolean definesLocalVariable(AbstractVariable variable) {
+	/*	for (AbstractVariable var : definedVariables) {
+			if(var.variableName.equals(variable.variableName))
+			{
+				return true;
+			}
+		}
+		return false;*/
 		return definedVariables.contains(variable);
 	}
 
 	public boolean usesLocalVariable(AbstractVariable variable) {
-		return usedVariables.contains(variable);
-	}
-
-	public boolean instantiatesLocalVariable(AbstractVariable variable) {
-		if(variable instanceof PlainVariable && this.definesLocalVariable(variable)) {
-			PlainVariable plainVariable = (PlainVariable)variable;
-			String variableType = plainVariable.getVariableType();
-			for(CreationObject creation : createdTypes) {
-				if(creation instanceof ClassInstanceCreationObject) {
-					ITypeBinding createdTypeBinding = ((ClassInstanceCreationObject)creation).getClassInstanceCreation().resolveTypeBinding();
-					String superclassName = createdTypeBinding.getSuperclass() != null ? createdTypeBinding.getSuperclass().getQualifiedName() : null;
-					Set<String> implementedInterfaces = new LinkedHashSet<String>();
-					for(ITypeBinding implementedInterface : createdTypeBinding.getInterfaces()) {
-						implementedInterfaces.add(implementedInterface.getQualifiedName());
-					}
-					if(variableType.equals(createdTypeBinding.getQualifiedName()) || variableType.equals(superclassName) || implementedInterfaces.contains(variableType))
-						return true;
-				}
+/*		for (AbstractVariable var : usedVariables) {
+			if(var.variableName.equals(variable.variableName))
+			{
+				return true;
 			}
 		}
-		return false;
+		
+		return false;*/
+		return usedVariables.contains(variable);
 	}
 
 	public boolean containsClassInstanceCreation() {
@@ -293,44 +288,9 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		return "Def = " + definedVariables + " , Use = " + usedVariables;
 	}
 
-	protected void processArgumentsOfInternalMethodInvocation(MethodInvocationObject methodInvocationObject, AbstractVariable variable) {
-//		SystemObject systemObject = ASTReader.getSystemObject();
-//		MethodInvocation methodInvocation = methodInvocationObject.getMethodInvocation();
-//		IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
-//		ClassObject classObject = systemObject.getClassObject(methodInvocationObject.getOriginClassName());
-//		MethodObject methodObject = null;
-//		if(classObject != null) {
-//			methodObject = classObject.getMethod(methodInvocationObject);
-//		}
-//		if(classObject == null || methodObject != null) {
-			//classObject == null => external method call
-			//methodObject != null => the internal method might not exist, in the case of built-in enumeration methods, such as values() and valueOf()
-//			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, methodObject, methodInvocation.arguments(), methodBinding, variable);
-//		}
-//		throw new NullPointerException();
-	}
-
-	protected void processArgumentsOfInternalClassInstanceCreation(ClassInstanceCreationObject classInstanceCreationObject, AbstractVariable variable) {
-/*		SystemObject systemObject = ASTReader.getSystemObject();
-		ClassInstanceCreation classInstanceCreation = classInstanceCreationObject.getClassInstanceCreation();
-		IMethodBinding methodBinding = classInstanceCreation.resolveConstructorBinding();
-		ClassObject classObject = systemObject.getClassObject(classInstanceCreationObject.getType().getClassType());
-		ConstructorObject constructorObject = null;
-		if(classObject != null) {
-			constructorObject = classObject.getConstructor(classInstanceCreationObject);
-		}
-		if((classObject == null && !methodBinding.getDeclaringClass().isAnonymous() && !methodBinding.getDeclaringClass().isLocal()) || constructorObject != null) {
-			//classObject == null && !methodBinding.getDeclaringClass().isAnonymous() => external constructor call that is not an anonymous class declaration
-			//constructorObject != null => the internal constructor might not exist, in the case the default constructor is called
-//			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, constructorObject, classInstanceCreation.arguments(), methodBinding, variable);
-		}*/
-//		throw new NullPointerException();
-	}
-
 	public void updateReachingAliasSet(ReachingAliasSet reachingAliasSet) {
 		Set<VariableDeclarationObject> variableDeclarations = new LinkedHashSet<VariableDeclarationObject>();
 		variableDeclarations.addAll(variableDeclarationsInMethod);
-//		variableDeclarations.addAll(fieldsAccessedInMethod);
 		Statement statement = getASTStatement();
 		if(statement instanceof VariableDeclarationStatement) {
 			VariableDeclarationStatement vDStatement = (VariableDeclarationStatement)statement;

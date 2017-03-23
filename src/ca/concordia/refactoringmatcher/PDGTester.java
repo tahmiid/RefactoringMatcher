@@ -1,0 +1,63 @@
+package ca.concordia.refactoringmatcher;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.internal.core.util.ASTNodeFinder;
+
+import gr.uom.java.ast.ConstructorObject;
+import gr.uom.java.ast.MethodObject;
+import gr.uom.java.ast.decomposition.cfg.CFG;
+import gr.uom.java.ast.decomposition.cfg.PDG;
+
+public class PDGTester {
+
+	public static void main(String[] args) throws IOException {
+		String wholeText = readFile("/RefactoringMatcher/src/ca/concordia/refactoringmatcher/TestClass.java", StandardCharsets.UTF_8);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(wholeText.toCharArray());
+		parser.setResolveBindings(true);
+		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+		
+		compilationUnit.accept(new ASTVisitor() {
+ 
+			public boolean visit(MethodDeclaration methodDeclaration) {
+				System.out.println(methodDeclaration.toString());
+				
+				MethodObject methodObject = createMethodObject(methodDeclaration);
+				CFG cfg = new CFG(methodObject);
+				PDG pdg = new PDG(cfg);
+
+				System.out.println(pdg.getNodes().size());
+				System.out.println("Done");
+				return false;
+			}
+		});
+		
+		
+
+	}
+	
+	private static MethodObject createMethodObject(MethodDeclaration methodDeclaration) {
+		final ConstructorObject constructorObject = new ConstructorObject(methodDeclaration);
+		MethodObject methodObject = new MethodObject(constructorObject);
+		return methodObject;
+	}
+	
+	private static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+}

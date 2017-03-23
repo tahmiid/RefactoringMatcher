@@ -1,11 +1,5 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import gr.uom.java.ast.AbstractMethodDeclaration;
-import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.LocalVariableDeclarationObject;
-import gr.uom.java.ast.ParameterObject;
-import gr.uom.java.ast.VariableDeclarationObject;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -17,14 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
-//import org.eclipse.jface.preference.IPreferenceStore;
+
+import gr.uom.java.ast.AbstractMethodDeclaration;
+import gr.uom.java.ast.LocalVariableDeclarationObject;
+import gr.uom.java.ast.ParameterObject;
+import gr.uom.java.ast.VariableDeclarationObject;
 
 public class PDG extends Graph {
 	private CFG cfg;
@@ -32,29 +28,32 @@ public class PDG extends Graph {
 	private Map<CFGBranchNode, Set<CFGNode>> nestingMap;
 	private Set<VariableDeclarationObject> variableDeclarationsInMethod;
 	private Map<PDGNode, Set<BasicBlock>> dominatedBlockMap;
-	
+
 	public PDG(CFG cfg) {
 		this.cfg = cfg;
 		this.entryNode = new PDGMethodEntryNode(cfg.getMethod());
 		this.nestingMap = new LinkedHashMap<CFGBranchNode, Set<CFGNode>>();
-		for(GraphNode node : cfg.nodes) {
-			CFGNode cfgNode = (CFGNode)node;
-			if(cfgNode instanceof CFGBranchNode) {
-				CFGBranchNode branchNode = (CFGBranchNode)cfgNode;
+		for (GraphNode node : cfg.nodes) {
+			CFGNode cfgNode = (CFGNode) node;
+			if (cfgNode instanceof CFGBranchNode) {
+				CFGBranchNode branchNode = (CFGBranchNode) cfgNode;
 				nestingMap.put(branchNode, branchNode.getImmediatelyNestedNodesFromAST());
 			}
 		}
 		this.variableDeclarationsInMethod = new LinkedHashSet<VariableDeclarationObject>();
-//		this.fieldsAccessedInMethod = new LinkedHashSet<FieldObject>();
 		ListIterator<ParameterObject> parameterIterator = cfg.getMethod().getParameterListIterator();
-		while(parameterIterator.hasNext()) {
+		while (parameterIterator.hasNext()) {
 			ParameterObject parameter = parameterIterator.next();
 			variableDeclarationsInMethod.add(parameter);
 		}
-		for(LocalVariableDeclarationObject localVariableDeclaration : cfg.getMethod().getLocalVariableDeclarations()) {
+		for (LocalVariableDeclarationObject localVariableDeclaration : cfg.getMethod().getLocalVariableDeclarations()) {
 			variableDeclarationsInMethod.add(localVariableDeclaration);
 		}
 		createControlDependenciesFromEntryNode();
+
+		if (!nodes.isEmpty()) {
+			createDataDependencies();
+		}
 
 		this.dominatedBlockMap = new LinkedHashMap<PDGNode, Set<BasicBlock>>();
 		GraphNode.resetNodeNum();
@@ -77,7 +76,7 @@ public class PDG extends Graph {
 
 	public Set<VariableDeclaration> getVariableDeclarationsInMethod() {
 		Set<VariableDeclaration> variableDeclarations = new LinkedHashSet<VariableDeclaration>();
-		for(VariableDeclarationObject variableDeclaration : variableDeclarationsInMethod) {
+		for (VariableDeclarationObject variableDeclaration : variableDeclarationsInMethod) {
 			variableDeclarations.add(variableDeclaration.getVariableDeclaration());
 		}
 		return variableDeclarations;
@@ -85,23 +84,22 @@ public class PDG extends Graph {
 
 	public PDGBlockNode isDirectlyNestedWithinBlockNode(PDGNode node) {
 		Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
-		for(CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
+		for (CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
 			List<CFGNode> nestedNodes = directlyNestedNodesInBlocks.get(blockNode);
-			if(nestedNodes.contains(node.getCFGNode())) {
-				return (PDGBlockNode)blockNode.getPDGNode();
+			if (nestedNodes.contains(node.getCFGNode())) {
+				return (PDGBlockNode) blockNode.getPDGNode();
 			}
 		}
 		return null;
 	}
-	
+
 	public PDGBlockNode isNestedWithinBlockNode(PDGNode node) {
 		PDGBlockNode blockNode = isDirectlyNestedWithinBlockNode(node);
-		if(blockNode != null) {
+		if (blockNode != null) {
 			return blockNode;
-		}
-		else {
+		} else {
 			PDGNode controlParent = node.getControlDependenceParent();
-			if(controlParent != null) {
+			if (controlParent != null) {
 				return isNestedWithinBlockNode(controlParent);
 			}
 			return null;
@@ -110,9 +108,9 @@ public class PDG extends Graph {
 
 	public Set<PDGNode> getNestedNodesWithinBlockNode(PDGBlockNode blockNode) {
 		Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
-		List<CFGNode> directlyNestedCFGNodes = directlyNestedNodesInBlocks.get((CFGBlockNode)blockNode.getCFGNode());
+		List<CFGNode> directlyNestedCFGNodes = directlyNestedNodesInBlocks.get((CFGBlockNode) blockNode.getCFGNode());
 		Set<PDGNode> directlyNestedPDGNodes = new LinkedHashSet<PDGNode>();
-		for(CFGNode cfgNode : directlyNestedCFGNodes) {
+		for (CFGNode cfgNode : directlyNestedCFGNodes) {
 			directlyNestedPDGNodes.add(cfgNode.getPDGNode());
 		}
 		return directlyNestedPDGNodes;
@@ -120,13 +118,14 @@ public class PDG extends Graph {
 
 	public Set<PlainVariable> getVariablesWithMethodBodyScope() {
 		Set<PlainVariable> variables = new LinkedHashSet<PlainVariable>();
-		for(AbstractVariable variable : entryNode.declaredVariables)
-			variables.add((PlainVariable)variable);
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.hasIncomingControlDependenceFromMethodEntryNode() && !(pdgNode instanceof PDGControlPredicateNode)) {
-				for(AbstractVariable variable : pdgNode.declaredVariables)
-					variables.add((PlainVariable)variable);
+		for (AbstractVariable variable : entryNode.declaredVariables)
+			variables.add((PlainVariable) variable);
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.hasIncomingControlDependenceFromMethodEntryNode()
+					&& !(pdgNode instanceof PDGControlPredicateNode)) {
+				for (AbstractVariable variable : pdgNode.declaredVariables)
+					variables.add((PlainVariable) variable);
 			}
 		}
 		return variables;
@@ -134,13 +133,13 @@ public class PDG extends Graph {
 
 	public Set<PlainVariable> getAllDeclaredVariables() {
 		Set<PlainVariable> variables = new LinkedHashSet<PlainVariable>();
-		for(AbstractVariable variable : entryNode.declaredVariables)
-			variables.add((PlainVariable)variable);
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(!(pdgNode instanceof PDGControlPredicateNode)) {
-				for(AbstractVariable variable : pdgNode.declaredVariables)
-					variables.add((PlainVariable)variable);
+		for (AbstractVariable variable : entryNode.declaredVariables)
+			variables.add((PlainVariable) variable);
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (!(pdgNode instanceof PDGControlPredicateNode)) {
+				for (AbstractVariable variable : pdgNode.declaredVariables)
+					variables.add((PlainVariable) variable);
 			}
 		}
 		return variables;
@@ -156,17 +155,16 @@ public class PDG extends Graph {
 
 	public Map<CompositeVariable, LinkedHashSet<PDGNode>> getDefinedAttributesOfReference(PlainVariable reference) {
 		Map<CompositeVariable, LinkedHashSet<PDGNode>> definedPropertiesMap = new LinkedHashMap<CompositeVariable, LinkedHashSet<PDGNode>>();
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			for(AbstractVariable definedVariable : pdgNode.definedVariables) {
-				if(definedVariable instanceof CompositeVariable) {
-					CompositeVariable compositeVariable = (CompositeVariable)definedVariable;
-					if(compositeVariable.equals(reference)) {
-						if(definedPropertiesMap.containsKey(compositeVariable)) {
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			for (AbstractVariable definedVariable : pdgNode.definedVariables) {
+				if (definedVariable instanceof CompositeVariable) {
+					CompositeVariable compositeVariable = (CompositeVariable) definedVariable;
+					if (compositeVariable.equals(reference)) {
+						if (definedPropertiesMap.containsKey(compositeVariable)) {
 							LinkedHashSet<PDGNode> nodeCriteria = definedPropertiesMap.get(compositeVariable);
 							nodeCriteria.add(pdgNode);
-						}
-						else {
+						} else {
 							LinkedHashSet<PDGNode> nodeCriteria = new LinkedHashSet<PDGNode>();
 							nodeCriteria.add(pdgNode);
 							definedPropertiesMap.put(compositeVariable, nodeCriteria);
@@ -180,48 +178,52 @@ public class PDG extends Graph {
 
 	public Set<PDGNode> getAssignmentNodesOfVariableCriterion(AbstractVariable localVariableCriterion) {
 		Set<PDGNode> nodeCriteria = new LinkedHashSet<PDGNode>();
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.definesLocalVariable(localVariableCriterion) &&
-					!pdgNode.declaresLocalVariable(localVariableCriterion))
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.definesLocalVariable(localVariableCriterion)
+					&& !pdgNode.declaresLocalVariable(localVariableCriterion))
 				nodeCriteria.add(pdgNode);
 		}
 		return nodeCriteria;
 	}
 
-	public Set<PDGNode> getAssignmentNodesOfVariableCriterionIncludingDeclaration(AbstractVariable localVariableCriterion) {
+	public Set<PDGNode> getAssignmentNodesOfVariableCriterionIncludingDeclaration(
+			AbstractVariable localVariableCriterion) {
 		Set<PDGNode> nodeCriteria = new LinkedHashSet<PDGNode>();
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.definesLocalVariable(localVariableCriterion))
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.definesLocalVariable(localVariableCriterion))
 				nodeCriteria.add(pdgNode);
 		}
 		return nodeCriteria;
 	}
 
 	private void handleThrowExceptionNodes() {
-		for(GraphNode node : this.nodes) {
-			PDGNode pdgNode = (PDGNode)node;
+		for (GraphNode node : this.nodes) {
+			PDGNode pdgNode = (PDGNode) node;
 			CFGNode cfgNode = pdgNode.getCFGNode();
-			if(cfgNode instanceof CFGThrowNode || pdgNode.throwsException()) {
+			if (cfgNode instanceof CFGThrowNode || pdgNode.throwsException()) {
 				boolean matchingTryNode = false;
 				Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
-				for(CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
-					if(blockNode instanceof CFGTryNode) {
-						CFGTryNode tryNode = (CFGTryNode)blockNode;
+				for (CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
+					if (blockNode instanceof CFGTryNode) {
+						CFGTryNode tryNode = (CFGTryNode) blockNode;
 						List<CFGNode> directlyNestedNodes = directlyNestedNodesInBlocks.get(tryNode);
-						for(CFGNode directlyNestedNode : directlyNestedNodes) {
-							if(pdgNode.equals(directlyNestedNode.getPDGNode()) || isControlDependent(pdgNode, directlyNestedNode.getPDGNode())) {
+						for (CFGNode directlyNestedNode : directlyNestedNodes) {
+							if (pdgNode.equals(directlyNestedNode.getPDGNode())
+									|| isControlDependent(pdgNode, directlyNestedNode.getPDGNode())) {
 								matchingTryNode = true;
-								PDGControlDependence cd = new PDGControlDependence(tryNode.getPDGNode(), directlyNestedNode.getPDGNode(), true);
+								PDGControlDependence cd = new PDGControlDependence(tryNode.getPDGNode(),
+										directlyNestedNode.getPDGNode(), true);
 								edges.add(cd);
 								break;
 							}
 						}
-						if(matchingTryNode && cfgNode instanceof CFGThrowNode) {
-							for(CFGNode directlyNestedNode : directlyNestedNodes) {
-								if(directlyNestedNode.getPDGNode().getId() > pdgNode.getId()) {
-									PDGControlDependence cd = new PDGControlDependence(pdgNode, directlyNestedNode.getPDGNode(), false);
+						if (matchingTryNode && cfgNode instanceof CFGThrowNode) {
+							for (CFGNode directlyNestedNode : directlyNestedNodes) {
+								if (directlyNestedNode.getPDGNode().getId() > pdgNode.getId()) {
+									PDGControlDependence cd = new PDGControlDependence(pdgNode,
+											directlyNestedNode.getPDGNode(), false);
 									edges.add(cd);
 								}
 							}
@@ -234,12 +236,12 @@ public class PDG extends Graph {
 	}
 
 	private boolean isControlDependent(PDGNode node, PDGNode targetNode) {
-		for(GraphEdge edge : node.incomingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-				PDGNode srcPDGNode = (PDGNode)controlDependence.src;
-				if(srcPDGNode.equals(targetNode))
+		for (GraphEdge edge : node.incomingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
+				if (srcPDGNode.equals(targetNode))
 					return true;
 				return isControlDependent(srcPDGNode, targetNode);
 			}
@@ -250,42 +252,39 @@ public class PDG extends Graph {
 	private void handleSwitchCaseNodes() {
 		Map<PDGNode, Set<PDGNode>> switchCaseMap = new LinkedHashMap<PDGNode, Set<PDGNode>>();
 		Stack<PDGNode> switchNodeStack = new Stack<PDGNode>();
-		for(GraphNode node : this.nodes) {
-			PDGNode pdgNode = (PDGNode)node;
+		for (GraphNode node : this.nodes) {
+			PDGNode pdgNode = (PDGNode) node;
 			CFGNode cfgNode = pdgNode.getCFGNode();
-			if(!switchNodeStack.isEmpty()) {
+			if (!switchNodeStack.isEmpty()) {
 				PDGNode pdgSwitchNode = switchNodeStack.peek();
-				CFGBranchSwitchNode cfgSwitchNode = (CFGBranchSwitchNode)pdgSwitchNode.getCFGNode();
-				if(cfgSwitchNode.getJoinNode() != null && cfgSwitchNode.getJoinNode().getId() == cfgNode.getId())
+				CFGBranchSwitchNode cfgSwitchNode = (CFGBranchSwitchNode) pdgSwitchNode.getCFGNode();
+				if (cfgSwitchNode.getJoinNode() != null && cfgSwitchNode.getJoinNode().getId() == cfgNode.getId())
 					switchNodeStack.pop();
 			}
-			if(!switchNodeStack.isEmpty()) {
+			if (!switchNodeStack.isEmpty()) {
 				PDGNode currentSwitchNode = switchNodeStack.peek();
-				if(currentSwitchNode != null && isDirectlyDependentOnSwitchNode(pdgNode, currentSwitchNode)) {
-					if(cfgNode instanceof CFGSwitchCaseNode) {
-						if(switchCaseMap.containsKey(currentSwitchNode)) {
+				if (currentSwitchNode != null && isDirectlyDependentOnSwitchNode(pdgNode, currentSwitchNode)) {
+					if (cfgNode instanceof CFGSwitchCaseNode) {
+						if (switchCaseMap.containsKey(currentSwitchNode)) {
 							switchCaseMap.get(currentSwitchNode).add(pdgNode);
-						}
-						else {
+						} else {
 							Set<PDGNode> switchCaseSet = new LinkedHashSet<PDGNode>();
 							switchCaseSet.add(pdgNode);
 							switchCaseMap.put(currentSwitchNode, switchCaseSet);
 						}
-					}
-					else if(cfgNode instanceof CFGBreakNode) {
-						if(switchCaseMap.containsKey(currentSwitchNode)) {
+					} else if (cfgNode instanceof CFGBreakNode) {
+						if (switchCaseMap.containsKey(currentSwitchNode)) {
 							Set<PDGNode> switchCaseSet = switchCaseMap.get(currentSwitchNode);
-							for(PDGNode switchCase : switchCaseSet) {
+							for (PDGNode switchCase : switchCaseSet) {
 								PDGControlDependence cd = new PDGControlDependence(pdgNode, switchCase, false);
 								edges.add(cd);
 							}
 							switchCaseMap.get(currentSwitchNode).clear();
 						}
-					}
-					else {
-						if(switchCaseMap.containsKey(currentSwitchNode)) {
+					} else {
+						if (switchCaseMap.containsKey(currentSwitchNode)) {
 							Set<PDGNode> switchCaseSet = switchCaseMap.get(currentSwitchNode);
-							for(PDGNode switchCase : switchCaseSet) {
+							for (PDGNode switchCase : switchCaseSet) {
 								PDGControlDependence cd = new PDGControlDependence(switchCase, pdgNode, true);
 								edges.add(cd);
 							}
@@ -293,20 +292,20 @@ public class PDG extends Graph {
 					}
 				}
 			}
-			if(cfgNode instanceof CFGBranchSwitchNode) {
+			if (cfgNode instanceof CFGBranchSwitchNode) {
 				switchNodeStack.push(pdgNode);
 			}
 		}
 	}
 
 	private boolean isDirectlyDependentOnSwitchNode(PDGNode node, PDGNode switchNode) {
-		for(GraphEdge edge : node.incomingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-				PDGNode srcPDGNode = (PDGNode)controlDependence.src;
+		for (GraphEdge edge : node.incomingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
-				if(srcCFGNode instanceof CFGBranchSwitchNode && srcPDGNode.equals(switchNode))
+				if (srcCFGNode instanceof CFGBranchSwitchNode && srcPDGNode.equals(switchNode))
 					return true;
 			}
 		}
@@ -314,18 +313,19 @@ public class PDG extends Graph {
 	}
 
 	private void handleJumpNodes() {
-		//key is the jump node and value is the innermost loop node
+		// key is the jump node and value is the innermost loop node
 		Map<PDGNode, PDGNode> jumpNodeMap = getInnerMostLoopNodesForJumpNodes();
-		for(PDGNode jumpNode : jumpNodeMap.keySet()) {
+		for (PDGNode jumpNode : jumpNodeMap.keySet()) {
 			PDGNode innerMostLoopNode = jumpNodeMap.get(jumpNode);
 			CFGNode innerMostLoopCFGNode = innerMostLoopNode.getCFGNode();
-			if(innerMostLoopCFGNode instanceof CFGBranchLoopNode || innerMostLoopCFGNode instanceof CFGBranchDoLoopNode || innerMostLoopCFGNode instanceof CFGBranchSwitchNode) {
-				for(GraphEdge edge : innerMostLoopNode.outgoingEdges) {
-					PDGDependence dependence = (PDGDependence)edge;
-					if(dependence instanceof PDGControlDependence) {
-						PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-						PDGNode dstPDGNode = (PDGNode)controlDependence.dst;
-						if(dstPDGNode.getId() > jumpNode.getId()) {
+			if (innerMostLoopCFGNode instanceof CFGBranchLoopNode || innerMostLoopCFGNode instanceof CFGBranchDoLoopNode
+					|| innerMostLoopCFGNode instanceof CFGBranchSwitchNode) {
+				for (GraphEdge edge : innerMostLoopNode.outgoingEdges) {
+					PDGDependence dependence = (PDGDependence) edge;
+					if (dependence instanceof PDGControlDependence) {
+						PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+						PDGNode dstPDGNode = (PDGNode) controlDependence.dst;
+						if (dstPDGNode.getId() > jumpNode.getId()) {
 							PDGControlDependence cd = new PDGControlDependence(jumpNode, dstPDGNode, false);
 							edges.add(cd);
 						}
@@ -334,12 +334,11 @@ public class PDG extends Graph {
 				PDGControlDependence cd = new PDGControlDependence(jumpNode, innerMostLoopNode, false);
 				edges.add(cd);
 				CFGNode jumpCFGNode = jumpNode.getCFGNode();
-				if(jumpCFGNode instanceof CFGBreakNode) {
-					CFGBreakNode breakNode = (CFGBreakNode)jumpCFGNode;
+				if (jumpCFGNode instanceof CFGBreakNode) {
+					CFGBreakNode breakNode = (CFGBreakNode) jumpCFGNode;
 					breakNode.setInnerMostLoopNode(innerMostLoopCFGNode);
-				}
-				else if(jumpCFGNode instanceof CFGContinueNode) {
-					CFGContinueNode continueNode = (CFGContinueNode)jumpCFGNode;
+				} else if (jumpCFGNode instanceof CFGContinueNode) {
+					CFGContinueNode continueNode = (CFGContinueNode) jumpCFGNode;
 					continueNode.setInnerMostLoopNode(innerMostLoopCFGNode);
 				}
 			}
@@ -348,32 +347,30 @@ public class PDG extends Graph {
 
 	private Map<PDGNode, PDGNode> getInnerMostLoopNodesForJumpNodes() {
 		Map<PDGNode, PDGNode> map = new LinkedHashMap<PDGNode, PDGNode>();
-		for(GraphNode node : this.nodes) {
-			PDGNode pdgNode = (PDGNode)node;
+		for (GraphNode node : this.nodes) {
+			PDGNode pdgNode = (PDGNode) node;
 			CFGNode cfgNode = pdgNode.getCFGNode();
 			String label = null;
 			boolean unlabeledJump = false;
 			boolean isBreak = false;
-			if(cfgNode instanceof CFGBreakNode) {
-				CFGBreakNode breakNode = (CFGBreakNode)cfgNode;
+			if (cfgNode instanceof CFGBreakNode) {
+				CFGBreakNode breakNode = (CFGBreakNode) cfgNode;
 				isBreak = true;
-				if(!breakNode.isLabeled())
+				if (!breakNode.isLabeled())
 					unlabeledJump = true;
 				else
 					label = breakNode.getLabel();
-			}
-			else if(cfgNode instanceof CFGContinueNode) {
-				CFGContinueNode continueNode = (CFGContinueNode)cfgNode;
+			} else if (cfgNode instanceof CFGContinueNode) {
+				CFGContinueNode continueNode = (CFGContinueNode) cfgNode;
 				isBreak = false;
-				if(!continueNode.isLabeled())
+				if (!continueNode.isLabeled())
 					unlabeledJump = true;
 				else
 					label = continueNode.getLabel();
 			}
-			if(unlabeledJump) {
+			if (unlabeledJump) {
 				map.put(pdgNode, getInnerMostLoopNode(pdgNode, isBreak));
-			}
-			else if(label != null) {
+			} else if (label != null) {
 				map.put(pdgNode, getLoopNodeUnderLabel(pdgNode, label));
 			}
 		}
@@ -381,17 +378,18 @@ public class PDG extends Graph {
 	}
 
 	private PDGNode getLoopNodeUnderLabel(PDGNode node, String label) {
-		for(GraphEdge edge : node.incomingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-				PDGNode srcPDGNode = (PDGNode)controlDependence.src;
+		for (GraphEdge edge : node.incomingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
-				if(srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode || srcCFGNode instanceof CFGBranchSwitchNode) {
+				if (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode
+						|| srcCFGNode instanceof CFGBranchSwitchNode) {
 					Statement predicate = srcCFGNode.getASTStatement();
-					if(predicate.getParent() instanceof LabeledStatement) {
-						LabeledStatement labeled = (LabeledStatement)predicate.getParent();
-						if(labeled.getLabel().getIdentifier().equals(label))
+					if (predicate.getParent() instanceof LabeledStatement) {
+						LabeledStatement labeled = (LabeledStatement) predicate.getParent();
+						if (labeled.getLabel().getIdentifier().equals(label))
 							return srcPDGNode;
 					}
 				}
@@ -402,15 +400,16 @@ public class PDG extends Graph {
 	}
 
 	private PDGNode getInnerMostLoopNode(PDGNode node, boolean isBreak) {
-		for(GraphEdge edge : node.incomingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-				PDGNode srcPDGNode = (PDGNode)controlDependence.src;
+		for (GraphEdge edge : node.incomingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
-				if(isBreak && (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode || srcCFGNode instanceof CFGBranchSwitchNode))
+				if (isBreak && (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode
+						|| srcCFGNode instanceof CFGBranchSwitchNode))
 					return srcPDGNode;
-				if(!isBreak && (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode))
+				if (!isBreak && (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode))
 					return srcPDGNode;
 				return getInnerMostLoopNode(srcPDGNode, isBreak);
 			}
@@ -419,48 +418,50 @@ public class PDG extends Graph {
 	}
 
 	private boolean containsNodeWithID(int id) {
-		for(GraphNode node : cfg.nodes) {
-			if(node.getId() == id)
+		for (GraphNode node : cfg.nodes) {
+			if (node.getId() == id)
 				return true;
 		}
 		return false;
 	}
 
 	private void createControlDependenciesFromEntryNode() {
-		for(GraphNode node : cfg.nodes) {
-			CFGNode cfgNode = (CFGNode)node;
-			if(!isNested(cfgNode)) {
+		for (GraphNode node : cfg.nodes) {
+			CFGNode cfgNode = (CFGNode) node;
+			if (!isNested(cfgNode)) {
 				processCFGNode(entryNode, cfgNode, true);
 			}
 		}
 		Map<CFGBlockNode, List<CFGNode>> directlyNestedNodesInBlocks = cfg.getDirectlyNestedNodesInBlocks();
-		for(CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
-			if(!containsNodeWithID(blockNode.getId())) {
+		for (CFGBlockNode blockNode : directlyNestedNodesInBlocks.keySet()) {
+			if (!containsNodeWithID(blockNode.getId())) {
 				PDGBlockNode pdgBlockNode = null;
-				if(blockNode instanceof CFGTryNode) {
-					CFGTryNode tryNode = (CFGTryNode)blockNode;
-					pdgBlockNode = new PDGTryNode(tryNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
+				if (blockNode instanceof CFGTryNode) {
+					CFGTryNode tryNode = (CFGTryNode) blockNode;
+					pdgBlockNode = new PDGTryNode(
+							tryNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
+				} else if (blockNode instanceof CFGSynchronizedNode) {
+					CFGSynchronizedNode synchronizedNode = (CFGSynchronizedNode) blockNode;
+					pdgBlockNode = new PDGSynchronizedNode(
+							synchronizedNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
 				}
-				else if(blockNode instanceof CFGSynchronizedNode) {
-					CFGSynchronizedNode synchronizedNode = (CFGSynchronizedNode)blockNode;
-					pdgBlockNode = new PDGSynchronizedNode(synchronizedNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
-				}
-				if(pdgBlockNode != null) {
+				if (pdgBlockNode != null) {
 					nodes.add(pdgBlockNode);
 					PDGNode parent = findParentOfBlockNode(pdgBlockNode);
-					if(parent != null) {
+					if (parent != null) {
 						PDGControlDependence controlDependence = new PDGControlDependence(parent, pdgBlockNode, true);
 						edges.add(controlDependence);
-						if(parent.equals(entryNode)) {
+						if (parent.equals(entryNode)) {
 							createDataDependenciesFromEntryNode(pdgBlockNode);
 						}
-						//create data dependencies from other nodes
-						for(GraphNode node : nodes) {
-							PDGNode pdgNode = (PDGNode)node;
-							if(!pdgNode.equals(pdgBlockNode)) {
-								for(AbstractVariable variableInstruction : pdgNode.definedVariables) {
-									if(pdgBlockNode.usesLocalVariable(variableInstruction)) {
-										PDGDataDependence dataDependence = new PDGDataDependence(pdgNode, pdgBlockNode, variableInstruction, null);
+						// create data dependencies from other nodes
+						for (GraphNode node : nodes) {
+							PDGNode pdgNode = (PDGNode) node;
+							if (!pdgNode.equals(pdgBlockNode)) {
+								for (AbstractVariable variableInstruction : pdgNode.definedVariables) {
+									if (pdgBlockNode.usesLocalVariable(variableInstruction)) {
+										PDGDataDependence dataDependence = new PDGDataDependence(pdgNode, pdgBlockNode,
+												variableInstruction, null);
 										edges.add(dataDependence);
 									}
 								}
@@ -475,15 +476,15 @@ public class PDG extends Graph {
 	private PDGNode findParentOfBlockNode(PDGBlockNode blockNode) {
 		Statement statement = blockNode.getASTStatement();
 		ASTNode parent = statement.getParent();
-		while(parent instanceof Block) {
+		while (parent instanceof Block) {
 			parent = parent.getParent();
 		}
-		if(entryNode.getMethod().getMethodDeclaration().equals(parent)) {
+		if (entryNode.getMethod().getMethodDeclaration().equals(parent)) {
 			return entryNode;
 		}
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.getASTStatement().equals(parent)) {
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.getASTStatement().equals(parent)) {
 				return pdgNode;
 			}
 		}
@@ -491,23 +492,29 @@ public class PDG extends Graph {
 	}
 
 	private void processCFGNode(PDGNode previousNode, CFGNode cfgNode, boolean controlType) {
-		if(cfgNode instanceof CFGBranchNode) {
-			PDGControlPredicateNode predicateNode = new PDGControlPredicateNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
+		if (cfgNode instanceof CFGBranchNode) {
+			PDGControlPredicateNode predicateNode = new PDGControlPredicateNode(cfgNode,
+					variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
 			nodes.add(predicateNode);
 			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, predicateNode, controlType);
 			edges.add(controlDependence);
 			processControlPredicate(predicateNode);
-		}
-		else {
+		} else {
 			PDGNode pdgNode = null;
-			if(cfgNode instanceof CFGExitNode)
-				pdgNode = new PDGExitNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
-			else if(cfgNode instanceof CFGTryNode)
-				pdgNode = new PDGTryNode((CFGTryNode)cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
-			else if(cfgNode instanceof CFGSynchronizedNode)
-				pdgNode = new PDGSynchronizedNode((CFGSynchronizedNode)cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
+			if (cfgNode instanceof CFGExitNode)
+				pdgNode = new PDGExitNode(
+						cfgNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
+			else if (cfgNode instanceof CFGTryNode)
+				pdgNode = new PDGTryNode(
+						(CFGTryNode) cfgNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
+			else if (cfgNode instanceof CFGSynchronizedNode)
+				pdgNode = new PDGSynchronizedNode((CFGSynchronizedNode) cfgNode,
+						variableDeclarationsInMethod/*
+													 * , fieldsAccessedInMethod
+													 */);
 			else
-				pdgNode = new PDGStatementNode(cfgNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);
+				pdgNode = new PDGStatementNode(
+						cfgNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
 			nodes.add(pdgNode);
 			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, pdgNode, controlType);
 			edges.add(controlDependence);
@@ -515,91 +522,90 @@ public class PDG extends Graph {
 	}
 
 	private void processControlPredicate(PDGControlPredicateNode predicateNode) {
-		CFGBranchNode branchNode = (CFGBranchNode)predicateNode.getCFGNode();
-		if(branchNode instanceof CFGBranchIfNode) {
-			CFGBranchIfNode conditionalNode = (CFGBranchIfNode)branchNode;
+		CFGBranchNode branchNode = (CFGBranchNode) predicateNode.getCFGNode();
+		if (branchNode instanceof CFGBranchIfNode) {
+			CFGBranchIfNode conditionalNode = (CFGBranchIfNode) branchNode;
 			Set<CFGNode> nestedNodesInTrueControlFlow = conditionalNode.getImmediatelyNestedNodesInTrueControlFlow();
-			for(CFGNode nestedNode : nestedNodesInTrueControlFlow) {
+			for (CFGNode nestedNode : nestedNodesInTrueControlFlow) {
 				processCFGNode(predicateNode, nestedNode, true);
 			}
 			Set<CFGNode> nestedNodesInFalseControlFlow = conditionalNode.getImmediatelyNestedNodesInFalseControlFlow();
-			for(CFGNode nestedNode : nestedNodesInFalseControlFlow) {
+			for (CFGNode nestedNode : nestedNodesInFalseControlFlow) {
 				processCFGNode(predicateNode, nestedNode, false);
 			}
-		}
-		else {
+		} else {
 			Set<CFGNode> nestedNodes = nestingMap.get(branchNode);
-			for(CFGNode nestedNode : nestedNodes) {
+			for (CFGNode nestedNode : nestedNodes) {
 				processCFGNode(predicateNode, nestedNode, true);
 			}
 		}
 	}
 
 	private boolean isNested(CFGNode node) {
-		for(CFGBranchNode key : nestingMap.keySet()) {
+		for (CFGBranchNode key : nestingMap.keySet()) {
 			Set<CFGNode> nestedNodes = nestingMap.get(key);
-			if(nestedNodes.contains(node))
+			if (nestedNodes.contains(node))
 				return true;
 		}
 		return false;
 	}
 
 	private void performAliasAnalysis() {
-		PDGNode firstPDGNode = (PDGNode)nodes.toArray()[0];
+		PDGNode firstPDGNode = (PDGNode) nodes.toArray()[0];
 		ReachingAliasSet reachingAliasSet = new ReachingAliasSet();
 		firstPDGNode.updateReachingAliasSet(reachingAliasSet);
 		aliasSearch(firstPDGNode, new LinkedHashSet<PDGNode>(), false, reachingAliasSet);
 	}
 
 	private void createDataDependencies() {
-		PDGNode firstPDGNode = (PDGNode)nodes.toArray()[0];
+		PDGNode firstPDGNode = (PDGNode) nodes.toArray()[0];
 		createDataDependenciesFromEntryNode(firstPDGNode);
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			for(AbstractVariable variableInstruction : pdgNode.definedVariables) {
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			for (AbstractVariable variableInstruction : pdgNode.definedVariables) {
 				dataDependenceSearch(pdgNode, variableInstruction, pdgNode, new LinkedHashSet<PDGNode>(), null);
 				outputDependenceSearch(pdgNode, variableInstruction, pdgNode, new LinkedHashSet<PDGNode>(), null);
 			}
-			for(AbstractVariable variableInstruction : pdgNode.usedVariables) {
+			for (AbstractVariable variableInstruction : pdgNode.usedVariables) {
 				antiDependenceSearch(pdgNode, variableInstruction, pdgNode, new LinkedHashSet<PDGNode>(), null);
 			}
 		}
 	}
 
 	private void createDataDependenciesFromEntryNode(PDGNode pdgNode) {
-		for(AbstractVariable variableInstruction : entryNode.definedVariables) {
-			if(pdgNode.usesLocalVariable(variableInstruction)) {
+		for (AbstractVariable variableInstruction : entryNode.definedVariables) {
+			if (pdgNode.usesLocalVariable(variableInstruction)) {
 				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null);
 				edges.add(dataDependence);
 			}
-			if(!pdgNode.definesLocalVariable(variableInstruction)) {
+			if (!pdgNode.definesLocalVariable(variableInstruction)) {
 				dataDependenceSearch(entryNode, variableInstruction, pdgNode, new LinkedHashSet<PDGNode>(), null);
-			}
-			else if(entryNode.declaresLocalVariable(variableInstruction)) {
-				//create def-order data dependence edge
+			} else if (entryNode.declaresLocalVariable(variableInstruction)) {
+				// create def-order data dependence edge
 				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null);
 				edges.add(dataDependence);
 			}
 		}
 	}
 
-	private void aliasSearch(PDGNode currentNode, Set<PDGNode> visitedNodes, boolean visitedFromLoopbackFlow, ReachingAliasSet reachingAliasSet) {
-		if(visitedNodes.contains(currentNode))
+	private void aliasSearch(PDGNode currentNode, Set<PDGNode> visitedNodes, boolean visitedFromLoopbackFlow,
+			ReachingAliasSet reachingAliasSet) {
+		if (visitedNodes.contains(currentNode))
 			return;
 		else
 			visitedNodes.add(currentNode);
 		CFGNode currentCFGNode = currentNode.getCFGNode();
-		for(GraphEdge edge : currentCFGNode.outgoingEdges) {
-			Flow flow = (Flow)edge;
-			if(!visitedFromLoopbackFlow || (visitedFromLoopbackFlow && flow.isFalseControlFlow())) {
-				CFGNode srcCFGNode = (CFGNode)flow.src;
-				CFGNode dstCFGNode = (CFGNode)flow.dst;
+		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
+			Flow flow = (Flow) edge;
+			if (!visitedFromLoopbackFlow || (visitedFromLoopbackFlow && flow.isFalseControlFlow())) {
+				CFGNode srcCFGNode = (CFGNode) flow.src;
+				CFGNode dstCFGNode = (CFGNode) flow.dst;
 				PDGNode dstPDGNode = dstCFGNode.getPDGNode();
 				ReachingAliasSet reachingAliasSetCopy = reachingAliasSet.copy();
 				dstPDGNode.applyReachingAliasSet(reachingAliasSetCopy);
 				dstPDGNode.updateReachingAliasSet(reachingAliasSetCopy);
-				if(!(srcCFGNode instanceof CFGBranchDoLoopNode && flow.isTrueControlFlow())) {
-					if(flow.isLoopbackFlow())
+				if (!(srcCFGNode instanceof CFGBranchDoLoopNode && flow.isTrueControlFlow())) {
+					if (flow.isLoopbackFlow())
 						aliasSearch(dstPDGNode, visitedNodes, true, reachingAliasSetCopy);
 					else
 						aliasSearch(dstPDGNode, visitedNodes, false, reachingAliasSetCopy);
@@ -608,89 +614,95 @@ public class PDG extends Graph {
 		}
 	}
 
-	private void dataDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction,
-			PDGNode currentNode, Set<PDGNode> visitedNodes, CFGBranchNode loop) {
-		if(visitedNodes.contains(currentNode))
+	private void dataDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction, PDGNode currentNode,
+			Set<PDGNode> visitedNodes, CFGBranchNode loop) {
+		if (visitedNodes.contains(currentNode))
 			return;
 		else
 			visitedNodes.add(currentNode);
 		CFGNode currentCFGNode = currentNode.getCFGNode();
-		for(GraphEdge edge : currentCFGNode.outgoingEdges) {
-			Flow flow = (Flow)edge;
-			CFGNode srcCFGNode = (CFGNode)flow.src;
-			CFGNode dstCFGNode = (CFGNode)flow.dst;
-			if(flow.isLoopbackFlow()) {
-				if(dstCFGNode instanceof CFGBranchLoopNode)
-					loop = (CFGBranchLoopNode)dstCFGNode;
-				if(srcCFGNode instanceof CFGBranchDoLoopNode)
-					loop = (CFGBranchDoLoopNode)srcCFGNode;
+		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
+			Flow flow = (Flow) edge;
+			CFGNode srcCFGNode = (CFGNode) flow.src;
+			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			if (flow.isLoopbackFlow()) {
+				if (dstCFGNode instanceof CFGBranchLoopNode)
+					loop = (CFGBranchLoopNode) dstCFGNode;
+				if (srcCFGNode instanceof CFGBranchDoLoopNode)
+					loop = (CFGBranchDoLoopNode) srcCFGNode;
 			}
 			PDGNode dstPDGNode = dstCFGNode.getPDGNode();
-			if(dstPDGNode.usesLocalVariable(variableInstruction)) {
-				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction, loop);
+			if (dstPDGNode.usesLocalVariable(variableInstruction)) {
+				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction,
+						loop);
 				edges.add(dataDependence);
 			}
-			if(!dstPDGNode.definesLocalVariable(variableInstruction)) {
+			if (!dstPDGNode.definesLocalVariable(variableInstruction)) {
 				dataDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
-			}
-			else if(initialNode.declaresLocalVariable(variableInstruction) && !initialNode.equals(dstPDGNode)) {
-				//create def-order data dependence edge
-				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction, loop);
+			} else if (initialNode.declaresLocalVariable(variableInstruction) && !initialNode.equals(dstPDGNode)) {
+				// create def-order data dependence edge
+				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction,
+						loop);
 				edges.add(dataDependence);
 			}
 		}
 	}
 
-	private void antiDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction,
-			PDGNode currentNode, Set<PDGNode> visitedNodes, CFGBranchNode loop) {
-		if(visitedNodes.contains(currentNode))
+	private void antiDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction, PDGNode currentNode,
+			Set<PDGNode> visitedNodes, CFGBranchNode loop) {
+		if (visitedNodes.contains(currentNode))
 			return;
 		else
 			visitedNodes.add(currentNode);
 		CFGNode currentCFGNode = currentNode.getCFGNode();
-		for(GraphEdge edge : currentCFGNode.outgoingEdges) {
-			Flow flow = (Flow)edge;
-			CFGNode srcCFGNode = (CFGNode)flow.src;
-			CFGNode dstCFGNode = (CFGNode)flow.dst;
-			if(flow.isLoopbackFlow()) {
-				if(dstCFGNode instanceof CFGBranchLoopNode)
-					loop = (CFGBranchLoopNode)dstCFGNode;
-				if(srcCFGNode instanceof CFGBranchDoLoopNode)
-					loop = (CFGBranchDoLoopNode)srcCFGNode;
+		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
+			Flow flow = (Flow) edge;
+			CFGNode srcCFGNode = (CFGNode) flow.src;
+			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			if (flow.isLoopbackFlow()) {
+				if (dstCFGNode instanceof CFGBranchLoopNode)
+					loop = (CFGBranchLoopNode) dstCFGNode;
+				if (srcCFGNode instanceof CFGBranchDoLoopNode)
+					loop = (CFGBranchDoLoopNode) srcCFGNode;
 			}
 			PDGNode dstPDGNode = dstCFGNode.getPDGNode();
-			if(dstPDGNode.definesLocalVariable(variableInstruction)) {
-				PDGAntiDependence antiDependence = new PDGAntiDependence(initialNode, dstPDGNode, variableInstruction, loop);
+			if (dstPDGNode.definesLocalVariable(variableInstruction)) {
+				PDGAntiDependence antiDependence = new PDGAntiDependence(initialNode, dstPDGNode, variableInstruction,
+						loop);
 				edges.add(antiDependence);
-			}
-			else
+			} else
 				antiDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
 		}
 	}
 
-	private void outputDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction,
-			PDGNode currentNode, Set<PDGNode> visitedNodes, CFGBranchNode loop) {
-		if(visitedNodes.contains(currentNode))
+	private void outputDependenceSearch(PDGNode initialNode, AbstractVariable variableInstruction, PDGNode currentNode,
+			Set<PDGNode> visitedNodes, CFGBranchNode loop) {
+		if (visitedNodes.contains(currentNode))
 			return;
 		else
 			visitedNodes.add(currentNode);
 		CFGNode currentCFGNode = currentNode.getCFGNode();
-		for(GraphEdge edge : currentCFGNode.outgoingEdges) {
-			Flow flow = (Flow)edge;
-			CFGNode srcCFGNode = (CFGNode)flow.src;
-			CFGNode dstCFGNode = (CFGNode)flow.dst;
-			if(flow.isLoopbackFlow()) {
-				if(dstCFGNode instanceof CFGBranchLoopNode)
-					loop = (CFGBranchLoopNode)dstCFGNode;
-				if(srcCFGNode instanceof CFGBranchDoLoopNode)
-					loop = (CFGBranchDoLoopNode)srcCFGNode;
+		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
+			Flow flow = (Flow) edge;
+			CFGNode srcCFGNode = (CFGNode) flow.src;
+			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			if (flow.isLoopbackFlow()) {
+				if (dstCFGNode instanceof CFGBranchLoopNode)
+					loop = (CFGBranchLoopNode) dstCFGNode;
+				if (srcCFGNode instanceof CFGBranchDoLoopNode)
+					loop = (CFGBranchDoLoopNode) srcCFGNode;
 			}
 			PDGNode dstPDGNode = dstCFGNode.getPDGNode();
-			if(dstPDGNode.definesLocalVariable(variableInstruction)) {
-				PDGOutputDependence outputDependence = new PDGOutputDependence(initialNode, dstPDGNode, variableInstruction, loop);
-				edges.add(outputDependence);
-			}
-			else
+			if (dstPDGNode.definesLocalVariable(variableInstruction)) {
+				if (dstPDGNode.id == initialNode.id && dstPDGNode instanceof PDGStatementNode
+						&& dstPDGNode.declaresLocalVariable(variableInstruction)) {
+					outputDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
+				} else {
+					PDGOutputDependence outputDependence = new PDGOutputDependence(initialNode, dstPDGNode,
+							variableInstruction, loop);
+					edges.add(outputDependence);
+				}
+			} else
 				outputDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
 		}
 	}
@@ -703,14 +715,15 @@ public class PDG extends Graph {
 		return cfg.getBasicBlockCFG().forwardReachableBlocks(basicBlock);
 	}
 
-	//returns the node (branch or method entry) that directly dominates the leader of the block
+	// returns the node (branch or method entry) that directly dominates the
+	// leader of the block
 	private PDGNode directlyDominates(BasicBlock block) {
 		CFGNode leaderCFGNode = block.getLeader();
 		PDGNode leaderPDGNode = leaderCFGNode.getPDGNode();
-		for(GraphEdge edge : leaderPDGNode.incomingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGNode srcNode = (PDGNode)dependence.src;
+		for (GraphEdge edge : leaderPDGNode.incomingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGNode srcNode = (PDGNode) dependence.src;
 				return srcNode;
 			}
 		}
@@ -719,26 +732,25 @@ public class PDG extends Graph {
 
 	private Set<BasicBlock> dominatedBlocks(BasicBlock block) {
 		PDGNode pdgNode = directlyDominates(block);
-		if(dominatedBlockMap.containsKey(pdgNode)) {
+		if (dominatedBlockMap.containsKey(pdgNode)) {
 			return dominatedBlockMap.get(pdgNode);
-		}
-		else {
+		} else {
 			Set<BasicBlock> dominatedBlocks = dominatedBlocks(pdgNode);
 			dominatedBlockMap.put(pdgNode, dominatedBlocks);
 			return dominatedBlocks;
 		}
 	}
-	
+
 	private Set<BasicBlock> dominatedBlocks(PDGNode branchNode) {
 		Set<BasicBlock> dominatedBlocks = new LinkedHashSet<BasicBlock>();
-		for(GraphEdge edge : branchNode.outgoingEdges) {
-			PDGDependence dependence = (PDGDependence)edge;
-			if(dependence instanceof PDGControlDependence) {
-				PDGNode dstNode = (PDGNode)dependence.dst;
+		for (GraphEdge edge : branchNode.outgoingEdges) {
+			PDGDependence dependence = (PDGDependence) edge;
+			if (dependence instanceof PDGControlDependence) {
+				PDGNode dstNode = (PDGNode) dependence.dst;
 				BasicBlock dstBlock = dstNode.getBasicBlock();
 				dominatedBlocks.add(dstBlock);
 				PDGNode dstBlockLastNode = dstBlock.getLastNode().getPDGNode();
-				if(dstBlockLastNode instanceof PDGControlPredicateNode && !dstBlockLastNode.equals(branchNode))
+				if (dstBlockLastNode instanceof PDGControlPredicateNode && !dstBlockLastNode.equals(branchNode))
 					dominatedBlocks.addAll(dominatedBlocks(dstBlockLastNode));
 			}
 		}
@@ -748,13 +760,13 @@ public class PDG extends Graph {
 	public Set<BasicBlock> boundaryBlocks(PDGNode node) {
 		Set<BasicBlock> boundaryBlocks = new LinkedHashSet<BasicBlock>();
 		BasicBlock srcBlock = node.getBasicBlock();
-		for(BasicBlock block : getBasicBlocks()) {
+		for (BasicBlock block : getBasicBlocks()) {
 			Set<BasicBlock> forwardReachableBlocks = forwardReachableBlocks(block);
 			Set<BasicBlock> dominatedBlocks = dominatedBlocks(block);
 			Set<BasicBlock> intersection = new LinkedHashSet<BasicBlock>();
 			intersection.addAll(forwardReachableBlocks);
 			intersection.retainAll(dominatedBlocks);
-			if(intersection.contains(srcBlock))
+			if (intersection.contains(srcBlock))
 				boundaryBlocks.add(block);
 		}
 		return boundaryBlocks;
@@ -763,9 +775,9 @@ public class PDG extends Graph {
 	public Set<PDGNode> blockBasedRegion(BasicBlock block) {
 		Set<PDGNode> regionNodes = new LinkedHashSet<PDGNode>();
 		Set<BasicBlock> reachableBlocks = forwardReachableBlocks(block);
-		for(BasicBlock reachableBlock : reachableBlocks) {
+		for (BasicBlock reachableBlock : reachableBlocks) {
 			List<CFGNode> blockNodes = reachableBlock.getAllNodesIncludingTry();
-			for(CFGNode cfgNode : blockNodes) {
+			for (CFGNode cfgNode : blockNodes) {
 				regionNodes.add(cfgNode.getPDGNode());
 			}
 		}
@@ -774,12 +786,12 @@ public class PDG extends Graph {
 
 	public Set<AbstractVariable> getReturnedVariables() {
 		Set<AbstractVariable> returnedVariables = new LinkedHashSet<AbstractVariable>();
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode instanceof PDGExitNode) {
-				PDGExitNode exitNode = (PDGExitNode)pdgNode;
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode instanceof PDGExitNode) {
+				PDGExitNode exitNode = (PDGExitNode) pdgNode;
 				AbstractVariable returnedVariable = exitNode.getReturnedVariable();
-				if(returnedVariable != null)
+				if (returnedVariable != null)
 					returnedVariables.add(returnedVariable);
 			}
 		}
@@ -787,9 +799,9 @@ public class PDG extends Graph {
 	}
 
 	public PDGNode getFirstDef(PlainVariable variable) {
-		for(GraphNode node : nodes) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.definesLocalVariable(variable))
+		for (GraphNode node : nodes) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.definesLocalVariable(variable))
 				return pdgNode;
 		}
 		return null;
@@ -798,9 +810,9 @@ public class PDG extends Graph {
 	public PDGNode getLastUse(PlainVariable variable) {
 		List<GraphNode> reversedNodeList = new ArrayList<GraphNode>(nodes);
 		Collections.reverse(reversedNodeList);
-		for(GraphNode node : reversedNodeList) {
-			PDGNode pdgNode = (PDGNode)node;
-			if(pdgNode.usesLocalVariable(variable))
+		for (GraphNode node : reversedNodeList) {
+			PDGNode pdgNode = (PDGNode) node;
+			if (pdgNode.usesLocalVariable(variable))
 				return pdgNode;
 		}
 		return null;

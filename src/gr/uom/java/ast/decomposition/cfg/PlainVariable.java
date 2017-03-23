@@ -1,18 +1,15 @@
 package gr.uom.java.ast.decomposition.cfg;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
+
+import gr.uom.java.ast.TypeObject;
 
 public class PlainVariable extends AbstractVariable {
 	private volatile int hashCode = 0;
 	
-	public PlainVariable(VariableDeclaration variableName) {
-		super(variableName);
-	}
-
-	public PlainVariable(String variableName, String variableType) {
-		super(variableName, variableType);
+	public PlainVariable(VariableDeclaration variableDeclaration) {
+		super(variableDeclaration);
 	}
 
 	public PlainVariable(String variableName) {
@@ -40,7 +37,7 @@ public class PlainVariable extends AbstractVariable {
 		}
 		if(o instanceof PlainVariable) {
 			PlainVariable plain = (PlainVariable)o;
-			return this.hashCode == plain.hashCode;
+			return this.hashCode() == plain.hashCode();
 		}
 		return false;
 	}
@@ -49,6 +46,8 @@ public class PlainVariable extends AbstractVariable {
 		if(hashCode == 0) {
 			int result = 17;
 			result = 31*result + variableName.hashCode();
+			if(variableDeclaration!=null)
+				result = 31*result + variableDeclaration.hashCode();
 			hashCode = result;
 		}
 		return hashCode;
@@ -56,6 +55,7 @@ public class PlainVariable extends AbstractVariable {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(variableType).append(" ");
 		sb.append(variableName);
 		return sb.toString();
 	}
