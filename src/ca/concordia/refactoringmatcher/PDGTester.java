@@ -6,24 +6,31 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.internal.core.util.ASTNodeFinder;
+import org.eclipse.jdt.internal.core.JavaProject;
 
-import gr.uom.java.ast.ConstructorObject;
-import gr.uom.java.ast.MethodObject;
-import gr.uom.java.ast.decomposition.cfg.CFG;
-import gr.uom.java.ast.decomposition.cfg.PDG;
+import ca.concordia.java.ast.ConstructorObject;
+import ca.concordia.java.ast.MethodObject;
+import ca.concordia.java.ast.decomposition.cfg.CFG;
+import ca.concordia.java.ast.decomposition.cfg.PDG;
 
 public class PDGTester {
 
 	public static void main(String[] args) throws IOException {
+		testFile();
+	}
+	
+
+	private static void testFile() throws IOException {
 		String wholeText = readFile("/RefactoringMatcher/src/ca/concordia/refactoringmatcher/TestClass.java", StandardCharsets.UTF_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -45,9 +52,6 @@ public class PDGTester {
 				return false;
 			}
 		});
-		
-		
-
 	}
 	
 	private static MethodObject createMethodObject(MethodDeclaration methodDeclaration) {

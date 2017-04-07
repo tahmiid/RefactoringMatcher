@@ -70,21 +70,21 @@ import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.util.GitServiceImpl;
 
+import ca.concordia.java.ast.Access;
+import ca.concordia.java.ast.ConstructorObject;
+import ca.concordia.java.ast.FieldObject;
+import ca.concordia.java.ast.MethodObject;
+import ca.concordia.java.ast.decomposition.MethodBodyObject;
+import ca.concordia.java.ast.decomposition.cfg.BasicBlock;
+import ca.concordia.java.ast.decomposition.cfg.BasicBlockCFG;
+import ca.concordia.java.ast.decomposition.cfg.CFG;
+import ca.concordia.java.ast.decomposition.cfg.CFGBranchNode;
+import ca.concordia.java.ast.decomposition.cfg.CFGNode;
+import ca.concordia.java.ast.decomposition.cfg.GraphNode;
+import ca.concordia.java.ast.decomposition.cfg.PDG;
+import ca.concordia.java.ast.decomposition.cfg.PDGNode;
 import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
 import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
-import gr.uom.java.ast.Access;
-import gr.uom.java.ast.ConstructorObject;
-import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.MethodObject;
-import gr.uom.java.ast.decomposition.MethodBodyObject;
-import gr.uom.java.ast.decomposition.cfg.BasicBlock;
-import gr.uom.java.ast.decomposition.cfg.BasicBlockCFG;
-import gr.uom.java.ast.decomposition.cfg.CFG;
-import gr.uom.java.ast.decomposition.cfg.CFGBranchNode;
-import gr.uom.java.ast.decomposition.cfg.CFGNode;
-import gr.uom.java.ast.decomposition.cfg.GraphNode;
-import gr.uom.java.ast.decomposition.cfg.PDG;
-import gr.uom.java.ast.decomposition.cfg.PDGNode;
 
 public class RefactoringMatcherTest {
 
@@ -112,17 +112,17 @@ public class RefactoringMatcherTest {
 
 	String[] projectLinks = {
 
-			// "https://github.com/iluwatar/java-design-patterns.git",
-			// "https://github.com/JakeWharton/ActionBarSherlock.git",
-			// "https://github.com/alibaba/dubbo.git",
-			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
-			// "https://github.com/alibaba/fastjson.git",
-			// "https://github.com/jfeinstein10/SlidingMenu.git",
-			// "https://github.com/JakeWharton/ViewPagerIndicator.git",
-			// "https://github.com/square/retrofit.git",
-			// "https://github.com/square/okhttp.git",
-			// "https://github.com/zxing/zxing.git",
-			// "https://github.com/google/guava.git",
+//			 "https://github.com/iluwatar/java-design-patterns.git",
+//			 "https://github.com/JakeWharton/ActionBarSherlock.git",
+//			 "https://github.com/alibaba/dubbo.git",
+//			 "https://github.com/chrisbanes/Android-PullToRefresh.git",
+//			 "https://github.com/alibaba/fastjson.git",
+//			 "https://github.com/jfeinstein10/SlidingMenu.git",
+//			 "https://github.com/JakeWharton/ViewPagerIndicator.git",
+//			 "https://github.com/square/retrofit.git",
+//			 "https://github.com/square/okhttp.git",
+//			 "https://github.com/zxing/zxing.git",
+//			 "https://github.com/google/guava.git",
 
 			// "https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
@@ -164,9 +164,9 @@ public class RefactoringMatcherTest {
 			refactorings.addAll(project.getRefactorings());
 		}
 		
-		RefactoringData ref = refactorings.get(6);
+/*		RefactoringData ref = refactorings.get(6);
 		refactorings.clear();
-		refactorings.add(ref);
+		refactorings.add(ref);*/
 
 		for (RefactoringData refactoringData : refactorings) {
 			Repository repo = projects.get(0).getRepository();
@@ -179,12 +179,8 @@ public class RefactoringMatcherTest {
 			MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
 			if (methodDeclaration != null) {
 				System.out.println(methodDeclaration.toString());
-				MethodObject methodObject = createMethodObject(methodDeclaration);
-				CFG cfg = new CFG(methodObject);
-				PDG pdg = new PDG(cfg);
 				
-				System.out.println(pdg.getNodes().size());
-				System.out.println("Done");
+				checkPDG(methodDeclaration);
 			}
 		}
 
@@ -196,6 +192,21 @@ public class RefactoringMatcherTest {
 		// project,refactoringSets);
 	}
 
+	public void checkPDG(MethodDeclaration methodDeclaration) {
+		MethodObject methodObject = createMethodObject(methodDeclaration);
+		CFG cfg = new CFG(methodObject);
+		PDG pdg = new PDG(cfg);
+		
+		System.out.println(pdg.getNodes().size());
+		System.out.println("Done");
+	}
+
+	private MethodObject createMethodObject(MethodDeclaration methodDeclaration) {
+		final ConstructorObject constructorObject = new ConstructorObject(methodDeclaration);
+		MethodObject methodObject = new MethodObject(constructorObject);
+		return methodObject;
+	}
+	
 	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
 			throws IOException, InterruptedException, ParseException {
 		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
@@ -230,15 +241,6 @@ public class RefactoringMatcherTest {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private MethodObject createMethodObject(MethodDeclaration methodDeclaration) {
-
-		final ConstructorObject constructorObject = new ConstructorObject(methodDeclaration);
-
-		MethodObject methodObject = new MethodObject(constructorObject);
-
-		return methodObject;
 	}
 
 	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
