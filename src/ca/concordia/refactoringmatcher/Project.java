@@ -175,6 +175,7 @@ public class Project {
 			oos.close();
 		} catch (IOException e) {
 			System.out.println("Failed to serialize");
+			System.out.println(e);
 		}
 
 	}

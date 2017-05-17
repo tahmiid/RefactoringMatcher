@@ -47,7 +47,6 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -124,7 +123,7 @@ public class RefactoringMatcherTest {
 //			 "https://github.com/zxing/zxing.git",
 //			 "https://github.com/google/guava.git",
 
-			// "https://github.com/danilofes/refactoring-toy-example.git",
+//			 "https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
@@ -164,9 +163,9 @@ public class RefactoringMatcherTest {
 			refactorings.addAll(project.getRefactorings());
 		}
 		
-/*		RefactoringData ref = refactorings.get(6);
+		RefactoringData ref = refactorings.get(6);
 		refactorings.clear();
-		refactorings.add(ref);*/
+		refactorings.add(ref);
 
 		for (RefactoringData refactoringData : refactorings) {
 			Repository repo = projects.get(0).getRepository();
@@ -207,265 +206,265 @@ public class RefactoringMatcherTest {
 		return methodObject;
 	}
 	
-	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
-			throws IOException, InterruptedException, ParseException {
-		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
-		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
-		printReport(refactoringSets);
+//	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
+//			throws IOException, InterruptedException, ParseException {
+//		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
+//		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
+//		printReport(refactoringSets);
+//
+//		createTreeView(refactoringSets);
+//	}
 
-		createTreeView(refactoringSets);
-	}
+//	private void readFromDeckardOutput() throws IOException {
+//		String line;
+//		try (InputStream fis = new FileInputStream(
+//				"/home/tahmiid/Downloads/RefactoringMatcher/clusters/cluster_vdb_30_0_allg_1.0_30");
+//				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+//				BufferedReader br = new BufferedReader(isr);) {
+//			while ((line = br.readLine()) != null) {
+//				if (line.equals("")) {
+//					System.out.println("Bla");
+//					continue;
+//				}
+//				String[] headerParts = line.split("\t");
+//				String detail = headerParts[2];
+//				String[] detailParts = detail.split(" ");
+//				Path file = Paths.get(detailParts[1]);
+//				String location = detailParts[2];
+//				String[] locationParts = location.split(":");
+//				int start = Integer.parseInt(locationParts[1]);
+//				int size = Integer.parseInt(locationParts[2]);
+//				int end = start + size;
+//
+//			}
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
-	private void readFromDeckardOutput() throws IOException {
-		String line;
-		try (InputStream fis = new FileInputStream(
-				"/home/tahmiid/Downloads/RefactoringMatcher/clusters/cluster_vdb_30_0_allg_1.0_30");
-				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				BufferedReader br = new BufferedReader(isr);) {
-			while ((line = br.readLine()) != null) {
-				if (line.equals("")) {
-					System.out.println("Bla");
-					continue;
-				}
-				String[] headerParts = line.split("\t");
-				String detail = headerParts[2];
-				String[] detailParts = detail.split(" ");
-				Path file = Paths.get(detailParts[1]);
-				String location = detailParts[2];
-				String[] locationParts = location.split(":");
-				int start = Integer.parseInt(locationParts[1]);
-				int size = Integer.parseInt(locationParts[2]);
-				int end = start + size;
+//	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
+//			List<RefactoringSet> refactoringSets) throws Exception, ParseException, InterruptedException, IOException {
+//		for (RefactoringSet refactoringSet : refactoringSets) {
+//			for (Commit commit : refactoringSet.getCommits()) {
+//				gitService.checkout(project.getRepository(), commit.getId());
+//				SourcererCCDetector sccd = new SourcererCCDetector();
+//				sccd.detectClonePairs(projectsDirectory);
+//			}
+//		}
+//	}
 
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+//	private void printReport(List<RefactoringSet> refactoringSets) {
+//		System.out.println();
+//		System.out.println("Similar Refactorings\t" + refactoringSets.size());
+//
+//		int i = 0;
+//		int totalRefactoringsInSets = 0;
+//		int sameDaySets = 0;
+//		int sameDevSets = 0;
+//		int sumOfDayDifference = 0;
+//		for (RefactoringSet refactoringSet : refactoringSets) {
+//			i++;
+//
+//			totalRefactoringsInSets += refactoringSet.size();
+//			sumOfDayDifference += refactoringSet.getDuration();
+//
+//			if (refactoringSet.isSameDay())
+//				sameDaySets++;
+//			if (refactoringSet.isSameDeveloper())
+//				sameDevSets++;
+//
+//			System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t"
+//					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t"
+//					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t"
+//					+ refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper() + "\t"
+//					+ refactoringSet.isSameProject());
+//			// System.out.println(hashSet.getSimilarCode());
+//		}
+//
+//		System.out.println();
+//		System.out.println(refactoringSets.size() + "\t" + (float) totalRefactoringsInSets / refactoringSets.size()
+//				+ "\t" + sameDaySets + "\t" + (refactoringSets.size() - sameDaySets) + "\t"
+//				+ (float) sumOfDayDifference / refactoringSets.size() + "\t" + sameDevSets + "\t"
+//				+ (refactoringSets.size() - sameDevSets));
+//	}
 
-	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
-			List<RefactoringSet> refactoringSets) throws Exception, ParseException, InterruptedException, IOException {
-		for (RefactoringSet refactoringSet : refactoringSets) {
-			for (Commit commit : refactoringSet.getCommits()) {
-				gitService.checkout(project.getRepository(), commit.getId());
-				SourcererCCDetector sccd = new SourcererCCDetector();
-				sccd.detectClonePairs(projectsDirectory);
-			}
-		}
-	}
+//	private void createTreeView(List<RefactoringSet> similarRefactorings) {
+//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
+//		for (HashSet<RefactoringData> set : similarRefactorings) {
+//			DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode(
+//					"Set " + (similarRefactorings.indexOf(set) + 1));
+//
+//			for (RefactoringData refactoringData : set) {
+//				refactoringSetNode.add(createTreeNode(refactoringData));
+//			}
+//			root.add(refactoringSetNode);
+//		}
+//
+//		scrollPane = new JScrollPane();
+//		scrollPane.setBounds(0, 0, 400, 788);
+//		frame.getContentPane().add(scrollPane);
+//		tree = new JTree(root);
+//		scrollPane.setViewportView(tree);
+//		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+//			@Override
+//			public void valueChanged(TreeSelectionEvent e) {
+//				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+//
+//				if (selectedNode == null)
+//					return;
+//
+//				if (selectedNode.getLevel() == 1) {
+//					lblNewLabel.setText(selectedNode.toString());
+//					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
+//							.get(selectedNode.getParent().getIndex(selectedNode));
+//					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
+//
+//					TitledBorder border;
+//
+//					lblCommit.setToolTipText("Commit: " + list.get(0).getCommit().getId());
+//					lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit().getId());
+//
+//					border = new TitledBorder(list.get(0).getBeforeCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_2.setBorder(border);
+//					beforeRef1.setText(list.get(0).getBeforeCodeText());
+//
+//					border = new TitledBorder(list.get(1).getBeforeCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_3.setBorder(border);
+//					beforeRef2.setText(list.get(1).getBeforeCodeText());
+//
+//					border = new TitledBorder(list.get(0).getAfterCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_4.setBorder(border);
+//					afterRef1.setText(list.get(0).getAfterCodeText());
+//
+//					border = new TitledBorder(list.get(1).getAfterCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_5.setBorder(border);
+//					afterRef2.setText(list.get(1).getAfterCodeText());
+//				} else if (selectedNode.getLevel() == 2) {
+//					lblNewLabel.setText(selectedNode.getParent().toString());
+//					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
+//							.get(selectedNode.getParent().getParent().getIndex(selectedNode.getParent()));
+//					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
+//					RefactoringData refactoring = (RefactoringData) list
+//							.get(selectedNode.getParent().getIndex(selectedNode));
+//
+//					TitledBorder border;
+//
+//					lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit().getId());
+//
+//					border = new TitledBorder(refactoring.getBeforeCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_3.setBorder(border);
+//					beforeRef2.setText(refactoring.getBeforeCodeText());
+//
+//					border = new TitledBorder(refactoring.getAfterCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_5.setBorder(border);
+//					afterRef2.setText(refactoring.getAfterCodeText());
+//				}
+//			}
+//		});
+//	}
 
-	private void printReport(List<RefactoringSet> refactoringSets) {
-		System.out.println();
-		System.out.println("Similar Refactorings\t" + refactoringSets.size());
+//	private void printpairs(List<RefactoringPair> similarRefactoringPairs) {
+//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Refactoring Pairs");
+//		for (RefactoringPair pair : similarRefactoringPairs) {
+//			DefaultMutableTreeNode refactoringPairNode = new DefaultMutableTreeNode(
+//					"Pair " + (similarRefactoringPairs.indexOf(pair) + 1));
+//
+//			refactoringPairNode.add(createTreeNode(pair.getRefactoringOne()));
+//			refactoringPairNode.add(createTreeNode(pair.getRefactoringTwo()));
+//
+//			root.add(refactoringPairNode);
+//		}
+//
+//		scrollPane = new JScrollPane();
+//		scrollPane.setBounds(0, 0, 400, 788);
+//		frame.getContentPane().add(scrollPane);
+//		tree = new JTree(root);
+//		scrollPane.setViewportView(tree);
+//		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+//			@Override
+//			public void valueChanged(TreeSelectionEvent e) {
+//				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+//
+//				if (selectedNode.getLevel() == 1) {
+//					lblNewLabel.setText(selectedNode.toString());
+//					RefactoringPair pair = (RefactoringPair) similarRefactoringPairs
+//							.get(selectedNode.getParent().getIndex(selectedNode));
+//
+//					TitledBorder border;
+//
+//					lblCommit.setToolTipText("Commit: " + pair.getRefactoringOne().getCommit().getId());
+//					lblCommit_1.setToolTipText("Commit: " + pair.getRefactoringTwo().getCommit().getId());
+//
+//					border = new TitledBorder(pair.getRefactoringOne().getBeforeCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_2.setBorder(border);
+//					beforeRef1.setText(pair.getRefactoringOne().getBeforeCodeText());
+//
+//					border = new TitledBorder(pair.getRefactoringTwo().getBeforeCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_3.setBorder(border);
+//					beforeRef2.setText(pair.getRefactoringTwo().getBeforeCodeText());
+//
+//					border = new TitledBorder(pair.getRefactoringOne().getAfterCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_4.setBorder(border);
+//					afterRef1.setText(pair.getRefactoringOne().getAfterCodeText());
+//
+//					border = new TitledBorder(pair.getRefactoringTwo().getAfterCode().getFileName());
+//					border.setTitleJustification(TitledBorder.CENTER);
+//					border.setTitlePosition(TitledBorder.TOP);
+//
+//					panel_5.setBorder(border);
+//					afterRef2.setText(pair.getRefactoringTwo().getAfterCodeText());
+//				}
+//			}
+//		});
+//		System.out.println();
+//		System.out.println("Refactorings Pairs: " + similarRefactoringPairs.size());
+//	}
 
-		int i = 0;
-		int totalRefactoringsInSets = 0;
-		int sameDaySets = 0;
-		int sameDevSets = 0;
-		int sumOfDayDifference = 0;
-		for (RefactoringSet refactoringSet : refactoringSets) {
-			i++;
+//	private DefaultMutableTreeNode createTreeNode(RefactoringData refactoring) {
+//		DefaultMutableTreeNode refactoringNode = new DefaultMutableTreeNode(refactoring.getCommitShort());
+//		refactoringNode.add(createTreeNode(refactoring.getBeforeCode()));
+//		refactoringNode.add(createTreeNode(refactoring.getAfterCode()));
+//		return refactoringNode;
+//	}
 
-			totalRefactoringsInSets += refactoringSet.size();
-			sumOfDayDifference += refactoringSet.getDuration();
-
-			if (refactoringSet.isSameDay())
-				sameDaySets++;
-			if (refactoringSet.isSameDeveloper())
-				sameDevSets++;
-
-			System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t"
-					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t"
-					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t"
-					+ refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper() + "\t"
-					+ refactoringSet.isSameProject());
-			// System.out.println(hashSet.getSimilarCode());
-		}
-
-		System.out.println();
-		System.out.println(refactoringSets.size() + "\t" + (float) totalRefactoringsInSets / refactoringSets.size()
-				+ "\t" + sameDaySets + "\t" + (refactoringSets.size() - sameDaySets) + "\t"
-				+ (float) sumOfDayDifference / refactoringSets.size() + "\t" + sameDevSets + "\t"
-				+ (refactoringSets.size() - sameDevSets));
-	}
-
-	private void createTreeView(List<RefactoringSet> similarRefactorings) {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
-		for (HashSet<RefactoringData> set : similarRefactorings) {
-			DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode(
-					"Set " + (similarRefactorings.indexOf(set) + 1));
-
-			for (RefactoringData refactoringData : set) {
-				refactoringSetNode.add(createTreeNode(refactoringData));
-			}
-			root.add(refactoringSetNode);
-		}
-
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 400, 788);
-		frame.getContentPane().add(scrollPane);
-		tree = new JTree(root);
-		scrollPane.setViewportView(tree);
-		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-				if (selectedNode == null)
-					return;
-
-				if (selectedNode.getLevel() == 1) {
-					lblNewLabel.setText(selectedNode.toString());
-					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
-							.get(selectedNode.getParent().getIndex(selectedNode));
-					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
-
-					TitledBorder border;
-
-					lblCommit.setToolTipText("Commit: " + list.get(0).getCommit().getId());
-					lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit().getId());
-
-					border = new TitledBorder(list.get(0).getBeforeCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_2.setBorder(border);
-					beforeRef1.setText(list.get(0).getBeforeCodeText());
-
-					border = new TitledBorder(list.get(1).getBeforeCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_3.setBorder(border);
-					beforeRef2.setText(list.get(1).getBeforeCodeText());
-
-					border = new TitledBorder(list.get(0).getAfterCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_4.setBorder(border);
-					afterRef1.setText(list.get(0).getAfterCodeText());
-
-					border = new TitledBorder(list.get(1).getAfterCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_5.setBorder(border);
-					afterRef2.setText(list.get(1).getAfterCodeText());
-				} else if (selectedNode.getLevel() == 2) {
-					lblNewLabel.setText(selectedNode.getParent().toString());
-					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
-							.get(selectedNode.getParent().getParent().getIndex(selectedNode.getParent()));
-					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
-					RefactoringData refactoring = (RefactoringData) list
-							.get(selectedNode.getParent().getIndex(selectedNode));
-
-					TitledBorder border;
-
-					lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit().getId());
-
-					border = new TitledBorder(refactoring.getBeforeCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_3.setBorder(border);
-					beforeRef2.setText(refactoring.getBeforeCodeText());
-
-					border = new TitledBorder(refactoring.getAfterCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_5.setBorder(border);
-					afterRef2.setText(refactoring.getAfterCodeText());
-				}
-			}
-		});
-	}
-
-	private void printpairs(List<RefactoringPair> similarRefactoringPairs) {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Refactoring Pairs");
-		for (RefactoringPair pair : similarRefactoringPairs) {
-			DefaultMutableTreeNode refactoringPairNode = new DefaultMutableTreeNode(
-					"Pair " + (similarRefactoringPairs.indexOf(pair) + 1));
-
-			refactoringPairNode.add(createTreeNode(pair.getRefactoringOne()));
-			refactoringPairNode.add(createTreeNode(pair.getRefactoringTwo()));
-
-			root.add(refactoringPairNode);
-		}
-
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 400, 788);
-		frame.getContentPane().add(scrollPane);
-		tree = new JTree(root);
-		scrollPane.setViewportView(tree);
-		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-				if (selectedNode.getLevel() == 1) {
-					lblNewLabel.setText(selectedNode.toString());
-					RefactoringPair pair = (RefactoringPair) similarRefactoringPairs
-							.get(selectedNode.getParent().getIndex(selectedNode));
-
-					TitledBorder border;
-
-					lblCommit.setToolTipText("Commit: " + pair.getRefactoringOne().getCommit().getId());
-					lblCommit_1.setToolTipText("Commit: " + pair.getRefactoringTwo().getCommit().getId());
-
-					border = new TitledBorder(pair.getRefactoringOne().getBeforeCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_2.setBorder(border);
-					beforeRef1.setText(pair.getRefactoringOne().getBeforeCodeText());
-
-					border = new TitledBorder(pair.getRefactoringTwo().getBeforeCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_3.setBorder(border);
-					beforeRef2.setText(pair.getRefactoringTwo().getBeforeCodeText());
-
-					border = new TitledBorder(pair.getRefactoringOne().getAfterCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_4.setBorder(border);
-					afterRef1.setText(pair.getRefactoringOne().getAfterCodeText());
-
-					border = new TitledBorder(pair.getRefactoringTwo().getAfterCode().getFileName());
-					border.setTitleJustification(TitledBorder.CENTER);
-					border.setTitlePosition(TitledBorder.TOP);
-
-					panel_5.setBorder(border);
-					afterRef2.setText(pair.getRefactoringTwo().getAfterCodeText());
-				}
-			}
-		});
-		System.out.println();
-		System.out.println("Refactorings Pairs: " + similarRefactoringPairs.size());
-	}
-
-	private DefaultMutableTreeNode createTreeNode(RefactoringData refactoring) {
-		DefaultMutableTreeNode refactoringNode = new DefaultMutableTreeNode(refactoring.getCommitShort());
-		refactoringNode.add(createTreeNode(refactoring.getBeforeCode()));
-		refactoringNode.add(createTreeNode(refactoring.getAfterCode()));
-		return refactoringNode;
-	}
-
-	private DefaultMutableTreeNode createTreeNode(Code code) {
-		DefaultMutableTreeNode before = new DefaultMutableTreeNode(code);
-		return before;
-	}
+//	private DefaultMutableTreeNode createTreeNode(Code code) {
+//		DefaultMutableTreeNode before = new DefaultMutableTreeNode(code);
+//		return before;
+//	}
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					RefactoringMatcherTest window = new RefactoringMatcherTest();
-					window.frame.setVisible(true);
+//					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

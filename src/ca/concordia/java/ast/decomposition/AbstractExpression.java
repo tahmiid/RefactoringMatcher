@@ -31,6 +31,8 @@ public class AbstractExpression extends AbstractMethodFragment {
         List<Expression> postfixExpressions = expressionExtractor.getPostfixExpressions(expression);
         List<Expression> prefixExpressions = expressionExtractor.getPrefixExpressions(expression);
 		processVariablesWithoutBindingInfo(expressionExtractor.getVariableInstructions(expression), assignments, postfixExpressions, prefixExpressions);
+		processMethodInvocations(expressionExtractor.getMethodInvocations(expression));
+//		processClassInstanceCreations(expressionExtractor.getClassInstanceCreations(expression));
 		processArrayCreations(expressionExtractor.getArrayCreations(expression));
 		processLiterals(expressionExtractor.getLiterals(expression));
 	}
