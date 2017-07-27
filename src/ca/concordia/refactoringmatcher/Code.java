@@ -34,7 +34,7 @@ public class Code implements Serializable {
 	private String methodName;
 	
 
-	public Code(Commit commit, Path directory, ASTInformation astInformation, GitService gitService,
+	public Code(Commit commit, Path directory, ASTInformation astInformation, ExtendedGitService gitService,
 			Repository repository) throws Exception {
 		this.commit = commit;
 		this.filePath = new String(directory + "/" + astInformation.getFilePath());
@@ -43,7 +43,7 @@ public class Code implements Serializable {
 		this.text = extractText(gitService, repository);
 	}
 
-	private String extractText(GitService gitService, Repository repository) throws Exception {
+	private String extractText(ExtendedGitService gitService, Repository repository) throws Exception {
 		String wholeText = getWholeTextFromFile(gitService, repository);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -156,4 +156,6 @@ public class Code implements Serializable {
 	public String toString(){
 		return methodName + " in " + getFileName();
 	}
+	
+	
 }

@@ -2,18 +2,22 @@ package ca.concordia.java.ast.decomposition;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PostfixExpression;
@@ -54,7 +58,7 @@ public abstract class AbstractMethodFragment {
 	private Set<PlainVariable> definedLocalVariables;
 	private Set<PlainVariable> usedLocalVariables;
 
-	private List<MethodInvocationObject> methodInvocationList;
+	private List<MethodInvocation> methodInvocationList;
 	private List<SuperMethodInvocationObject> superMethodInvocationList;
 	
 	protected AbstractMethodFragment(AbstractMethodFragment parent, List<ParameterObject> parameters) {
@@ -70,6 +74,8 @@ public abstract class AbstractMethodFragment {
 		this.declaredLocalVariables = new LinkedHashSet<PlainVariable>();
 		this.definedLocalVariables = new LinkedHashSet<PlainVariable>();
 		this.usedLocalVariables = new LinkedHashSet<PlainVariable>();
+		
+		this.methodInvocationList = new LinkedList<MethodInvocation>();
 	}
 
 	public AbstractMethodFragment getParent() {
@@ -284,7 +290,9 @@ public abstract class AbstractMethodFragment {
 		for(Expression expression : methodInvocations) {
 			if(expression instanceof MethodInvocation) {
 				MethodInvocation methodInvocation = (MethodInvocation)expression;
-				IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
+				addMethodInvocation(methodInvocation);
+				
+				/*IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
 				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
 				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
 				String methodInvocationName = methodBinding.getName();
@@ -304,83 +312,7 @@ public abstract class AbstractMethodFragment {
 				}
 				if((methodBinding.getModifiers() & Modifier.STATIC) != 0)
 					methodInvocationObject.setStatic(true);
-				addMethodInvocation(methodInvocationObject);
-/*				AbstractVariable invoker = MethodDeclarationUtility.processMethodInvocationExpression(methodInvocation.getExpression());
-				if(invoker != null) {
-					PlainVariable initialVariable = invoker.getInitialVariable();
-					if(initialVariable.isField()) {
-						//addInvokedMethodThroughField(invoker, methodInvocationObject);
-						addNonDistinctInvokedMethodThroughField(invoker, methodInvocationObject);
-					}
-					else if(initialVariable.isParameter()) {
-						//addInvokedMethodThroughParameter(invoker, methodInvocationObject);
-						addNonDistinctInvokedMethodThroughParameter(invoker, methodInvocationObject);
-					}
-					else {
-						//addInvokedMethodThroughLocalVariable(invoker, methodInvocationObject);
-						addNonDistinctInvokedMethodThroughLocalVariable(invoker, methodInvocationObject);
-					}
-				}
-				else {
-					if(methodInvocationObject.isStatic())
-						addStaticallyInvokedMethod(methodInvocationObject);
-					else if (methodInvocation.getExpression() == null || methodInvocation.getExpression() instanceof ThisExpression) {
-						//addInvokedMethodThroughThisReference(methodInvocationObject);
-						addNonDistinctInvokedMethodThroughThisReference(methodInvocationObject);
-					}
-				}*/
-//				List<Expression> arguments = methodInvocation.arguments();
-//				for(Expression argument : arguments) {
-//					if(argument instanceof SimpleName) {
-//						SimpleName argumentName = (SimpleName)argument;
-//						IBinding binding = argumentName.resolveBinding();
-//						if(binding != null && binding.getKind() == IBinding.VARIABLE) {
-//							IVariableBinding variableBinding = (IVariableBinding)binding;
-//							if(variableBinding.isParameter()) {
-//								PlainVariable variable = new PlainVariable(variableBinding);
-//								addParameterPassedAsArgumentInMethodInvocation(variable, methodInvocationObject);
-//							}
-//						}
-//					}
-//				}
-			}
-			else if(expression instanceof SuperMethodInvocation) {
-				SuperMethodInvocation superMethodInvocation = (SuperMethodInvocation)expression;
-				IMethodBinding methodBinding = superMethodInvocation.resolveMethodBinding();
-				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
-				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
-				String methodInvocationName = methodBinding.getName();
-				String qualifiedName = methodBinding.getReturnType().getQualifiedName();
-				TypeObject returnType = TypeObject.extractTypeObject(qualifiedName);
-				SuperMethodInvocationObject superMethodInvocationObject = new SuperMethodInvocationObject(originClassTypeObject, methodInvocationName, returnType);
-				superMethodInvocationObject.setSuperMethodInvocation(superMethodInvocation);
-				ITypeBinding[] parameterTypes = methodBinding.getParameterTypes();
-				for(ITypeBinding parameterType : parameterTypes) {
-					String qualifiedParameterName = parameterType.getQualifiedName();
-					TypeObject typeObject = TypeObject.extractTypeObject(qualifiedParameterName);
-					superMethodInvocationObject.addParameter(typeObject);
-				}
-				ITypeBinding[] thrownExceptionTypes = methodBinding.getExceptionTypes();
-				for(ITypeBinding thrownExceptionType : thrownExceptionTypes) {
-					superMethodInvocationObject.addThrownException(thrownExceptionType.getQualifiedName());
-				}
-				if((methodBinding.getModifiers() & Modifier.STATIC) != 0)
-					superMethodInvocationObject.setStatic(true);
-				addSuperMethodInvocation(superMethodInvocationObject);
-//				List<Expression> arguments = superMethodInvocation.arguments();
-//				for(Expression argument : arguments) {
-//					if(argument instanceof SimpleName) {
-//						SimpleName argumentName = (SimpleName)argument;
-//						IBinding binding = argumentName.resolveBinding();
-//						if(binding != null && binding.getKind() == IBinding.VARIABLE) {
-//							IVariableBinding variableBinding = (IVariableBinding)binding;
-//							if(variableBinding.isParameter()) {
-//								PlainVariable variable = new PlainVariable(variableBinding);
-//								addParameterPassedAsArgumentInSuperMethodInvocation(variable, superMethodInvocationObject);
-//							}
-//						}
-//					}
-//				}
+				addMethodInvocation(methodInvocationObject);*/
 			}
 		}
 	}
@@ -392,10 +324,10 @@ public abstract class AbstractMethodFragment {
 		}
 	}
 	
-	private void addMethodInvocation(MethodInvocationObject methodInvocationObject) {
-		methodInvocationList.add(methodInvocationObject);
+	private void addMethodInvocation(MethodInvocation methodInvocation) {
+		methodInvocationList.add(methodInvocation);
 		if(parent != null) {
-			parent.addMethodInvocation(methodInvocationObject);
+			parent.addMethodInvocation(methodInvocation);
 		}
 	}
 	
@@ -552,4 +484,10 @@ public abstract class AbstractMethodFragment {
 	public Set<PlainVariable> getUsedLocalVariables() {
 		return usedLocalVariables;
 	}
+
+	public List<MethodInvocation> getMethodInvocationList() {
+		return methodInvocationList;
+	}
+	
+	
 }

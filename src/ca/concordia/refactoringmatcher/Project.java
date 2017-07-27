@@ -11,8 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.refactoringminer.api.GitHistoryRefactoringMiner;
@@ -40,13 +42,26 @@ public class Project {
 	private Repository repository;
 	private int commitCount;
 	private List<RefactoringData> refactorings;
+	private List<Release> releases;
+	private String organization;
+	private ExtendedGitService gitService;
 	
-	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, GitService gitService) throws Exception {
+	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, ExtendedGitService gitService) throws Exception {
 		this.link = projectLink;
 		this.name = getName(link);
+		this.organization = getOrganization(link);
 		this.directory = Paths.get(projectsDirectory + "/" + name);
 		this.outputDirectory = Files.createDirectories( Paths.get(outputDirectory + "/" + name));	
-		this.repository = gitService.cloneIfNotExists(directory.toString(), link); 
+		this.gitService = gitService;
+		this.repository = gitService.cloneIfNotExists(directory.toString(), link);
+		
+		releases = new ArrayList<Release>();
+		Set<Ref> var = gitService.getAllReleaseTags(repository);
+		for (Ref ref : var) {
+			Release release = new Release(ref, gitService, repository, directory);
+			releases.add(release);
+		}
+		
 		try {
 			this.commitCount = gitService.countCommits(repository, "master");
 		} catch (Exception e) {
@@ -65,8 +80,21 @@ public class Project {
 
 		return projectLink;
 	}
+	
+	private String getOrganization(String projectLink) {
+		int splitIndex1 = projectLink.lastIndexOf('/');
+		projectLink = projectLink.substring(0, splitIndex1);
+		splitIndex1 = projectLink.lastIndexOf('/');
+		projectLink = projectLink.substring(splitIndex1 + 1);
+		int splitIndex2 = projectLink.lastIndexOf('.');
+		if (splitIndex2 != -1) {
+			projectLink = projectLink.substring(0, splitIndex2);
+		}
 
-	private List<RefactoringData> getAllRefactorings(GitService gitService) throws Exception {
+		return projectLink;
+	}
+
+	private List<RefactoringData> getAllRefactorings(ExtendedGitService gitService) throws Exception {
 		List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();
 
 		GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
@@ -118,7 +146,7 @@ public class Project {
 					 
 					Code beforeCode = null;
 					Code afterCode = null;
-					try {
+					try {					
 						Commit commit = new Commit(commitData.getParent(0).getName(), commitData.getParent(0).getFullMessage(), commitData.getParent(0).getCommitTime(), commitData.getParent(0).getCommitterIdent());
 						beforeCode = new Code(commit, directory, astBeforeChange, gitService, repository);
 						commit = new Commit(commitData.getName(), commitData.getFullMessage(), commitData.getCommitTime(), commitData.getCommitterIdent());
@@ -145,7 +173,7 @@ public class Project {
 		return allRefactoringData;
 	}
 	
-	private List<RefactoringData> loadRefactoringsFromFile(GitService gitService) throws Exception {
+	private List<RefactoringData> loadRefactoringsFromFile(ExtendedGitService gitService) throws Exception {
 		List<RefactoringData> refactorings;
 		String outputPathString = outputDirectory + "/" + name;
 		if (Files.exists(Paths.get(outputPathString))) {
@@ -212,6 +240,10 @@ public class Project {
 		return name;
 	}
 
+	public String getOrganization() {
+		return organization;
+	}
+
 	public Path getDirectory() {
 		return directory;
 	}
@@ -231,8 +263,31 @@ public class Project {
 	public List<RefactoringData> getRefactorings() {
 		return refactorings;
 	}
+
+	public List<Release> getReleases() {
+		return releases;
+	}
 	
-	
+	public Release getRelease(String commit) {
+		try {
+			String nextReleaseTag = gitService.getNextTag(repository, commit);
+			
+			Release previousRelease = null;
+			Release nextRelease = null;
+			
+			for (Release release : releases) {
+				if(release.getTag().equals(nextReleaseTag)){
+					nextRelease = release;
+					break;
+				}
+				previousRelease = release;
+			}
+			
+			return nextRelease == null ? previousRelease : nextRelease;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	
 }
 

@@ -53,8 +53,10 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.IDocElement;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NodeFinder;
@@ -69,6 +71,8 @@ import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.util.GitServiceImpl;
 
+import ca.concordia.jaranalyzer.JarAnalyzer;
+import ca.concordia.jaranalyzer.JarInfo;
 import ca.concordia.java.ast.Access;
 import ca.concordia.java.ast.ConstructorObject;
 import ca.concordia.java.ast.FieldObject;
@@ -111,44 +115,45 @@ public class RefactoringMatcherTest {
 
 	String[] projectLinks = {
 
-//			 "https://github.com/iluwatar/java-design-patterns.git",
-//			 "https://github.com/JakeWharton/ActionBarSherlock.git",
-//			 "https://github.com/alibaba/dubbo.git",
-//			 "https://github.com/chrisbanes/Android-PullToRefresh.git",
+			// "https://github.com/iluwatar/java-design-patterns.git",
+			// "https://github.com/JakeWharton/ActionBarSherlock.git",
+			// "https://github.com/alibaba/dubbo.git",
+			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
 //			 "https://github.com/alibaba/fastjson.git",
-//			 "https://github.com/jfeinstein10/SlidingMenu.git",
-//			 "https://github.com/JakeWharton/ViewPagerIndicator.git",
-//			 "https://github.com/square/retrofit.git",
-//			 "https://github.com/square/okhttp.git",
-//			 "https://github.com/zxing/zxing.git",
+			// "https://github.com/jfeinstein10/SlidingMenu.git",
+			// "https://github.com/JakeWharton/ViewPagerIndicator.git",
+			// "https://github.com/square/retrofit.git",
+			// "https://github.com/square/okhttp.git",
+			// "https://github.com/zxing/zxing.git",
 //			 "https://github.com/google/guava.git",
 
-//			 "https://github.com/danilofes/refactoring-toy-example.git",
+			// "https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
 			"https://github.com/jfree/jfreechart.git",
-//			 "https://github.com/apache/commons-lang.git",
+			 "https://github.com/apache/commons-lang.git",
+//			"https://github.com/apache/log4j",
 			// "https://github.com/apache/nifi-minifi.git",
 			// "https://github.com/apache/knox.git",
 			// "https://github.com/apache/zeppelin.git",
 			// "https://github.com/apache/cassandra.git",
-			// "https://github.com/apache/storm.git",
+//			 "https://github.com/apache/storm.git",
 			// "https://github.com/apache/hadoop.git",
 			// "https://github.com/apache/kafka.git",
 			// "https://github.com/apache/zookeeper.git",
 			// "https://github.com/apache/camel.git",
 			// "https://github.com/apache/hive.git"
 			// "https://github.com/spring-projects/spring-framework.git",
-			// "https://github.com/google/guava.git"
+//			 "https://github.com/google/guava.git"
 	};
 
 	protected void runTest() throws Exception {
-
+		int found =0, notfount = 0;
 		Path outputDirectory = Files.createDirectories(Paths.get("output"));
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
-		GitService gitService = new GitServiceImpl();
+		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
 		ArrayList<Project> projects = new ArrayList<Project>();
 
@@ -156,48 +161,47 @@ public class RefactoringMatcherTest {
 			Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
 			project.printReport();
 			projects.add(project);
-		}
+			
+			for (RefactoringData refactoringData : project.getRefactorings()) {
+				Repository repo = project.getRepository();
 
-		List<RefactoringData> refactorings = new ArrayList<RefactoringData>();
-		for (Project project : projects) {
-			refactorings.addAll(project.getRefactorings());
-		}
-		
-		RefactoringData ref = refactorings.get(6);
-		refactorings.clear();
-		refactorings.add(ref);
+				MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
+				if (methodDeclaration != null) {
+					System.out.println(methodDeclaration.toString());
 
-		for (RefactoringData refactoringData : refactorings) {
-			Repository repo = projects.get(0).getRepository();
-			for (Project project : projects) {
-				if (project.getName().equals(refactoringData.getProjectName())) {
-					repo = project.getRepository();
-					break;
+					MethodObject methodObject = createMethodObject(methodDeclaration);
+					PDG pdg = getPDG(methodObject);
+					
+//					Release  release = project.getRelease(refactoringData.getAfterCode().getCommit().getId());
+					Release  release = project.getReleases().get(1);
+					
+					for (MethodInvocation methodInvocation : methodObject.getMethodBody().getCompositeStatement().getMethodInvocationList()) {
+						
+
+						if(release.contains(methodInvocation))
+							found++;
+						else 
+							notfount++;
+					}
 				}
 			}
-			MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
-			if (methodDeclaration != null) {
-				System.out.println(methodDeclaration.toString());
-				
-				checkPDG(methodDeclaration);
-			}
+			System.out.println("Methods found in jar: " + found + " " + (found+notfount));
 		}
-
-		// findSimilarRefactorings(outputDirectory, refactorings);
-
-		// readFromDeckardOutput();
-
-		// countUnusedOpportunities(projectsDirectory, gitService,
-		// project,refactoringSets);
 	}
+	// findSimilarRefactorings(outputDirectory, refactorings);
 
-	public void checkPDG(MethodDeclaration methodDeclaration) {
-		MethodObject methodObject = createMethodObject(methodDeclaration);
+	// readFromDeckardOutput();
+
+	// countUnusedOpportunities(projectsDirectory, gitService,
+	// project,refactoringSets);
+	
+	public PDG getPDG(MethodObject methodObject) {
 		CFG cfg = new CFG(methodObject);
 		PDG pdg = new PDG(cfg);
-		
 		System.out.println(pdg.getNodes().size());
-		System.out.println("Done");
+		System.out.println("Done");	
+		
+		return pdg;
 	}
 
 	private MethodObject createMethodObject(MethodDeclaration methodDeclaration) {
@@ -205,266 +209,297 @@ public class RefactoringMatcherTest {
 		MethodObject methodObject = new MethodObject(constructorObject);
 		return methodObject;
 	}
-	
-//	private void findSimilarRefactorings(Path outputDirectory, List<RefactoringData> refactorings)
-//			throws IOException, InterruptedException, ParseException {
-//		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
-//		List<RefactoringSet> refactoringSets = patternFinder.getSimilarRefactorings();
-//		printReport(refactoringSets);
-//
-//		createTreeView(refactoringSets);
-//	}
 
-//	private void readFromDeckardOutput() throws IOException {
-//		String line;
-//		try (InputStream fis = new FileInputStream(
-//				"/home/tahmiid/Downloads/RefactoringMatcher/clusters/cluster_vdb_30_0_allg_1.0_30");
-//				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-//				BufferedReader br = new BufferedReader(isr);) {
-//			while ((line = br.readLine()) != null) {
-//				if (line.equals("")) {
-//					System.out.println("Bla");
-//					continue;
-//				}
-//				String[] headerParts = line.split("\t");
-//				String detail = headerParts[2];
-//				String[] detailParts = detail.split(" ");
-//				Path file = Paths.get(detailParts[1]);
-//				String location = detailParts[2];
-//				String[] locationParts = location.split(":");
-//				int start = Integer.parseInt(locationParts[1]);
-//				int size = Integer.parseInt(locationParts[2]);
-//				int end = start + size;
-//
-//			}
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	// private void findSimilarRefactorings(Path outputDirectory,
+	// List<RefactoringData> refactorings)
+	// throws IOException, InterruptedException, ParseException {
+	// RefactoringPatternFinder patternFinder = new
+	// TokenBasedRefactoringPatternFinder(refactorings, outputDirectory);
+	// List<RefactoringSet> refactoringSets =
+	// patternFinder.getSimilarRefactorings();
+	// printReport(refactoringSets);
+	//
+	// createTreeView(refactoringSets);
+	// }
 
-//	private void countUnusedOpportunities(Path projectsDirectory, GitService gitService, Project project,
-//			List<RefactoringSet> refactoringSets) throws Exception, ParseException, InterruptedException, IOException {
-//		for (RefactoringSet refactoringSet : refactoringSets) {
-//			for (Commit commit : refactoringSet.getCommits()) {
-//				gitService.checkout(project.getRepository(), commit.getId());
-//				SourcererCCDetector sccd = new SourcererCCDetector();
-//				sccd.detectClonePairs(projectsDirectory);
-//			}
-//		}
-//	}
+	// private void readFromDeckardOutput() throws IOException {
+	// String line;
+	// try (InputStream fis = new FileInputStream(
+	// "/home/tahmiid/Downloads/RefactoringMatcher/clusters/cluster_vdb_30_0_allg_1.0_30");
+	// InputStreamReader isr = new InputStreamReader(fis,
+	// Charset.forName("UTF-8"));
+	// BufferedReader br = new BufferedReader(isr);) {
+	// while ((line = br.readLine()) != null) {
+	// if (line.equals("")) {
+	// System.out.println("Bla");
+	// continue;
+	// }
+	// String[] headerParts = line.split("\t");
+	// String detail = headerParts[2];
+	// String[] detailParts = detail.split(" ");
+	// Path file = Paths.get(detailParts[1]);
+	// String location = detailParts[2];
+	// String[] locationParts = location.split(":");
+	// int start = Integer.parseInt(locationParts[1]);
+	// int size = Integer.parseInt(locationParts[2]);
+	// int end = start + size;
+	//
+	// }
+	// } catch (FileNotFoundException e) {
+	// e.printStackTrace();
+	// }
+	// }
 
-//	private void printReport(List<RefactoringSet> refactoringSets) {
-//		System.out.println();
-//		System.out.println("Similar Refactorings\t" + refactoringSets.size());
-//
-//		int i = 0;
-//		int totalRefactoringsInSets = 0;
-//		int sameDaySets = 0;
-//		int sameDevSets = 0;
-//		int sumOfDayDifference = 0;
-//		for (RefactoringSet refactoringSet : refactoringSets) {
-//			i++;
-//
-//			totalRefactoringsInSets += refactoringSet.size();
-//			sumOfDayDifference += refactoringSet.getDuration();
-//
-//			if (refactoringSet.isSameDay())
-//				sameDaySets++;
-//			if (refactoringSet.isSameDeveloper())
-//				sameDevSets++;
-//
-//			System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t"
-//					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate()) + "\t"
-//					+ new SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate()) + "\t"
-//					+ refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper() + "\t"
-//					+ refactoringSet.isSameProject());
-//			// System.out.println(hashSet.getSimilarCode());
-//		}
-//
-//		System.out.println();
-//		System.out.println(refactoringSets.size() + "\t" + (float) totalRefactoringsInSets / refactoringSets.size()
-//				+ "\t" + sameDaySets + "\t" + (refactoringSets.size() - sameDaySets) + "\t"
-//				+ (float) sumOfDayDifference / refactoringSets.size() + "\t" + sameDevSets + "\t"
-//				+ (refactoringSets.size() - sameDevSets));
-//	}
+	// private void countUnusedOpportunities(Path projectsDirectory, GitService
+	// gitService, Project project,
+	// List<RefactoringSet> refactoringSets) throws Exception, ParseException,
+	// InterruptedException, IOException {
+	// for (RefactoringSet refactoringSet : refactoringSets) {
+	// for (Commit commit : refactoringSet.getCommits()) {
+	// gitService.checkout(project.getRepository(), commit.getId());
+	// SourcererCCDetector sccd = new SourcererCCDetector();
+	// sccd.detectClonePairs(projectsDirectory);
+	// }
+	// }
+	// }
 
-//	private void createTreeView(List<RefactoringSet> similarRefactorings) {
-//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar Refactorings");
-//		for (HashSet<RefactoringData> set : similarRefactorings) {
-//			DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode(
-//					"Set " + (similarRefactorings.indexOf(set) + 1));
-//
-//			for (RefactoringData refactoringData : set) {
-//				refactoringSetNode.add(createTreeNode(refactoringData));
-//			}
-//			root.add(refactoringSetNode);
-//		}
-//
-//		scrollPane = new JScrollPane();
-//		scrollPane.setBounds(0, 0, 400, 788);
-//		frame.getContentPane().add(scrollPane);
-//		tree = new JTree(root);
-//		scrollPane.setViewportView(tree);
-//		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-//			@Override
-//			public void valueChanged(TreeSelectionEvent e) {
-//				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-//
-//				if (selectedNode == null)
-//					return;
-//
-//				if (selectedNode.getLevel() == 1) {
-//					lblNewLabel.setText(selectedNode.toString());
-//					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
-//							.get(selectedNode.getParent().getIndex(selectedNode));
-//					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
-//
-//					TitledBorder border;
-//
-//					lblCommit.setToolTipText("Commit: " + list.get(0).getCommit().getId());
-//					lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit().getId());
-//
-//					border = new TitledBorder(list.get(0).getBeforeCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_2.setBorder(border);
-//					beforeRef1.setText(list.get(0).getBeforeCodeText());
-//
-//					border = new TitledBorder(list.get(1).getBeforeCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_3.setBorder(border);
-//					beforeRef2.setText(list.get(1).getBeforeCodeText());
-//
-//					border = new TitledBorder(list.get(0).getAfterCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_4.setBorder(border);
-//					afterRef1.setText(list.get(0).getAfterCodeText());
-//
-//					border = new TitledBorder(list.get(1).getAfterCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_5.setBorder(border);
-//					afterRef2.setText(list.get(1).getAfterCodeText());
-//				} else if (selectedNode.getLevel() == 2) {
-//					lblNewLabel.setText(selectedNode.getParent().toString());
-//					HashSet<RefactoringData> set = (HashSet<RefactoringData>) similarRefactorings
-//							.get(selectedNode.getParent().getParent().getIndex(selectedNode.getParent()));
-//					ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
-//					RefactoringData refactoring = (RefactoringData) list
-//							.get(selectedNode.getParent().getIndex(selectedNode));
-//
-//					TitledBorder border;
-//
-//					lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit().getId());
-//
-//					border = new TitledBorder(refactoring.getBeforeCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_3.setBorder(border);
-//					beforeRef2.setText(refactoring.getBeforeCodeText());
-//
-//					border = new TitledBorder(refactoring.getAfterCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_5.setBorder(border);
-//					afterRef2.setText(refactoring.getAfterCodeText());
-//				}
-//			}
-//		});
-//	}
+	// private void printReport(List<RefactoringSet> refactoringSets) {
+	// System.out.println();
+	// System.out.println("Similar Refactorings\t" + refactoringSets.size());
+	//
+	// int i = 0;
+	// int totalRefactoringsInSets = 0;
+	// int sameDaySets = 0;
+	// int sameDevSets = 0;
+	// int sumOfDayDifference = 0;
+	// for (RefactoringSet refactoringSet : refactoringSets) {
+	// i++;
+	//
+	// totalRefactoringsInSets += refactoringSet.size();
+	// sumOfDayDifference += refactoringSet.getDuration();
+	//
+	// if (refactoringSet.isSameDay())
+	// sameDaySets++;
+	// if (refactoringSet.isSameDeveloper())
+	// sameDevSets++;
+	//
+	// System.out.println("Set " + i + "\t" + refactoringSet.size() + "\t"
+	// + new
+	// SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getFirstRefactoringDate())
+	// + "\t"
+	// + new
+	// SimpleDateFormat("yyyy-MM-dd").format(refactoringSet.getLastRefactoringDate())
+	// + "\t"
+	// + refactoringSet.getDuration() + "\t" + refactoringSet.isSameDeveloper()
+	// + "\t"
+	// + refactoringSet.isSameProject());
+	// // System.out.println(hashSet.getSimilarCode());
+	// }
+	//
+	// System.out.println();
+	// System.out.println(refactoringSets.size() + "\t" + (float)
+	// totalRefactoringsInSets / refactoringSets.size()
+	// + "\t" + sameDaySets + "\t" + (refactoringSets.size() - sameDaySets) +
+	// "\t"
+	// + (float) sumOfDayDifference / refactoringSets.size() + "\t" +
+	// sameDevSets + "\t"
+	// + (refactoringSets.size() - sameDevSets));
+	// }
 
-//	private void printpairs(List<RefactoringPair> similarRefactoringPairs) {
-//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Refactoring Pairs");
-//		for (RefactoringPair pair : similarRefactoringPairs) {
-//			DefaultMutableTreeNode refactoringPairNode = new DefaultMutableTreeNode(
-//					"Pair " + (similarRefactoringPairs.indexOf(pair) + 1));
-//
-//			refactoringPairNode.add(createTreeNode(pair.getRefactoringOne()));
-//			refactoringPairNode.add(createTreeNode(pair.getRefactoringTwo()));
-//
-//			root.add(refactoringPairNode);
-//		}
-//
-//		scrollPane = new JScrollPane();
-//		scrollPane.setBounds(0, 0, 400, 788);
-//		frame.getContentPane().add(scrollPane);
-//		tree = new JTree(root);
-//		scrollPane.setViewportView(tree);
-//		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-//			@Override
-//			public void valueChanged(TreeSelectionEvent e) {
-//				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-//
-//				if (selectedNode.getLevel() == 1) {
-//					lblNewLabel.setText(selectedNode.toString());
-//					RefactoringPair pair = (RefactoringPair) similarRefactoringPairs
-//							.get(selectedNode.getParent().getIndex(selectedNode));
-//
-//					TitledBorder border;
-//
-//					lblCommit.setToolTipText("Commit: " + pair.getRefactoringOne().getCommit().getId());
-//					lblCommit_1.setToolTipText("Commit: " + pair.getRefactoringTwo().getCommit().getId());
-//
-//					border = new TitledBorder(pair.getRefactoringOne().getBeforeCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_2.setBorder(border);
-//					beforeRef1.setText(pair.getRefactoringOne().getBeforeCodeText());
-//
-//					border = new TitledBorder(pair.getRefactoringTwo().getBeforeCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_3.setBorder(border);
-//					beforeRef2.setText(pair.getRefactoringTwo().getBeforeCodeText());
-//
-//					border = new TitledBorder(pair.getRefactoringOne().getAfterCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_4.setBorder(border);
-//					afterRef1.setText(pair.getRefactoringOne().getAfterCodeText());
-//
-//					border = new TitledBorder(pair.getRefactoringTwo().getAfterCode().getFileName());
-//					border.setTitleJustification(TitledBorder.CENTER);
-//					border.setTitlePosition(TitledBorder.TOP);
-//
-//					panel_5.setBorder(border);
-//					afterRef2.setText(pair.getRefactoringTwo().getAfterCodeText());
-//				}
-//			}
-//		});
-//		System.out.println();
-//		System.out.println("Refactorings Pairs: " + similarRefactoringPairs.size());
-//	}
+	// private void createTreeView(List<RefactoringSet> similarRefactorings) {
+	// DefaultMutableTreeNode root = new DefaultMutableTreeNode("Similar
+	// Refactorings");
+	// for (HashSet<RefactoringData> set : similarRefactorings) {
+	// DefaultMutableTreeNode refactoringSetNode = new DefaultMutableTreeNode(
+	// "Set " + (similarRefactorings.indexOf(set) + 1));
+	//
+	// for (RefactoringData refactoringData : set) {
+	// refactoringSetNode.add(createTreeNode(refactoringData));
+	// }
+	// root.add(refactoringSetNode);
+	// }
+	//
+	// scrollPane = new JScrollPane();
+	// scrollPane.setBounds(0, 0, 400, 788);
+	// frame.getContentPane().add(scrollPane);
+	// tree = new JTree(root);
+	// scrollPane.setViewportView(tree);
+	// tree.getSelectionModel().addTreeSelectionListener(new
+	// TreeSelectionListener() {
+	// @Override
+	// public void valueChanged(TreeSelectionEvent e) {
+	// DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)
+	// tree.getLastSelectedPathComponent();
+	//
+	// if (selectedNode == null)
+	// return;
+	//
+	// if (selectedNode.getLevel() == 1) {
+	// lblNewLabel.setText(selectedNode.toString());
+	// HashSet<RefactoringData> set = (HashSet<RefactoringData>)
+	// similarRefactorings
+	// .get(selectedNode.getParent().getIndex(selectedNode));
+	// ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
+	//
+	// TitledBorder border;
+	//
+	// lblCommit.setToolTipText("Commit: " + list.get(0).getCommit().getId());
+	// lblCommit_1.setToolTipText("Commit: " + list.get(1).getCommit().getId());
+	//
+	// border = new TitledBorder(list.get(0).getBeforeCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_2.setBorder(border);
+	// beforeRef1.setText(list.get(0).getBeforeCodeText());
+	//
+	// border = new TitledBorder(list.get(1).getBeforeCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_3.setBorder(border);
+	// beforeRef2.setText(list.get(1).getBeforeCodeText());
+	//
+	// border = new TitledBorder(list.get(0).getAfterCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_4.setBorder(border);
+	// afterRef1.setText(list.get(0).getAfterCodeText());
+	//
+	// border = new TitledBorder(list.get(1).getAfterCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_5.setBorder(border);
+	// afterRef2.setText(list.get(1).getAfterCodeText());
+	// } else if (selectedNode.getLevel() == 2) {
+	// lblNewLabel.setText(selectedNode.getParent().toString());
+	// HashSet<RefactoringData> set = (HashSet<RefactoringData>)
+	// similarRefactorings
+	// .get(selectedNode.getParent().getParent().getIndex(selectedNode.getParent()));
+	// ArrayList<RefactoringData> list = new ArrayList<RefactoringData>(set);
+	// RefactoringData refactoring = (RefactoringData) list
+	// .get(selectedNode.getParent().getIndex(selectedNode));
+	//
+	// TitledBorder border;
+	//
+	// lblCommit_1.setToolTipText("Commit: " + refactoring.getCommit().getId());
+	//
+	// border = new TitledBorder(refactoring.getBeforeCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_3.setBorder(border);
+	// beforeRef2.setText(refactoring.getBeforeCodeText());
+	//
+	// border = new TitledBorder(refactoring.getAfterCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_5.setBorder(border);
+	// afterRef2.setText(refactoring.getAfterCodeText());
+	// }
+	// }
+	// });
+	// }
 
-//	private DefaultMutableTreeNode createTreeNode(RefactoringData refactoring) {
-//		DefaultMutableTreeNode refactoringNode = new DefaultMutableTreeNode(refactoring.getCommitShort());
-//		refactoringNode.add(createTreeNode(refactoring.getBeforeCode()));
-//		refactoringNode.add(createTreeNode(refactoring.getAfterCode()));
-//		return refactoringNode;
-//	}
+	// private void printpairs(List<RefactoringPair> similarRefactoringPairs) {
+	// DefaultMutableTreeNode root = new DefaultMutableTreeNode("Refactoring
+	// Pairs");
+	// for (RefactoringPair pair : similarRefactoringPairs) {
+	// DefaultMutableTreeNode refactoringPairNode = new DefaultMutableTreeNode(
+	// "Pair " + (similarRefactoringPairs.indexOf(pair) + 1));
+	//
+	// refactoringPairNode.add(createTreeNode(pair.getRefactoringOne()));
+	// refactoringPairNode.add(createTreeNode(pair.getRefactoringTwo()));
+	//
+	// root.add(refactoringPairNode);
+	// }
+	//
+	// scrollPane = new JScrollPane();
+	// scrollPane.setBounds(0, 0, 400, 788);
+	// frame.getContentPane().add(scrollPane);
+	// tree = new JTree(root);
+	// scrollPane.setViewportView(tree);
+	// tree.getSelectionModel().addTreeSelectionListener(new
+	// TreeSelectionListener() {
+	// @Override
+	// public void valueChanged(TreeSelectionEvent e) {
+	// DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)
+	// tree.getLastSelectedPathComponent();
+	//
+	// if (selectedNode.getLevel() == 1) {
+	// lblNewLabel.setText(selectedNode.toString());
+	// RefactoringPair pair = (RefactoringPair) similarRefactoringPairs
+	// .get(selectedNode.getParent().getIndex(selectedNode));
+	//
+	// TitledBorder border;
+	//
+	// lblCommit.setToolTipText("Commit: " +
+	// pair.getRefactoringOne().getCommit().getId());
+	// lblCommit_1.setToolTipText("Commit: " +
+	// pair.getRefactoringTwo().getCommit().getId());
+	//
+	// border = new
+	// TitledBorder(pair.getRefactoringOne().getBeforeCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_2.setBorder(border);
+	// beforeRef1.setText(pair.getRefactoringOne().getBeforeCodeText());
+	//
+	// border = new
+	// TitledBorder(pair.getRefactoringTwo().getBeforeCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_3.setBorder(border);
+	// beforeRef2.setText(pair.getRefactoringTwo().getBeforeCodeText());
+	//
+	// border = new
+	// TitledBorder(pair.getRefactoringOne().getAfterCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_4.setBorder(border);
+	// afterRef1.setText(pair.getRefactoringOne().getAfterCodeText());
+	//
+	// border = new
+	// TitledBorder(pair.getRefactoringTwo().getAfterCode().getFileName());
+	// border.setTitleJustification(TitledBorder.CENTER);
+	// border.setTitlePosition(TitledBorder.TOP);
+	//
+	// panel_5.setBorder(border);
+	// afterRef2.setText(pair.getRefactoringTwo().getAfterCodeText());
+	// }
+	// }
+	// });
+	// System.out.println();
+	// System.out.println("Refactorings Pairs: " +
+	// similarRefactoringPairs.size());
+	// }
 
-//	private DefaultMutableTreeNode createTreeNode(Code code) {
-//		DefaultMutableTreeNode before = new DefaultMutableTreeNode(code);
-//		return before;
-//	}
+	// private DefaultMutableTreeNode createTreeNode(RefactoringData
+	// refactoring) {
+	// DefaultMutableTreeNode refactoringNode = new
+	// DefaultMutableTreeNode(refactoring.getCommitShort());
+	// refactoringNode.add(createTreeNode(refactoring.getBeforeCode()));
+	// refactoringNode.add(createTreeNode(refactoring.getAfterCode()));
+	// return refactoringNode;
+	// }
+
+	// private DefaultMutableTreeNode createTreeNode(Code code) {
+	// DefaultMutableTreeNode before = new DefaultMutableTreeNode(code);
+	// return before;
+	// }
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					RefactoringMatcherTest window = new RefactoringMatcherTest();
-//					window.frame.setVisible(true);
+					// window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -38,6 +38,8 @@ public class Commit implements Serializable{
 		return id.equals(commit.getId()) ? true : false;
 	}
 
+
+
 	private String id;
 	private String message;
 	private Date time;

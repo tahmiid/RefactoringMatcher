@@ -21,7 +21,7 @@ public class RefactoringMatcher {
 
 		Path outputDirectory = Files.createDirectories(Paths.get("output"));
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
-		GitService gitService = new GitServiceImpl();
+		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
 		Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
 
