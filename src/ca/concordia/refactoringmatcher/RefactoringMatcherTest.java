@@ -498,7 +498,7 @@ public class RefactoringMatcherTest {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RefactoringMatcherTest window = new RefactoringMatcherTest();
+					//Tests window = new Tests();
 					// window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
