@@ -12,18 +12,22 @@ public class RefactoringData implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Refactoring refactoring;
+//	private Refactoring refactoring;
 	private Code refactoredCode;
 	private String projectName;
+	private String name;
+	private RefactoringType type;
 
 	public RefactoringData(Refactoring refactoring, Code afterCode, String projectName) {
-		this.refactoring = refactoring;
+//		this.refactoring = refactoring;
+		this.name = refactoring.getName();
+		this.type = refactoring.getRefactoringType();
 		this.refactoredCode = afterCode;
 		this.projectName = projectName;
 	}
-	public Refactoring getRefactoring() {
-		return refactoring;
-	}
+//	public Refactoring getRefactoring() {
+//		return refactoring;
+//	}
 	
 	public String getProjectName() {
 		return projectName;
@@ -43,7 +47,7 @@ public class RefactoringData implements Serializable {
 	
 	public String toDetailString()
 	{
-		return "(Refactoring:" + refactoring.getName() + ")" + " (" + refactoredCode.getCommit() + ")\n"+ refactoredCode.getMethodName() + " in " + refactoredCode.getFileName();
+		return "(Refactoring:" + name + ")" + " (" + refactoredCode.getCommit() + ")\n"+ refactoredCode.getMethodName() + " in " + refactoredCode.getFileName();
 	}
 	
 	public String toString()
@@ -53,12 +57,12 @@ public class RefactoringData implements Serializable {
 	
 	public RefactoringType getType()
 	{
-		return refactoring.getRefactoringType();
+		return type;
 	}
 	
 	public String getName()
 	{
-		return refactoring.getName();
+		return name;
 	}
 	
 	public Commit getCommit()

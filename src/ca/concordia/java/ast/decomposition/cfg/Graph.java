@@ -27,4 +27,8 @@ public class Graph {
 	public void addEdge(GraphEdge edge) {
 		edges.add(edge);
 	}
+	
+	public int size()	{
+		return nodes.size();
+	}
 }

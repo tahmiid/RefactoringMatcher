@@ -17,23 +17,20 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 import org.refactoringminer.api.GitHistoryRefactoringMiner;
-import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.Refactoring;
 import org.refactoringminer.api.RefactoringHandler;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
-import org.refactoringminer.util.GitServiceImpl;
 
 import ca.concordia.java.ast.ConstructorObject;
 import ca.concordia.java.ast.MethodObject;
 import ca.concordia.java.ast.decomposition.cfg.CFG;
 import ca.concordia.java.ast.decomposition.cfg.Groum;
 import ca.concordia.java.ast.decomposition.cfg.PDG;
+import ca.concordia.refactoringmatcher.graph.GraphPair;
 import gr.uom.java.xmi.LocationInfo;
 import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
@@ -67,34 +64,23 @@ public class Tests {
 				@Override
 				public void handle(String commitId, List<Refactoring> refactorings) {
 					for (Refactoring ref : refactorings) {
-						LocationInfo astBeforeChange;
 						LocationInfo astAfterChange;
 						if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
-							astBeforeChange = ((InlineOperationRefactoring) ref).getInlinedOperation()
-									.getLocationInfo();
 							astAfterChange = ((InlineOperationRefactoring) ref).getTargetOperationAfterInline()
 									.getLocationInfo();
 						} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
-							astBeforeChange = ((ExtractOperationRefactoring) ref).getSourceOperationBeforeExtraction()
-									.getLocationInfo();
 							astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation()
 									.getLocationInfo();
 						} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
-							astBeforeChange = ((ExtractAndMoveOperationRefactoring) ref)
-									.getSourceOperationBeforeExtraction().getLocationInfo();
 							astAfterChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation()
 									.getLocationInfo();
 						} else {
 							continue;
 						}
 
-						Code beforeCode = null;
 						Code afterCode = null;
 						try {
 							Commit commit = new Commit(commitId);
-							beforeCode = new Code(commit, project.getDirectory(), astBeforeChange, gitService,
-									project.getRepository());
-							commit = new Commit(commitId);
 							afterCode = new Code(commit, project.getDirectory(), astAfterChange, gitService,
 									project.getRepository());
 						} catch (Exception e) {
@@ -156,6 +142,8 @@ public class Tests {
 			ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
 			ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
+			ArrayList<PDG> pdgs = new ArrayList<PDG>();
+			ArrayList<GraphPair> isomorphs = new ArrayList<GraphPair>();
 
 			for (String projectLink : projectLinks) {
 				GithubProject project;
@@ -174,13 +162,32 @@ public class Tests {
 
 							MethodObject methodObject = createMethodObject(methodDeclaration);
 							PDG pdg = getPDG(methodObject);
+							pdgs.add(pdg);
 						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					fail("Exception Thrown");
 				}
+			}		
+			
+			for (PDG pdg1 : pdgs) {
+				for (PDG pdg2 : pdgs) {
+					if(pdg1.equals(pdg2))
+						continue;
+					
+					try {
+						GraphPair pair = new GraphPair(pdg1, pdg2);
+						if(pair.areIsomorph())
+						{
+							isomorphs.add(pair);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
+			
 			assertEquals(true, true);
 
 		} catch (IOException e) {
@@ -206,7 +213,6 @@ public class Tests {
 				MethodObject methodObject = createMethodObject(methodDeclaration);
 				CFG cfg = new CFG(methodObject);
 				PDG pdg = new PDG(cfg);
-				Groum groum = new Groum(pdg);
 				System.out.println();
 				return false;
 			}
@@ -248,12 +254,13 @@ public class Tests {
 			// "https://github.com/zxing/zxing.git",
 			// "https://github.com/google/guava.git",
 			//
-			"https://github.com/danilofes/refactoring-toy-example.git",
+//			"https://github.com/tsantalis/RefactoringMiner",
+//			"https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
-			// "https://github.com/jfree/jfreechart.git",
+			 "https://github.com/jfree/jfreechart.git",
 			// "https://github.com/apache/commons-lang.git",
 			// "https://github.com/apache/log4j",
 			// "https://github.com/apache/nifi-minifi.git",
