@@ -20,7 +20,7 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 	private Long duration;
 	private boolean sameCommit;
 	private boolean sameDay;
-	private boolean sameDeveloper;
+//	private boolean sameDeveloper;
 	private HashSet<Commit> commits;
 	
 	public String getSimilarCode()
@@ -81,7 +81,7 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 		lastRefactoringDate = 0L;
 		firstRefactoringDate = new Date().getTime();
 		sameCommit = true;
-		sameDeveloper = true;	
+//		sameDeveloper = true;	
 		commits = new HashSet<Commit>();
 		
 		if(super.size() == 0)
@@ -92,19 +92,19 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 		
 		for (RefactoringData refactoring : this) {
 			commits.add(refactoring.getCommit());
-			if(sameDeveloper)
-			{
-				if(!commit.getCommiter().getEmailAddress().equals(refactoring.getCommit().getCommiter().getEmailAddress()))
-				{
-					sameDeveloper = false;
-				}
-			}
+//			if(sameDeveloper)
+//			{
+//				if(!commit.getCommiter().getEmailAddress().equals(refactoring.getCommit().getCommiter().getEmailAddress()))
+//				{
+//					sameDeveloper = false;
+//				}
+//			}
 			
-			long time = refactoring.getCommitTime().getTime();
-			if(time >= lastRefactoringDate)
-				lastRefactoringDate = time;
-			if(time <= firstRefactoringDate)
-				firstRefactoringDate = time;
+//			long time = refactoring.getCommitTime().getTime();
+//			if(time >= lastRefactoringDate)
+//				lastRefactoringDate = time;
+//			if(time <= firstRefactoringDate)
+//				firstRefactoringDate = time;
 		}
 		
 		if(commits.size() > 1)
@@ -157,7 +157,7 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 		return sameDay;
 	}
 
-	public boolean isSameDeveloper() {
-		return sameDeveloper;
-	}	
+//	public boolean isSameDeveloper() {
+//		return sameDeveloper;
+//	}	
 }

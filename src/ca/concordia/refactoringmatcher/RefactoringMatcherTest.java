@@ -1,93 +1,24 @@
 package ca.concordia.refactoringmatcher;
 
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.EventQueue;
-import java.awt.GridLayout;
+import ca.concordia.java.ast.ConstructorObject;
+import ca.concordia.java.ast.MethodObject;
+import ca.concordia.java.ast.decomposition.cfg.CFG;
+import ca.concordia.java.ast.decomposition.cfg.PDG;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jgit.lib.Repository;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTree;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.dom.IDocElement;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Javadoc;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
-import org.eclipse.jgit.gitrepo.RepoCommand;
-import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.lib.Repository;
-import org.refactoringminer.api.GitService;
-import org.refactoringminer.api.RefactoringType;
-import org.refactoringminer.util.GitServiceImpl;
-
-import ca.concordia.jaranalyzer.JarAnalyzer;
-import ca.concordia.jaranalyzer.JarInfo;
-import ca.concordia.java.ast.Access;
-import ca.concordia.java.ast.ConstructorObject;
-import ca.concordia.java.ast.FieldObject;
-import ca.concordia.java.ast.MethodObject;
-import ca.concordia.java.ast.decomposition.MethodBodyObject;
-import ca.concordia.java.ast.decomposition.cfg.BasicBlock;
-import ca.concordia.java.ast.decomposition.cfg.BasicBlockCFG;
-import ca.concordia.java.ast.decomposition.cfg.CFG;
-import ca.concordia.java.ast.decomposition.cfg.CFGBranchNode;
-import ca.concordia.java.ast.decomposition.cfg.CFGNode;
-import ca.concordia.java.ast.decomposition.cfg.GraphNode;
-import ca.concordia.java.ast.decomposition.cfg.PDG;
-import ca.concordia.java.ast.decomposition.cfg.PDGNode;
-import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
-import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
 
 public class RefactoringMatcherTest {
 
@@ -155,17 +86,17 @@ public class RefactoringMatcherTest {
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
-		ArrayList<Project> projects = new ArrayList<Project>();
+		ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
 
 		for (String projectLink : projectLinks) {
-			Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
+			GithubProject project = new GithubProject(projectLink, projectsDirectory, outputDirectory, gitService);
 			project.printReport();
 			projects.add(project);
 			
 			for (RefactoringData refactoringData : project.getRefactorings()) {
 				Repository repo = project.getRepository();
 
-				MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
+				MethodDeclaration methodDeclaration = refactoringData.getRefactoredCode().getMethodDeclaration(gitService, repo);
 				if (methodDeclaration != null) {
 					System.out.println(methodDeclaration.toString());
 

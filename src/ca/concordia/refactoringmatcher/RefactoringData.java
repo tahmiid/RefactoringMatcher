@@ -4,6 +4,7 @@ package ca.concordia.refactoringmatcher;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.refactoringminer.api.Refactoring;
 import org.refactoringminer.api.RefactoringType;
 
 public class RefactoringData implements Serializable {	
@@ -11,53 +12,38 @@ public class RefactoringData implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String name;
-	private RefactoringType type;
-	private Code beforeCode;
-	private Code afterCode;
+	private Refactoring refactoring;
+	private Code refactoredCode;
 	private String projectName;
+
+	public RefactoringData(Refactoring refactoring, Code afterCode, String projectName) {
+		this.refactoring = refactoring;
+		this.refactoredCode = afterCode;
+		this.projectName = projectName;
+	}
+	public Refactoring getRefactoring() {
+		return refactoring;
+	}
 	
 	public String getProjectName() {
 		return projectName;
 	}
-
-	public RefactoringData(String name, RefactoringType type, Code beforeCode, Code afterCode, String projectName) {
-		this.name = name;
-		this.type = type;
-		this.beforeCode = beforeCode;
-		this.afterCode = afterCode;
-		this.projectName = projectName;
+	
+	public String getRefactoredText() {
+		return refactoredCode.getText();
 	}
 	
-	public String getBeforeCodeBody() {
-		return beforeCode.getMethodBody();
-	}
+//	public String getRefactoredOperationBody() {
+//		return refactoredCode.getMethodBody();
+//	}
 	
-
-	public String getBeforeCodeText() {
-		return beforeCode.getText();
-	}
-	
-	public Code getBeforeCode() {
-		return beforeCode;
-	}
-	
-	public String getAfterCodeText() {
-		return afterCode.getText();
-	}
-	
-	public String getAfterCodeBody() {
-		return afterCode.getMethodBody();
-	}
-	
-	public Code getAfterCode() {
-		return afterCode;
+	public Code getRefactoredCode() {
+		return refactoredCode;
 	}
 	
 	public String toDetailString()
 	{
-		return beforeCode.getMethodName() + " in " + beforeCode.getFileName() + "\t(Refactoring:" + name + ")" + " (" + afterCode.getCommit() + ")\n"+
-			   afterCode.getMethodName() + " in " + afterCode.getFileName();
+		return "(Refactoring:" + refactoring.getName() + ")" + " (" + refactoredCode.getCommit() + ")\n"+ refactoredCode.getMethodName() + " in " + refactoredCode.getFileName();
 	}
 	
 	public String toString()
@@ -67,26 +53,26 @@ public class RefactoringData implements Serializable {
 	
 	public RefactoringType getType()
 	{
-		return type;
+		return refactoring.getRefactoringType();
 	}
 	
 	public String getName()
 	{
-		return name;
+		return refactoring.getName();
 	}
 	
 	public Commit getCommit()
 	{
-		return afterCode.getCommit();
+		return refactoredCode.getCommit();
 	}
 	
 	public String getCommitShort()
 	{
-		return afterCode.getCommitShort();
+		return refactoredCode.getCommitShort();
 	}
 	
-	public Date getCommitTime()
-	{
-		return afterCode.getCommit().getTime();
-	}
+//	public Date getCommitTime()
+//	{
+//		return afterCode.getCommit().getTime();
+//	}
 }

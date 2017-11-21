@@ -2,6 +2,7 @@ package ca.concordia.refactoringmatcher;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class TestClass {
 
@@ -16,10 +17,9 @@ public class TestClass {
 //		  return size;
 //		}
 	
-	private void GroumTestMethod()
-	{
+	private void GroumTestMethod() throws IOException {
 		StringBuffer strbuf = new StringBuffer();
-		BufferedReader in = new BufferedReader(new FileReader(file));
+		BufferedReader in = new BufferedReader(new FileReader(""));
 		String str;
 		while((str = in.readLine()) != null ) {
 			strbuf.append(str + "\n");
@@ -28,7 +28,10 @@ public class TestClass {
 			outputMessage(strbuf.toString());
 		in.close();
 	}
-	
+
+	private void outputMessage(String s) {
+	}
+
 //	private List<XYDataset> getDatasetsMappedToRangeAxis(Integer axisIndex) {
 //		ParamChecks.nullNotPermitted(axisIndex, "axisIndex");
 //		List<XYDataset> result = new ArrayList<XYDataset>();

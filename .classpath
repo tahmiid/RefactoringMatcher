@@ -13,6 +13,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/indexbased.SearchManager.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.8.0.201705170830-rc1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/RefactoringMiner"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar"/>
 	<classpathentry kind="lib" path="lib/InputBuilderClassic.jar"/>
@@ -22,10 +23,7 @@
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.core.runtime_3.11.1.v20150903-1804.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.equinox.app_1.3.300.v20150423-1356.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.equinox.preferences_3.5.300.v20150408-1437.jar"/>
-	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jdt.core_3.11.1.v20150902-1521.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jdt.core_3.12.1.v20160829-0950.jar"/>
-	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jdt.core.source_3.11.1.v20150902-1521.jar"/>
-	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jgit-4.5.0.201609210915-r.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

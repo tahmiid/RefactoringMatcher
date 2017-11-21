@@ -28,22 +28,22 @@ public class MethodSingnatureMatcher {
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
-		ArrayList<Project> projects = new ArrayList<Project>();
+		ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
 
 		for (String projectLink : projectLinks) {
-			Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
+			GithubProject project = new GithubProject(projectLink, projectsDirectory, outputDirectory, gitService);
 			project.printReport();
 			projects.add(project);
 			
 			for (RefactoringData refactoringData : project.getRefactorings()) {
 				Repository repo = project.getRepository();
 
-				MethodDeclaration methodDeclaration = refactoringData.getAfterCode().getMethodDeclaration(gitService, repo);
+				MethodDeclaration methodDeclaration = refactoringData.getRefactoredCode().getMethodDeclaration(gitService, repo);
 				if (methodDeclaration != null) {
 					System.out.println(methodDeclaration.toString());
 
 					PDG pdg = getPDG(methodDeclaration);
-					Release  release = project.getRelease(refactoringData.getAfterCode().getCommit().getId());
+					Release  release = project.getRelease(refactoringData.getRefactoredCode().getCommit().getId());
 				}
 			}
 		}

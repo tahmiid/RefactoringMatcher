@@ -1,5 +1,11 @@
 package ca.concordia.refactoringmatcher;
 
+import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jgit.lib.Repository;
+import org.refactoringminer.api.GitService;
+
+import gr.uom.java.xmi.LocationInfo;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -8,18 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jgit.lib.Repository;
-import org.refactoringminer.api.GitService;
-
-import gr.uom.java.xmi.decomposition.ASTInformation;
 
 public class Code implements Serializable {
 	/**
@@ -32,9 +26,8 @@ public class Code implements Serializable {
 	private int length;
 	private String text;
 	private String methodName;
-	
 
-	public Code(Commit commit, Path directory, ASTInformation astInformation, ExtendedGitService gitService,
+	public Code(Commit commit, Path directory, LocationInfo astInformation, ExtendedGitService gitService,
 			Repository repository) throws Exception {
 		this.commit = commit;
 		this.filePath = new String(directory + "/" + astInformation.getFilePath());
@@ -44,6 +37,7 @@ public class Code implements Serializable {
 	}
 
 	private String extractText(ExtendedGitService gitService, Repository repository) throws Exception {
+		gitService.checkout(repository, commit.getId());
 		String wholeText = getWholeTextFromFile(gitService, repository);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -51,16 +45,18 @@ public class Code implements Serializable {
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-		MethodDeclaration methodDeclaration = (MethodDeclaration) block.getParent();
+		MethodDeclaration methodDeclaration = (MethodDeclaration) block;
 		this.methodName = extractMethodSignature(methodDeclaration);
 		int absoluteStartOffset = methodDeclaration.getName().getStartPosition();
-		int absoluteLength = methodDeclaration.getLength() + (methodDeclaration.getStartPosition() - absoluteStartOffset);
-		String text = wholeText.subSequence(absoluteStartOffset, absoluteStartOffset + absoluteLength).toString() + "\n";
+		int absoluteLength = methodDeclaration.getLength()
+				+ (methodDeclaration.getStartPosition() - absoluteStartOffset);
+		String text = wholeText.subSequence(absoluteStartOffset, absoluteStartOffset + absoluteLength).toString()
+				+ "\n";
 		return text;
 	}
 
-
-	public MethodDeclaration getMethodDeclaration(GitService gitService, Repository repository) throws IOException, Exception {
+	public MethodDeclaration getMethodDeclaration(GitService gitService, Repository repository)
+			throws IOException, Exception {
 		String wholeText = getWholeTextFromFile(gitService, repository);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -68,18 +64,19 @@ public class Code implements Serializable {
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-		MethodDeclaration methodDeclaration = (MethodDeclaration) block.getParent();
+		// MethodDeclaration methodDeclaration = (MethodDeclaration)
+		// block.getParent();
+		MethodDeclaration methodDeclaration = (MethodDeclaration) block;
 		return methodDeclaration;
 	}
-	
 
 	private String getWholeTextFromFile(GitService gitService, Repository repository) throws IOException, Exception {
-		if(!repository.getFullBranch().equals(commit.getId()))
+		if (!repository.getFullBranch().equals(commit.getId()))
 			gitService.checkout(repository, commit.getId());
 		String wholeText = readFile(filePath, StandardCharsets.UTF_8);
 		return wholeText;
 	}
-	
+
 	private String extractMethodSignature(MethodDeclaration parent) {
 		String methodName = parent.getReturnType2() + " ";
 		methodName += parent.getName().toString();
@@ -99,9 +96,8 @@ public class Code implements Serializable {
 	public Commit getCommit() {
 		return commit;
 	}
-	
-	public String getCommitShort()
-	{
+
+	public String getCommitShort() {
 		return commit.getId().substring(0, 5);
 	}
 
@@ -140,7 +136,8 @@ public class Code implements Serializable {
 
 	public boolean equals(Code code) {
 		try {
-			if (code.methodName.equals(methodName) && code.filePath.equals(filePath) && code.commit.getId().equals(commit.getId()))
+			if (code.methodName.equals(methodName) && code.filePath.equals(filePath)
+					&& code.commit.getId().equals(commit.getId()))
 				return true;
 			else
 				return false;
@@ -148,14 +145,13 @@ public class Code implements Serializable {
 			return false;
 		}
 	}
-	
+
 	public String getMethodBody() {
 		return text.substring(text.indexOf('{'));
 	}
 
-	public String toString(){
+	public String toString() {
 		return methodName + " in " + getFileName();
 	}
-	
-	
+
 }

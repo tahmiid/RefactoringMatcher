@@ -61,13 +61,7 @@ public class TokenBasedRefactoringPatternFinder implements RefactoringPatternFin
 		
 		int fileNumber = 1;
 		for (RefactoringData refactoringData : refactorings) {
-
-			text = refactoringData.getBeforeCodeBody();
-			addToFile(Paths.get(beforeCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
-			beforeCodeMaping.add(Pair.of(fileNumber, refactoringData));
-			fileNumber++;
-
-			text = refactoringData.getAfterCodeBody();
+			text = refactoringData.getRefactoredCode().getMethodBody();
 			addToFile(Paths.get(afterCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
 			afterCodeMaping.add(Pair.of(fileNumber, refactoringData));
 			fileNumber++;

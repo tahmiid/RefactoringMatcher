@@ -2,23 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/0/0.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/0/0.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/1/1.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/1/1.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/10/10.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/10/10.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/11/11.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/11/11.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/12/12.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/12/12.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/13/13.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/13/13.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/14/14.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/14/14.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/2/2.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/2/2.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/3/3.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/3/3.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/4/4.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/4/4.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/5/5.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/5/5.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/6/6.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/6/6.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/7/7.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/7/7.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/8/8.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/8/8.iml" />
-      <module fileurl="file://A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/9/9.iml" filepath="A:/RefactoringMiner/VideoStore_Class_Sequence_diagrams/9/9.iml" />
       <module fileurl="file://A:/workspace/JarAnalyzer/JarAnalyzer.iml" filepath="A:/workspace/JarAnalyzer/JarAnalyzer.iml" />
       <module fileurl="file://$PROJECT_DIR$/RefactoringMatcher.iml" filepath="$PROJECT_DIR$/RefactoringMatcher.iml" />
+      <module fileurl="file://A:/RefactoringMiner/RefactoringMiner.iml" filepath="A:/RefactoringMiner/RefactoringMiner.iml" />
       <module fileurl="file://A:/RefactoringMiner/RefactoringMiner.iml" filepath="A:/RefactoringMiner/RefactoringMiner.iml" />
     </modules>
   </component>

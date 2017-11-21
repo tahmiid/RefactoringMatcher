@@ -23,7 +23,7 @@ public class RefactoringMatcher {
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
-		Project project = new Project(projectLink, projectsDirectory, outputDirectory, gitService);
+		GithubProject project = new GithubProject(projectLink, projectsDirectory, outputDirectory, gitService);
 
 		List<RefactoringData> refactorings = project.getRefactorings();
 
@@ -64,7 +64,7 @@ public class RefactoringMatcher {
 		}
 	}
 
-	private static void printReport(List<RefactoringData> allRefactoringData, Project project) {
+	private static void printReport(List<RefactoringData> allRefactoringData, GithubProject project) {
 		int inlineMethod = 0;
 		int extractMethod = 0;
 		int extractAndMoveMethod = 0;

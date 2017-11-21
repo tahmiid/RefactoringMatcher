@@ -1,17 +1,9 @@
 package ca.concordia.refactoringmatcher;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import gr.uom.java.xmi.LocationInfo;
+import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
+import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
+import gr.uom.java.xmi.diff.InlineOperationRefactoring;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -21,21 +13,24 @@ import org.refactoringminer.api.RefactoringHandler;
 import org.refactoringminer.api.RefactoringType;
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
 
-import gr.uom.java.xmi.decomposition.ASTInformation;
-import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
-import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
-import gr.uom.java.xmi.diff.InlineOperationRefactoring;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author tahmiid
  *
  */
-public class Project {
+public class GithubProject {
 
 	private String link;
 	private String name;
-	private Path directory;
-	private Path outputDirectory;
+	private Path localPath;
+	private Path outputPath;
 	private Repository repository;
 	private int commitCount;
 	private List<RefactoringData> refactorings;
@@ -43,22 +38,25 @@ public class Project {
 	private String organization;
 	private ExtendedGitService gitService;
 
-	public Project(String projectLink, Path projectsDirectory, Path outputDirectory, ExtendedGitService gitService)
-			throws Exception {
+	public GithubProject(String projectLink, Path projectsDirectory, Path outputDirectory,
+			ExtendedGitService gitService) throws Exception {
 		this.link = projectLink;
 		this.name = getName(link);
 		this.organization = getOrganization(link);
-		this.directory = Paths.get(projectsDirectory + "/" + name);
-		this.outputDirectory = Files.createDirectories(Paths.get(outputDirectory + "/" + name));
+		this.localPath = Paths.get(projectsDirectory + "/" + name);
+		this.outputPath = Files.createDirectories(Paths.get(outputDirectory + "/" + name));
 		this.gitService = gitService;
-		this.repository = gitService.cloneIfNotExists(directory.toString(), link);
+		this.repository = gitService.cloneIfNotExists(localPath.toString(), link);
+		this.commitCount = calculateCommitCount();
+	}
 
+	private int calculateCommitCount() {
+		int commitCount = 0;
 		try {
 			this.commitCount = gitService.countCommits(repository, "master");
 		} catch (Exception e) {
-			commitCount = 0;
 		}
-		// this.refactorings = loadRefactoringsFromFile(gitService);
+		return commitCount;
 	}
 
 	private String getName(String projectLink) {
@@ -85,112 +83,68 @@ public class Project {
 		return projectLink;
 	}
 
-	private List<RefactoringData> getAllRefactorings(ExtendedGitService gitService) throws Exception {
+	private List<RefactoringData> mineRefactorings() throws Exception {
 		List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();
 
 		GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
 		miner.detectAll(repository, "master", new RefactoringHandler() {
 			@Override
-			public void handle(RevCommit commitData, List<Refactoring> refactorings) {
+			public void handle(String commitId, List<Refactoring> refactorings) {
 				for (Refactoring ref : refactorings) {
-
-					ASTInformation astBeforeChange;
-					ASTInformation astAfterChange;
-
-					// Refactor Refactoring Miner
-
-					/*
-					 * if (ref.getRefactoringType() ==
-					 * RefactoringType.PULL_UP_OPERATION) { astBeforeChange =
-					 * ((PullUpOperationRefactoring)
-					 * ref).getOriginalOperation().getBody().
-					 * getCompositeStatement().getAstInformation();
-					 * astAfterChange = ((PullUpOperationRefactoring)
-					 * ref).getMovedOperation().getBody().getCompositeStatement(
-					 * ).getAstInformation(); } else if
-					 * (ref.getRefactoringType() ==
-					 * RefactoringType.PUSH_DOWN_OPERATION) { astBeforeChange =
-					 * ((PushDownOperationRefactoring)
-					 * ref).getOriginalOperation().getBody().
-					 * getCompositeStatement().getAstInformation();
-					 * astAfterChange = ((PushDownOperationRefactoring)
-					 * ref).getMovedOperation().getBody().getCompositeStatement(
-					 * ).getAstInformation(); } else
-					 */ if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
-						astBeforeChange = ((InlineOperationRefactoring) ref).getInlinedOperation().getBody()
-								.getCompositeStatement().getAstInformation();
-						astAfterChange = ((InlineOperationRefactoring) ref).getInlinedToOperation().getBody()
-								.getCompositeStatement().getAstInformation();
-					} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
-						astBeforeChange = ((ExtractOperationRefactoring) ref).getExtractedFromOperation().getBody()
-								.getCompositeStatement().getAstInformation();
-						astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation().getBody()
-								.getCompositeStatement().getAstInformation();
+					LocationInfo refactoredCodeLocation;
+					if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+						refactoredCodeLocation = ((ExtractOperationRefactoring) ref).getExtractedOperation().getLocationInfo();
 					} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
-						astBeforeChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedFromOperation()
-								.getBody().getCompositeStatement().getAstInformation();
-						astAfterChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation().getBody()
-								.getCompositeStatement().getAstInformation();
+						refactoredCodeLocation = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation().getLocationInfo();
 					} else {
 						continue;
 					}
 
-					Code beforeCode = null;
-					Code afterCode = null;
 					try {
-						Commit commit = new Commit(commitData.getParent(0).getName(),
-								commitData.getParent(0).getFullMessage(), commitData.getParent(0).getCommitTime(),
-								commitData.getParent(0).getCommitterIdent());
-						beforeCode = new Code(commit, directory, astBeforeChange, gitService, repository);
-						commit = new Commit(commitData.getName(), commitData.getFullMessage(),
-								commitData.getCommitTime(), commitData.getCommitterIdent());
-						afterCode = new Code(commit, directory, astAfterChange, gitService, repository);
+						Code refactoredCode = new Code(new Commit(commitId), localPath, refactoredCodeLocation, gitService, repository);
+						RefactoringData refactoringData = new RefactoringData(ref, refactoredCode, name);
+
+						boolean exists = false;
+						for (RefactoringData existingRefactoring : allRefactoringData) {
+							if (existingRefactoring.getRefactoredCode().equals(refactoringData.getRefactoredCode())) {
+								exists = true;
+								break;
+							}
+						}
+						if (!exists)
+							allRefactoringData.add(refactoringData);
 					} catch (Exception e) {
 						continue;
 					}
-
-					RefactoringData refactoringData = new RefactoringData(ref.getName(), ref.getRefactoringType(),
-							beforeCode, afterCode, name);
-
-					boolean exists = false;
-					for (RefactoringData existingRefactoring : allRefactoringData) {
-						if (existingRefactoring.getAfterCode().equals(refactoringData.getAfterCode())) {
-							exists = true;
-							break;
-						}
-					}
-
-					if (!exists)
-						allRefactoringData.add(refactoringData);
 				}
 			}
 		});
 		return allRefactoringData;
 	}
 
-	private List<RefactoringData> loadRefactoringsFromFile(ExtendedGitService gitService) throws Exception {
+	private List<RefactoringData> loadSerializedRefactorings() throws Exception {
 		List<RefactoringData> refactorings;
-		String outputPathString = outputDirectory + "/" + name;
+		String outputPathString = outputPath + "/" + name;
 		if (Files.exists(Paths.get(outputPathString))) {
 			FileInputStream fis = new FileInputStream(outputPathString);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			try {
 				refactorings = (List<RefactoringData>) ois.readObject();
-			} catch (ClassNotFoundException e) {
-				refactorings = getAllRefactorings(gitService);
+			} catch (Exception e) {
+				refactorings = mineRefactorings();
 				writeToFile(refactorings);
 			}
 			ois.close();
 		} else {
-			refactorings = getAllRefactorings(gitService);
+			refactorings = mineRefactorings();
 			writeToFile(refactorings);
 		}
 		return refactorings;
 	}
 
 	private void writeToFile(List<RefactoringData> refactorings) throws IOException {
-		Files.deleteIfExists(Paths.get(outputDirectory + "/" + name));
-		FileOutputStream fos = new FileOutputStream(outputDirectory + "/" + name);
+		Files.deleteIfExists(Paths.get(outputPath + "/" + name));
+		FileOutputStream fos = new FileOutputStream(outputPath + "/" + name);
 		ObjectOutputStream oos;
 		try {
 			oos = new ObjectOutputStream(fos);
@@ -240,11 +194,11 @@ public class Project {
 	}
 
 	public Path getDirectory() {
-		return directory;
+		return localPath;
 	}
 
 	public Path getOutputDirectory() {
-		return outputDirectory;
+		return outputPath;
 	}
 
 	public Repository getRepository() {
@@ -258,7 +212,7 @@ public class Project {
 	public List<RefactoringData> getRefactorings() {
 		if (refactorings == null)
 			try {
-				refactorings = loadRefactoringsFromFile(gitService);
+				refactorings = loadSerializedRefactorings();
 			} catch (Exception e) {
 			}
 		return refactorings;
@@ -271,7 +225,7 @@ public class Project {
 				Set<Ref> var;
 				var = gitService.getAllReleaseTags(repository);
 				for (Ref ref : var) {
-					Release release = new Release(ref, gitService, repository, directory);
+					Release release = new Release(ref, gitService, repository, localPath);
 					releases.add(release);
 				}
 			} catch (Exception e) {
