@@ -12,22 +12,17 @@ public class RefactoringData implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-//	private Refactoring refactoring;
 	private Code refactoredCode;
 	private String projectName;
 	private String name;
 	private RefactoringType type;
 
 	public RefactoringData(Refactoring refactoring, Code afterCode, String projectName) {
-//		this.refactoring = refactoring;
 		this.name = refactoring.getName();
 		this.type = refactoring.getRefactoringType();
 		this.refactoredCode = afterCode;
 		this.projectName = projectName;
 	}
-//	public Refactoring getRefactoring() {
-//		return refactoring;
-//	}
 	
 	public String getProjectName() {
 		return projectName;
@@ -37,22 +32,18 @@ public class RefactoringData implements Serializable {
 		return refactoredCode.getText();
 	}
 	
-//	public String getRefactoredOperationBody() {
-//		return refactoredCode.getMethodBody();
-//	}
-	
 	public Code getRefactoredCode() {
 		return refactoredCode;
 	}
 	
 	public String toDetailString()
 	{
-		return "(Refactoring:" + name + ")" + " (" + refactoredCode.getCommit() + ")\n"+ refactoredCode.getMethodName() + " in " + refactoredCode.getFileName();
+		return "Refactoring:" + name + " (" + refactoredCode.getCommit() + ")\n"+ refactoredCode.getMethodName() + " in file " + refactoredCode.getFileName();
 	}
 	
 	public String toString()
 	{
-		return getName() + " at " + getCommit();
+		return getName() + " at commit " + getCommit();
 	}
 	
 	public RefactoringType getType()
@@ -74,9 +65,4 @@ public class RefactoringData implements Serializable {
 	{
 		return refactoredCode.getCommitShort();
 	}
-	
-//	public Date getCommitTime()
-//	{
-//		return afterCode.getCommit().getTime();
-//	}
 }

@@ -3,6 +3,9 @@ package ca.concordia.refactoringmatcher;
 import java.util.ArrayList;
 
 public class RefactoringPair {
+	private RefactoringData refactoringOne;
+	private RefactoringData refactoringTwo;
+	private String similarBlock;
 	
 	public RefactoringPair(RefactoringData left, RefactoringData right, String similarBlock) {
 		this.refactoringOne = left;
@@ -27,8 +30,4 @@ public class RefactoringPair {
 		list.add(refactoringTwo);
 		return list;
 	}
-
-	private RefactoringData refactoringOne;
-	private RefactoringData refactoringTwo;
-	private String similarBlock;
 }
