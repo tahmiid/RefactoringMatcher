@@ -39,13 +39,7 @@ public class Code implements Serializable {
 	private String extractText(ExtendedGitService gitService, Repository repository) throws Exception {
 		gitService.checkout(repository, commit.getId());
 		String wholeText = getWholeTextFromFile(gitService, repository);
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(wholeText.toCharArray());
-		parser.setResolveBindings(true);
-		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-		MethodDeclaration methodDeclaration = (MethodDeclaration) block;
+		MethodDeclaration methodDeclaration = getMethodDeclaration(gitService, repository);
 		this.methodName = extractMethodSignature(methodDeclaration);
 		int absoluteStartOffset = methodDeclaration.getName().getStartPosition();
 		int absoluteLength = methodDeclaration.getLength()
@@ -57,6 +51,7 @@ public class Code implements Serializable {
 
 	public MethodDeclaration getMethodDeclaration(GitService gitService, Repository repository)
 			throws IOException, Exception {
+		gitService.checkout(repository, commit.getId());
 		String wholeText = getWholeTextFromFile(gitService, repository);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -64,8 +59,6 @@ public class Code implements Serializable {
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		ASTNode block = NodeFinder.perform(compilationUnit, startOffset, length);
-		// MethodDeclaration methodDeclaration = (MethodDeclaration)
-		// block.getParent();
 		MethodDeclaration methodDeclaration = (MethodDeclaration) block;
 		return methodDeclaration;
 	}

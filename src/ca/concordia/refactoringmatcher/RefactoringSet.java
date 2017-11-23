@@ -14,7 +14,6 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String similarCode;
 	private Long firstRefactoringDate;
 	private Long lastRefactoringDate;
 	private Long duration;
@@ -22,16 +21,6 @@ public class RefactoringSet extends HashSet<RefactoringData>{
 	private boolean sameDay;
 //	private boolean sameDeveloper;
 	private HashSet<Commit> commits;
-	
-	public String getSimilarCode()
-	{
-		return similarCode;
-	}
-	
-	public void setSimilarCode(String similarCode)
-	{
-		this.similarCode = similarCode;
-	}
 	
 	public boolean add(RefactoringData refactoringData) {
         

@@ -20,10 +20,10 @@ public class SourcererCCDetector implements CloneDetector {
 	static final String MATCHING_LANGUAGE = "java";
 	static final int MATCHING_THREADS = 8;
 	
-	static final String DETECTION_LEVEL = "blocks";
+	static final String DETECTION_LEVEL = "functions";
 	static final int MIN_TOKENS = 0;
 	static final int MAX_TOKENS = 0;
-	static final int MIN_LINES = 4;
+	static final int MIN_LINES = 0;
 	static final int MAX_LINES = 0;
 	static final boolean IGNORE_SEPERATORS = false;
 	static final boolean IGNORE_OPERATORS = false;

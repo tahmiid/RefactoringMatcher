@@ -2,7 +2,6 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.refactoringminer.api.Refactoring;
 import org.refactoringminer.api.RefactoringType;
@@ -24,6 +23,16 @@ public class RefactoringData implements Serializable {
 		this.projectName = projectName;
 	}
 	
+	public int hashCode() {
+        int result = 17;
+        result = 37 * result + refactoredCode.hashCode();
+        result = 37 * result + projectName.hashCode();
+        result = 37 * result + name.hashCode();        
+        result = 37 * result + type.hashCode();    
+        return result;
+    }
+
+	
 	public String getProjectName() {
 		return projectName;
 	}
@@ -43,7 +52,7 @@ public class RefactoringData implements Serializable {
 	
 	public String toString()
 	{
-		return getName() + " at commit " + getCommit();
+		return refactoredCode.getMethodName() + ":" + getCommitShort();
 	}
 	
 	public RefactoringType getType()

@@ -3,21 +3,18 @@ package ca.concordia.refactoringmatcher;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.refactoringminer.api.GitService;
 import org.refactoringminer.api.RefactoringType;
-import org.refactoringminer.util.GitServiceImpl;
 
 public class RefactoringMatcher {
 	public static void main(String[] args) throws Exception {
-//		String projectLink = "https://github.com/danilofes/refactoring-toy-example.git";
-//		 String projectLink = "https://github.com/junit-team/junit5.git";
-//		 String projectLink = "https://github.com/jfree/jfreechart.git";
+		// String projectLink =
+		// "https://github.com/danilofes/refactoring-toy-example.git";
+		// String projectLink = "https://github.com/junit-team/junit5.git";
+		// String projectLink = "https://github.com/jfree/jfreechart.git";
 		String projectLink = "https://github.com/romuloceccon/jedit";
-//		 String projectLink = "https://github.com/apache/commons-lang";
+		// String projectLink = "https://github.com/apache/commons-lang";
 
 		Path outputDirectory = Files.createDirectories(Paths.get("output"));
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
@@ -29,15 +26,16 @@ public class RefactoringMatcher {
 
 		printReport(refactorings, project);
 
-		RefactoringPatternFinder patternFinder = new TokenBasedRefactoringPatternFinder(refactorings, project.getOutputDirectory());
+		SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
 
-//		List<HashSet<RefactoringData>> similarRefactorings = patternFinder.getSimilarRefactorings();
-		
-		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs();
+		// List<HashSet<RefactoringData>> similarRefactorings =
+		// patternFinder.getSimilarRefactorings();
+
+		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs(refactorings);
 
 		printpairs(similarRefactoringPairs);
-		
-//		printGroups(similarRefactorings);
+
+		// printGroups(similarRefactorings);
 
 	}
 
@@ -48,18 +46,6 @@ public class RefactoringMatcher {
 			System.out.println(pair.getRefactoringOne());
 			System.out.println(pair.getRefactoringTwo());
 
-			System.out.println();
-		}
-	}
-
-	private static void printGroups(List<HashSet<RefactoringData>> similarRefactorings) {
-		System.out.println("Similar Refactorings: " + similarRefactorings.size());
-		System.out.println();
-		for (HashSet<RefactoringData> set : similarRefactorings) {
-			System.out.println("Group Size: " + set.size());
-			for (RefactoringData refactoringData : set) {
-				System.out.println(refactoringData.toString());
-			}
 			System.out.println();
 		}
 	}
