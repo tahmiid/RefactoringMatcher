@@ -1,8 +1,9 @@
 package ca.concordia.refactoringmatcher;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class RefactoringPair {
+public class RefactoringPair implements Serializable{
 	private RefactoringData refactoringOne;
 	private RefactoringData refactoringTwo;
 	

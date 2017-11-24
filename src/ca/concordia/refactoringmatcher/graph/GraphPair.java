@@ -30,6 +30,16 @@ public class GraphPair {
 		}
 	}
 
+	public Graph getGraph1 ()
+	{
+		return graph1;
+	}
+	
+	public Graph getGraph2 ()
+	{
+		return graph2;
+	}
+	
 	public int graph1Size() {
 		return graph1.size();
 	}
