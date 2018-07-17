@@ -47,7 +47,7 @@ public class Release {
 			System.out.println(tag);
 			
 			JarAnalyzer jarAnalyzer = new JarAnalyzer();
-			jarInfo = jarAnalyzer.AnalyzeJar(jarUrl);
+			jarInfo = jarAnalyzer.AnalyzeJar(jarUrl, "", "", "");
 		}
 
 	}

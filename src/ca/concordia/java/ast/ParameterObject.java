@@ -1,10 +1,12 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
-public class ParameterObject extends VariableDeclarationObject {
+public class ParameterObject extends VariableDeclarationObject implements Serializable{
 	private TypeObject type;
 	private String name;
 	private boolean varargs;

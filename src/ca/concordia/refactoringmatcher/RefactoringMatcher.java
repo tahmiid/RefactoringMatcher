@@ -31,9 +31,9 @@ public class RefactoringMatcher {
 		// List<HashSet<RefactoringData>> similarRefactorings =
 		// patternFinder.getSimilarRefactorings();
 
-		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs(refactorings);
+//		List<RefactoringPair> similarRefactoringPairs = patternFinder.getSimilarRefactoringPairs(refactorings);
 
-		printpairs(similarRefactoringPairs);
+//		printpairs(similarRefactoringPairs);
 
 		// printGroups(similarRefactorings);
 

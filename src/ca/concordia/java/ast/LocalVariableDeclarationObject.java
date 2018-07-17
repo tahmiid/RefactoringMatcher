@@ -1,5 +1,7 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -9,7 +11,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-public class LocalVariableDeclarationObject extends VariableDeclarationObject {
+public class LocalVariableDeclarationObject extends VariableDeclarationObject implements Serializable{
 	private TypeObject type;
 	private String name;
 	private ASTInformation scope;

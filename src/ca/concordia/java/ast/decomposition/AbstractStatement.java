@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Statement;
@@ -8,7 +9,7 @@ import ca.concordia.java.ast.ASTInformation;
 import ca.concordia.java.ast.ASTInformationGenerator;
 import ca.concordia.java.ast.ParameterObject;
 
-public abstract class AbstractStatement extends AbstractMethodFragment {
+public abstract class AbstractStatement extends AbstractMethodFragment implements Serializable{
 
 	private ASTInformation statement;
 	private StatementType type;

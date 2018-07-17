@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,7 +16,11 @@ import ca.concordia.java.ast.decomposition.StatementObject;
 import ca.concordia.java.ast.decomposition.StatementType;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
-public class CFG extends Graph {
+public class CFG extends Graph implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int PUSH_NEW_LIST = 0;
 	private static final int JOIN_TOP_LIST = 1;
 	private static final int PLACE_NEW_LIST_SECOND_FROM_TOP = 2;

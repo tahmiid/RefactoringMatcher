@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jgit.lib.Repository;
 
 import ca.concordia.refactoringmatcher.clonedetector.CloneDetector;
 import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
@@ -18,7 +19,6 @@ import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
 
 public class TokenBasedSimilarRefactoringFinder implements SimilarRefactoringFinder {
 
-	@Override
 	public List<RefactoringPair> getSimilarRefactoringPairs(List<RefactoringData> refactorings) {
 		try {
 			Path refactoredCodeDirectory = Paths.get("tmp" + "/refactoredCode");
@@ -105,6 +105,13 @@ public class TokenBasedSimilarRefactoringFinder implements SimilarRefactoringFin
 
 		}
 		dir.toFile().delete();
+	}
+
+	@Override
+	public List<RefactoringPair> getSimilarRefactoringPairs(ArrayList<Pair<RefactoringData, Repository>> refactorings,
+			ExtendedGitService gitService) throws IOException, Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

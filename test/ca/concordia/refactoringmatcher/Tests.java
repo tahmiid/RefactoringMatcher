@@ -37,79 +37,41 @@ import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
 import gr.uom.java.xmi.diff.InlineOperationRefactoring;
 
 public class Tests {
+	
+	public static void main(String[] args) {
+		try {
+			refactoringMinerTest();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e);
+		}
+	}
 
 	@Test
-	public void refactoringMinerTest() throws Exception {
+	public static void refactoringMinerTest() throws Exception {
 		Path outputDirectory = Files.createDirectories(Paths.get("output"));
 		Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
-		ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
+		ArrayList<GitProject> projects = new ArrayList<GitProject>();
 
 		for (String projectLink : projectLinks) {
-			GithubProject project;
+			GitProject project;
 			try {
-				project = new GithubProject(projectLink, projectsDirectory, outputDirectory, gitService);
+				project = new GitProject(projectLink, projectsDirectory, outputDirectory, gitService);
 				projects.add(project);
 			} catch (Exception e) {
 				e.printStackTrace();
 				fail("Exception Thrown");
 			}
 		}
-		for (GithubProject project : projects) {
-			List<RefactoringData> allRefactoringData = new ArrayList<RefactoringData>();
-
-			GitHistoryRefactoringMiner miner = new GitHistoryRefactoringMinerImpl();
-			miner.detectAll(project.getRepository(), "master", new RefactoringHandler() {
-				@Override
-				public void handle(String commitId, List<Refactoring> refactorings) {
-					for (Refactoring ref : refactorings) {
-						LocationInfo astAfterChange;
-						if (ref.getRefactoringType() == RefactoringType.INLINE_OPERATION) {
-							astAfterChange = ((InlineOperationRefactoring) ref).getTargetOperationAfterInline()
-									.getLocationInfo();
-						} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
-							astAfterChange = ((ExtractOperationRefactoring) ref).getExtractedOperation()
-									.getLocationInfo();
-						} else if (ref.getRefactoringType() == RefactoringType.EXTRACT_AND_MOVE_OPERATION) {
-							astAfterChange = ((ExtractAndMoveOperationRefactoring) ref).getExtractedOperation()
-									.getLocationInfo();
-						} else {
-							continue;
-						}
-
-						Code afterCode = null;
-						try {
-							Commit commit = new Commit(commitId);
-							afterCode = new Code(commit, project.getDirectory(), astAfterChange, gitService,
-									project.getRepository());
-						} catch (Exception e) {
-							continue;
-						}
-
-						RefactoringData refactoringData = new RefactoringData(ref, afterCode, project.getName());
-
-						boolean exists = false;
-						for (RefactoringData existingRefactoring : allRefactoringData) {
-							if (existingRefactoring.getRefactoredCode().equals(refactoringData.getRefactoredCode())) {
-								exists = true;
-								break;
-							}
-						}
-						if (!exists)
-							allRefactoringData.add(refactoringData);
-					}
-				}
-			});
-		}
-
 	}
 
 	@Test
 	public void createProjects() {
 		try {
-			Path outputDirectory = Files.createDirectories(Paths.get("output"));
-			Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
+			Path outputDirectory = Files.createDirectories(Paths.get("E:\\SerializedProjects"));
+			Path projectsDirectory = Files.createDirectories(Paths.get("E:\\ProjectDataset"));
 			ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
 			ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
@@ -198,7 +160,7 @@ public class Tests {
 
 	@Test
 	public void pdgTester() throws IOException {
-		String wholeText = readFile("/RefactoringMatcher/src/ca/concordia/refactoringmatcher/TestClass.java",
+		String wholeText = readFile("../RefactoringMatcher/src/ca/concordia/refactoringmatcher/TestClass.java",
 				StandardCharsets.UTF_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -240,9 +202,9 @@ public class Tests {
 		return methodObject;
 	}
 
-	String[] projectLinks = {
+	static String[] projectLinks = {
 
-			// "https://github.com/iluwatar/java-design-patterns.git",
+			 "https://github.com/iluwatar/java-design-patterns.git",
 			// "https://github.com/JakeWharton/ActionBarSherlock.git",
 			// "https://github.com/alibaba/dubbo.git",
 			// "https://github.com/chrisbanes/Android-PullToRefresh.git",
@@ -252,16 +214,16 @@ public class Tests {
 			// "https://github.com/square/retrofit.git",
 			// "https://github.com/square/okhttp.git",
 			// "https://github.com/zxing/zxing.git",
-			 "https://github.com/google/guava.git",
+//			 "https://github.com/google/guava.git",
 			//
 //			"https://github.com/tsantalis/RefactoringMiner",
-//			"https://github.com/danilofes/refactoring-toy-example.git",
+//			"https://github.com/danilofes/refactoring-toy-example",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",
 			// "https://github.com/romuloceccon/jedit.git",
 //			 "https://github.com/jfree/jfreechart.git",
-			 "https://github.com/apache/commons-lang.git",
+//			 "https://github.com/apache/commons-lang.git",
 			// "https://github.com/apache/log4j",
 			// "https://github.com/apache/nifi-minifi.git",
 			// "https://github.com/apache/knox.git",
@@ -275,5 +237,6 @@ public class Tests {
 			// "https://github.com/apache/hive.git",
 			// "https://github.com/spring-projects/spring-framework.git",
 			// "https://github.com/google/guava.git"
+//			 "https://github.com/tahmiid/RepositorySearch"
 	};
 }

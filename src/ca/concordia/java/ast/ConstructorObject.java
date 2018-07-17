@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.eclipse.jdt.core.dom.Type;
 import ca.concordia.java.ast.decomposition.MethodBodyObject;
 import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
-public class ConstructorObject implements AbstractMethodDeclaration {
+public class ConstructorObject implements AbstractMethodDeclaration, Serializable {
 
     protected String name;
 	protected List<ParameterObject> parameterList;

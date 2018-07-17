@@ -1,6 +1,8 @@
 package ca.concordia.java.ast;
 
-public enum Access {
+import java.io.Serializable;
+
+public enum Access implements Serializable{
     NONE, PUBLIC, PRIVATE, PROTECTED;
 
     public String toString() {

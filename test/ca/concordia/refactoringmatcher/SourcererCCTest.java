@@ -21,23 +21,23 @@ public class SourcererCCTest {
 			Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
 			ExtendedGitService gitService = new ExtendedGitServiceImpl();
 
-			ArrayList<GithubProject> projects = new ArrayList<GithubProject>();
+			ArrayList<GitProject> projects = new ArrayList<GitProject>();
 
 			for (String projectLink : projectLinks) {
-				GithubProject project;
+				GitProject project;
 				try {
-					project = new GithubProject(projectLink, projectsDirectory, outputDirectory, gitService);
+					project = new GitProject(projectLink, projectsDirectory, outputDirectory, gitService);
 					project.printReport();
 					projects.add(project);
 
 					SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
 
-					List<RefactoringPair> similarRefactoringPairs = patternFinder
-							.getSimilarRefactoringPairs(project.getRefactorings());
+//					List<RefactoringPair> similarRefactoringPairs = patternFinder
+//							.getSimilarRefactoringPairs(project.getRefactorings());
 
-					for (RefactoringPair refactoringPair : similarRefactoringPairs) {
-						System.out.println(refactoringPair.toString());
-					}
+//					for (RefactoringPair refactoringPair : similarRefactoringPairs) {
+//						System.out.println(refactoringPair.toString());
+//					}
 
 				} catch (Exception e) {
 					e.printStackTrace();

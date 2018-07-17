@@ -23,11 +23,11 @@ public class GraphPair {
 
 		calculateIsomorphism();
 
-		if (graph1Size() <= graph2Size()) {
-			calculateSubgraphIsomorphism(graph1, graph2);
-		} else {
-			calculateSubgraphIsomorphism(graph2, graph1);
-		}
+//		if (graph1Size() <= graph2Size()) {
+//			calculateSubgraphIsomorphism(graph1, graph2);
+//		} else {
+//			calculateSubgraphIsomorphism(graph2, graph1);
+//		}
 	}
 
 	public Graph getGraph1 ()

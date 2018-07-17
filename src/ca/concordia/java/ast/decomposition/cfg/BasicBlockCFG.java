@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -8,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class BasicBlockCFG {
+public class BasicBlockCFG implements Serializable{
 	private List<BasicBlock> basicBlocks;
 	private Map<BasicBlock, Set<BasicBlock>> forwardReachableBlocks;
 	

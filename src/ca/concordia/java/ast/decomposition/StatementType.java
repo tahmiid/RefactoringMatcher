@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition;
 
-public enum StatementType {
+import java.io.Serializable;
+
+public enum StatementType implements Serializable{
 	ASSERT,
 	BLOCK {
 		public String toString() {

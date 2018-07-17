@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -32,7 +33,7 @@ import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
  * 10.	WhileStatement
  */
 
-public class CompositeStatementObject extends AbstractStatement {
+public class CompositeStatementObject extends AbstractStatement implements Serializable{
 	
 	private List<AbstractStatement> statementList;
 	private List<AbstractExpression> expressionList;

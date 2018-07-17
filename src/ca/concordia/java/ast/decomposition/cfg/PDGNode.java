@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -27,7 +28,7 @@ import ca.concordia.java.ast.VariableDeclarationObject;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 import ca.concordia.java.ast.util.ExpressionExtractor;
 
-public class PDGNode extends GraphNode implements Comparable<PDGNode> {
+public class PDGNode extends GraphNode implements Comparable<PDGNode>, Serializable {
 	private CFGNode cfgNode;
 	protected Set<AbstractVariable> declaredVariables;
 	protected Set<AbstractVariable> definedVariables;

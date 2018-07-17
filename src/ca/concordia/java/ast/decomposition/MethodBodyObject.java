@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 import ca.concordia.java.ast.util.ExpressionExtractor;
 
-public class MethodBodyObject {
+public class MethodBodyObject implements Serializable{
 	
 	private CompositeStatementObject compositeStatement;
 	private List<ParameterObject> parameters;

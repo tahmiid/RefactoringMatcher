@@ -1,8 +1,10 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
-public class PlainVariable extends AbstractVariable {
+public class PlainVariable extends AbstractVariable implements Serializable{
 	private volatile int hashCode = 0;
 	
 	public PlainVariable(VariableDeclaration variableDeclaration) {

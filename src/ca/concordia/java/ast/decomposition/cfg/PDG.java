@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,17 +20,31 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import ca.concordia.java.ast.AbstractMethodDeclaration;
 import ca.concordia.java.ast.LocalVariableDeclarationObject;
+import ca.concordia.java.ast.MethodObject;
 import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.VariableDeclarationObject;
 
-public class PDG extends Graph {
+public class PDG extends Graph implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private CFG cfg;
 	private PDGMethodEntryNode entryNode;
 	private Map<CFGBranchNode, Set<CFGNode>> nestingMap;
 	private Set<VariableDeclarationObject> variableDeclarationsInMethod;
 	private Map<PDGNode, Set<BasicBlock>> dominatedBlockMap;
 
+	public PDG(MethodObject methodObject) {
+		CFG cfg = new CFG(methodObject);
+		createPDG(cfg);
+	}
+	
 	public PDG(CFG cfg) {
+		createPDG(cfg);
+	}
+
+	private void createPDG(CFG cfg) {
 		this.cfg = cfg;
 		this.entryNode = new PDGMethodEntryNode(cfg.getMethod());
 		this.nestingMap = new LinkedHashMap<CFGBranchNode, Set<CFGNode>>();

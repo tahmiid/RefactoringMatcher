@@ -1,10 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.Statement;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGNode extends GraphNode implements Comparable<CFGNode> {
+public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializable {
 	private AbstractStatement statement;
 	private BasicBlock basicBlock;
 	private PDGNode pdgNode;

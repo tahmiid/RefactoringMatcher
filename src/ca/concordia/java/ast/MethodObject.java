@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -22,7 +23,7 @@ import org.eclipse.jdt.core.dom.Type;
 import ca.concordia.java.ast.decomposition.MethodBodyObject;
 import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
-public class MethodObject implements AbstractMethodDeclaration {
+public class MethodObject implements AbstractMethodDeclaration, Serializable{
 
 	private TypeObject returnType;
 	private boolean _abstract;
