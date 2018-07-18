@@ -58,7 +58,7 @@ public class Tests {
 		for (String projectLink : projectLinks) {
 			GitProject project;
 			try {
-				project = new GitProject(projectLink, projectsDirectory, outputDirectory, gitService);
+				project = new GitProject(projectLink, projectsDirectory, outputDirectory);
 				projects.add(project);
 			} catch (Exception e) {
 				e.printStackTrace();

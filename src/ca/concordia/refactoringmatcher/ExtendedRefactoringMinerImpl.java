@@ -31,22 +31,22 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 
 		ArrayList<String> commits = gitService.getAllCommits(repository);
 
-		int splits = 2;
+		double splits = 3;
 		int i = 1;
 		int splitSize = (int) Math.ceil(commits.size() / splits);
 		ArrayList<Thread> repoThreads = new ArrayList<>();
 
 		while (i <= splits) {
 			Repository repo = gitService.duplicate(repository);
-			String startCommit = commits.get(Math.max(( (i - 1)*splitSize -1), 0));
-			String endCommit = commits.get(Math.min(i * splitSize, commits.size() - 1));
+			String startCommit = commits.get(Math.max(( (i - 1)*splitSize), 0));
+			String endCommit = commits.get(Math.min(i * splitSize - 1, commits.size() - 1));
 
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
-						RevWalk walk = gitService.createRevsWalkBetweenCommits(repository, startCommit, endCommit);
+						RevWalk walk = gitService.createRevsWalkBetweenCommits(repo, startCommit, endCommit);
 						detect(repo, handler, new ExtendedGitServiceImpl(), walk.iterator());
-						FileUtils.deleteDirectory(repo.getDirectory());
+//						FileUtils.deleteDirectory(repo.getDirectory());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -57,7 +57,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 			i++;
 		}
 
-		while (repoThreads.size() > 0) {
+		while (repoThreads.size() >= splits) {
 			Thread threadToRemove = null;
 			for (Thread thread : repoThreads) {
 				if (!thread.isAlive()) {
@@ -98,13 +98,13 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 					t.start();
 					threads.add(Pair.of(System.currentTimeMillis(), t));
 
-					while (threads.size() > 10) {
+					while (threads.size() > 3) {
 						Pair<Long, Thread> threadToRemove = null;
 						for (Pair<Long, Thread> thread : threads) {
 							if (!thread.getRight().isAlive()) {
 								threadToRemove = thread;
 								break;
-							} else if (System.currentTimeMillis() - thread.getLeft() > 300000) {
+							} else if (System.currentTimeMillis() - thread.getLeft() > 60000) {
 								thread.getRight().stop();
 								threadToRemove = thread;
 								break;

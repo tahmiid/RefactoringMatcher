@@ -2,17 +2,22 @@ package ca.concordia.refactoringmatcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -22,26 +27,33 @@ import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.refactoringminer.util.GitServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.misc.Lock;
 
 public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGitService {
 
-	@Override
+	Logger logger = LoggerFactory.getLogger(ExtendedGitServiceImpl.class);
+
 	public synchronized void checkout(Repository repository, String commitId) throws Exception {
-//	    logger.info("Checking out {} {} ...", repository.getDirectory().getParent().toString(), commitId);
-		Lock lock = new Lock();
-		lock.lock();
+		ReentrantLock lock = new ReentrantLock();
 		try {
-		    // access to the shared resource
-		} finally {
-		    lock.unlock();
-		}
-	    super.checkout(repository, commitId);
-//		File workingDir = repository.getDirectory().getParentFile();
-//		ExternalProcess.execute(workingDir, "git", "checkout", commitId);
+			lock.lock();
+			super.checkout(repository, commitId);
+		} catch (CheckoutConflictException e) {
+			lock.unlock();
+			e.printStackTrace();
+		} catch (JGitInternalException e) {
+			lock.unlock();
+			checkout(repository, commitId);
+//			e.printStackTrace();
+		} 
+		finally {
+			lock.unlock();
+		} 
 	}
-	
+
 	public String getNextTag(Repository repository, String commitId) throws Exception {
 		String nextRelease = "";
 		final Set<Ref> tags = new HashSet<Ref>();
@@ -70,23 +82,24 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 	}
 
 	public Repository duplicate(Repository repository) throws Exception {
-		String source = repository.getDirectory().getAbsolutePath().replaceAll("\\.git", "") ;
+		String source = repository.getDirectory().getAbsolutePath().replaceAll("\\.git", "");
 		File srcDir = new File(source);
 
-		int rand = ThreadLocalRandom.current().nextInt(1,1000);
-		String destination = source.substring(0, source.length()-2) + rand;
+		int rand = ThreadLocalRandom.current().nextInt(1, 1000);
+		String destination = source.substring(0, source.length() - 2) + rand;
 		File destDir = new File(destination);
 
 		try {
-		    FileUtils.copyDirectory(srcDir, destDir);
-		    return super.openRepository(destination);
+			FileUtils.copyDirectory(srcDir, destDir);
+			Repository newRepo = super.openRepository(destination);
+			Files.deleteIfExists(Paths.get(newRepo.getDirectory().getAbsolutePath() , "index.lock") );
+			return newRepo;
 		} catch (IOException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
-		
 		return null;
 	}
-	
+
 	public Set<Ref> getAllReleaseTags(Repository repository) throws Exception {
 		final Set<Ref> tags = new HashSet<Ref>();
 		final RevWalk walk = new RevWalk(repository);
@@ -105,9 +118,9 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 	public ArrayList<String> getAllCommits(Repository repository) throws Exception {
 		ArrayList<String> commits = new ArrayList<String>();
 		String treeName = "refs/heads/master"; // tag or branch
-		try(Git git = new Git(repository)) {
+		try (Git git = new Git(repository)) {
 			for (RevCommit commit : git.log().add(repository.resolve(treeName)).call()) {
-			    commits.add(commit.getName());
+				commits.add(commit.getName());
 			}
 		} catch (RevisionSyntaxException | GitAPIException | IOException e) {
 			e.printStackTrace();

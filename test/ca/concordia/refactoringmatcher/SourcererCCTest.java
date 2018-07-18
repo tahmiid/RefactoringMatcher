@@ -17,28 +17,24 @@ public class SourcererCCTest {
 	@Test
 	public void test() {
 		try {
-			Path outputDirectory = Files.createDirectories(Paths.get("output"));
-			Path projectsDirectory = Files.createDirectories(Paths.get("projects"));
-			ExtendedGitService gitService = new ExtendedGitServiceImpl();
+			Path outputDirectory = Files.createDirectories(Paths.get("E:\\SerializedProjects"));
+			Path projectsDirectory = Files.createDirectories(Paths.get("E:\\ProjectDataset"));
 
 			ArrayList<GitProject> projects = new ArrayList<GitProject>();
 
 			for (String projectLink : projectLinks) {
 				GitProject project;
 				try {
-					project = new GitProject(projectLink, projectsDirectory, outputDirectory, gitService);
+					project = new GitProject(projectLink, projectsDirectory, outputDirectory);
 					project.printReport();
 					projects.add(project);
 
-					SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
-
+//					SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
 //					List<RefactoringPair> similarRefactoringPairs = patternFinder
 //							.getSimilarRefactoringPairs(project.getRefactorings());
-
 //					for (RefactoringPair refactoringPair : similarRefactoringPairs) {
 //						System.out.println(refactoringPair.toString());
 //					}
-
 				} catch (Exception e) {
 					e.printStackTrace();
 					fail("Exception Thrown");
@@ -46,7 +42,6 @@ public class SourcererCCTest {
 			}
 			assertEquals(true, true);
 		} catch (
-
 		IOException e) {
 			e.printStackTrace();
 			fail("Exception Thrown");
@@ -68,7 +63,7 @@ public class SourcererCCTest {
 			// "https://github.com/google/guava.git",
 			//
 			// "https://github.com/tsantalis/RefactoringMiner",
-			// "https://github.com/danilofes/refactoring-toy-example.git",
+//			 "https://github.com/danilofes/refactoring-toy-example.git",
 			// "https://github.com/elastic/elasticsearch.git",
 			// "https://github.com/google/google-java-format.git",
 			// "https://github.com/google/ExoPlayer.git",

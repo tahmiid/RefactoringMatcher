@@ -45,24 +45,23 @@ public class GitProject implements Serializable {
 	private List<String> commits;
 	private List<Release> releases;
 	private String organization;
-	private ExtendedGitService gitService;
 
-	public GitProject(String projectLink, Path projectsDirectory, Path outputDirectory,
-			ExtendedGitService gitService) throws Exception {
+	public GitProject(String projectLink, Path projectsDirectory, Path outputDirectory) throws Exception {
 		this.link = projectLink;
 		this.name = getName(link);
 		this.organization = getOrganization(link);
 		this.localPath = Paths.get(projectsDirectory + "/" + name + "." + organization);
 		this.outputPath = Files.createDirectories(Paths.get(outputDirectory + "/" + name + "." + organization));
-		this.gitService = gitService;
+		ExtendedGitService gitService = new ExtendedGitServiceImpl();
 		this.repository = gitService.cloneIfNotExists(localPath.toString(), link);
 		this.commits = getCommits();
 		this.commitCount = commits.size();
-		this.refactorings = loadSerializedRefactorings();
+		this.refactorings = mineOrLoadRefactorings();
 	}
 
 	private List<String> getCommits() {
 		try {
+			ExtendedGitService gitService = new ExtendedGitServiceImpl();
 			return  gitService.getAllCommits(repository);
 		} catch (Exception e) {
 			System.out.println(e);
@@ -98,6 +97,14 @@ public class GitProject implements Serializable {
 		List<IRefactoringData> allRefactoringData = new ArrayList<IRefactoringData>();
 		ExtendedRefactoringMiner miner = new ExtendedRefactoringMinerImpl();
 		miner.detectAllWithTimeOut(repository, "master", refactoringHandler(allRefactoringData));
+		
+		for (IRefactoringData iRefactoringData : allRefactoringData) {
+			try{
+				iRefactoringData.retrieveCode(repository);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return allRefactoringData;
 	}
 
@@ -105,10 +112,12 @@ public class GitProject implements Serializable {
 		return new RefactoringHandler() {
 			@Override
 			public void handle(String commitId, List<Refactoring> refactorings) {
+				if(refactorings == null)
+					return;
 				for (Refactoring ref : refactorings) {
 					if (ref.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
 						try {
-							ExtractMethod refactoring = new ExtractMethod((ExtractOperationRefactoring) ref, link, commitId, repository, gitService);
+							ExtractMethod refactoring = new ExtractMethod((ExtractOperationRefactoring) ref, link, commitId, lastCommit(commitId), repository);
 							allRefactoringData.add(refactoring);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -120,7 +129,16 @@ public class GitProject implements Serializable {
 		};
 	}
 
-	private List<IRefactoringData> loadSerializedRefactorings() throws Exception {
+	private String lastCommit(String commitId) {
+		try{
+			return commits.get(commits.indexOf(commitId) + 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return commitId;
+		}
+	}
+
+	private List<IRefactoringData> mineOrLoadRefactorings() throws Exception {
 		List<IRefactoringData> refactorings;
 		String outputPathString = outputPath + "/" + "refactoringdata";
 		if (Files.exists(Paths.get(outputPathString))) {
@@ -217,7 +235,7 @@ public class GitProject implements Serializable {
 	public List<IRefactoringData> getRefactorings() {
 		if (refactorings == null)
 			try {
-				refactorings = loadSerializedRefactorings();
+				refactorings = mineOrLoadRefactorings();
 			} catch (Exception e) {
 			}
 		return refactorings;
@@ -228,6 +246,7 @@ public class GitProject implements Serializable {
 			try {
 				releases = new ArrayList<Release>();
 				Set<Ref> var;
+				ExtendedGitService gitService = new ExtendedGitServiceImpl();
 				var = gitService.getAllReleaseTags(repository);
 				for (Ref ref : var) {
 					Release release = new Release(ref, gitService, repository, localPath);
@@ -242,8 +261,8 @@ public class GitProject implements Serializable {
 
 	public Release getRelease(String commit) {
 		try {
+			ExtendedGitService gitService = new ExtendedGitServiceImpl();
 			String nextReleaseTag = gitService.getNextTag(repository, commit);
-
 			Release previousRelease = null;
 			Release nextRelease = null;
 

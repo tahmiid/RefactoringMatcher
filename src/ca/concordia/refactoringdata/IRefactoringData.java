@@ -1,6 +1,8 @@
 package ca.concordia.refactoringdata;
 
 import java.io.Serializable;
+
+import org.eclipse.jgit.lib.Repository;
 import org.refactoringminer.api.Refactoring;
 
 public interface IRefactoringData extends Serializable {	
@@ -10,4 +12,6 @@ public interface IRefactoringData extends Serializable {
 	public String getCommitId();
 
 	public String getProjectLink();
+
+	public void retrieveCode(Repository repository) throws Exception;
 }

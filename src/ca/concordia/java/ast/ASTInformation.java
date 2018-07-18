@@ -1,8 +1,11 @@
 package ca.concordia.java.ast;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -22,28 +25,39 @@ public class ASTInformation implements Serializable {
 	private int length;
 	private int nodeType;
 	private volatile int hashCode = 0;
-//	private ASTNode astNode;
 
 	public ASTInformation(ITypeRoot iTypeRoot, ASTNode astNode) {
 		this.iTypeRoot = iTypeRoot;
 		this.startPosition = astNode.getStartPosition();
 		this.length = astNode.getLength();
 		this.nodeType = astNode.getNodeType();
-//		this.astNode = astNode;
 	}
 
 	public ASTNode recoverASTNode() {
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(Cache.currentFileText.toCharArray());
-		parser.setResolveBindings(true);
-		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-		ASTNode block = NodeFinder.perform(compilationUnit, startPosition, length);
-		// CompilationUnit compilationUnit =
-		// CompilationUnitCache.getInstance().getCompilationUnit(iTypeRoot);
-		// ASTNode astNode = NodeFinder.perform(compilationUnit, startPosition,
-		// length);
-		return block;
+		try {
+			ASTParser parser = ASTParser.newParser(AST.JLS8);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			Map options = JavaCore.getOptions();
+			JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+			parser.setCompilerOptions(options);
+			parser.setResolveBindings(false);
+			parser.setEnvironment(new String[0], new String[] { Cache.currentFile }, null, false);
+			parser.setSource(Cache.currentFileText.toCharArray());
+			CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+			ASTNode block = NodeFinder.perform(compilationUnit, startPosition, length);
+
+			if (block.getNodeType() != nodeType) {
+				if (block.getParent().getNodeType() == nodeType)
+					return block.getParent();
+				else {
+					return null;
+				}
+			}
+			return block;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public ITypeRoot getITypeRoot() {
@@ -74,7 +88,6 @@ public class ASTInformation implements Serializable {
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;
-			// result = 37*result + iTypeRoot.hashCode();
 			result = 37 * result + startPosition;
 			result = 37 * result + length;
 			result = 37 * result + nodeType;
