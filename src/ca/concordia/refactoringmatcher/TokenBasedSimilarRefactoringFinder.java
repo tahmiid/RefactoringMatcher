@@ -11,48 +11,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jgit.lib.Repository;
+import org.refactoringminer.api.RefactoringType;
 
+import ca.concordia.refactoringdata.ExtractMethod;
+import ca.concordia.refactoringdata.IRefactoringData;
 import ca.concordia.refactoringmatcher.clonedetector.CloneDetector;
 import ca.concordia.refactoringmatcher.clonedetector.CodeLocation;
 import ca.concordia.refactoringmatcher.clonedetector.SourcererCCDetector;
 
 public class TokenBasedSimilarRefactoringFinder implements SimilarRefactoringFinder {
 
-	public List<RefactoringPair> getSimilarRefactoringPairs(List<RefactoringData> refactorings) {
+	public List<RefactoringPair> getSimilarRefactoringPairs(List<IRefactoringData> refactorings) {
+		List<RefactoringPair> refactoringPairs = new ArrayList<RefactoringPair>();
 		try {
 			Path refactoredCodeDirectory = Paths.get("tmp" + "/refactoredCode");
 			if (Files.exists(refactoredCodeDirectory))
 				deleteDir(refactoredCodeDirectory);
 			Files.createDirectories(refactoredCodeDirectory);
-			ArrayList<Pair<Integer, RefactoringData>> refactoredCodeMaping = new ArrayList<Pair<Integer, RefactoringData>>();
+			ArrayList<Pair<Integer, IRefactoringData>> refactoredCodeMaping = new ArrayList<Pair<Integer, IRefactoringData>>();
 			String text;
 			int fileNumber = 1;
-			for (RefactoringData refactoringData : refactorings) {
-				text = refactoringData.getRefactoredCode().getText();
-				addToFile(Paths.get(refactoredCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
-				refactoredCodeMaping.add(Pair.of(fileNumber, refactoringData));
-				fileNumber++;
+			for (IRefactoringData refactoringData : refactorings) {
+				if (refactoringData.getRefactoring().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
+					ExtractMethod em = (ExtractMethod) refactoringData;
+					text = em.getExtractedOperationCode();
+					addToFile(Paths.get(refactoredCodeDirectory.toString() + "/" + fileNumber + ".java"), text);
+					refactoredCodeMaping.add(Pair.of(fileNumber, refactoringData));
+					fileNumber++;
+				}
+				CloneDetector detector = new SourcererCCDetector();
+				List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(refactoredCodeDirectory);
+				refactoringPairs.addAll(getRefactoringPairsFromClonePairs(clonePairs, refactoredCodeMaping));
 			}
-			CloneDetector detector = new SourcererCCDetector();
-			List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(refactoredCodeDirectory);
-
-			return findSimilarRefactoringsBasedOnExtractedCode(clonePairs, refactoredCodeMaping);
 		} catch (Exception e) {
-			return null;
+			System.out.println(e);
 		}
+		return refactoringPairs;
 	}
 
-	private List<RefactoringPair> findSimilarRefactoringsBasedOnExtractedCode(
+	private List<RefactoringPair> getRefactoringPairsFromClonePairs(
 			List<Pair<CodeLocation, CodeLocation>> clonePairs,
-			ArrayList<Pair<Integer, RefactoringData>> refactoredCodeMaping) {
+			ArrayList<Pair<Integer, IRefactoringData>> refactoredCodeMaping) {
 
 		List<RefactoringPair> similarRefactoringPairs = new ArrayList<RefactoringPair>();
 		for (Pair<CodeLocation, CodeLocation> pair : clonePairs) {
-			RefactoringData left = null;
-			RefactoringData right = null;
+			IRefactoringData left = null;
+			IRefactoringData right = null;
 
-			for (Pair<Integer, RefactoringData> maping : refactoredCodeMaping) {
+			for (Pair<Integer, IRefactoringData> maping : refactoredCodeMaping) {
 				if (maping.getKey() == pair.getLeft().getFileNumber())
 					left = maping.getRight();
 				if (maping.getKey() == pair.getRight().getFileNumber())
@@ -106,12 +112,4 @@ public class TokenBasedSimilarRefactoringFinder implements SimilarRefactoringFin
 		}
 		dir.toFile().delete();
 	}
-
-	@Override
-	public List<RefactoringPair> getSimilarRefactoringPairs(ArrayList<Pair<RefactoringData, Repository>> refactorings,
-			ExtendedGitService gitService) throws IOException, Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

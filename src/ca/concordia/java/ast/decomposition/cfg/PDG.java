@@ -39,7 +39,7 @@ public class PDG extends Graph implements Serializable {
 		CFG cfg = new CFG(methodObject);
 		createPDG(cfg);
 	}
-	
+
 	public PDG(CFG cfg) {
 		createPDG(cfg);
 	}
@@ -831,5 +831,40 @@ public class PDG extends Graph implements Serializable {
 				return pdgNode;
 		}
 		return null;
+	}
+
+	public Graph getGraph() {
+		Graph graph = new Graph();
+
+		for (GraphNode graphNode : nodes) {
+			graph.addNode(new GraphNode(graphNode.toString(), graphNode.getId()));
+		}
+
+		for (GraphEdge graphEdge : edges) {
+			GraphNode src = null;
+			GraphNode dst = null;
+			for (GraphNode node : graph.nodes) {
+				if (graphEdge.src.id == node.id) {
+					src = node;
+				}
+				if (graphEdge.dst.id == node.id) {
+					dst = node;
+				}
+			}
+			if (src == null) {
+				src = new GraphNode(graphEdge.src.toString(), graphEdge.src.getId());
+				graph.addNode(src);
+			}
+			if (dst == null) {
+				dst = new GraphNode(graphEdge.dst.toString(), graphEdge.dst.getId());
+				graph.addNode(dst);
+			}
+			graph.addEdge(new GraphEdge(src, dst));
+		}
+		return graph;
+	}
+	
+	public String toString() {
+		return edges.toString();
 	}
 }

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Expression;
@@ -9,7 +10,7 @@ import ca.concordia.java.ast.ASTInformationGenerator;
 import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.util.ExpressionExtractor;
 
-public class AbstractExpression extends AbstractMethodFragment {
+public class AbstractExpression extends AbstractMethodFragment implements Serializable {
 
 	private ASTInformation expression;
 	
@@ -31,7 +32,7 @@ public class AbstractExpression extends AbstractMethodFragment {
         List<Expression> postfixExpressions = expressionExtractor.getPostfixExpressions(expression);
         List<Expression> prefixExpressions = expressionExtractor.getPrefixExpressions(expression);
 		processVariablesWithoutBindingInfo(expressionExtractor.getVariableInstructions(expression), assignments, postfixExpressions, prefixExpressions);
-		processMethodInvocations(expressionExtractor.getMethodInvocations(expression));
+//		processMethodInvocations(expressionExtractor.getMethodInvocations(expression));
 //		processClassInstanceCreations(expressionExtractor.getClassInstanceCreations(expression));
 		processArrayCreations(expressionExtractor.getArrayCreations(expression));
 		processLiterals(expressionExtractor.getLiterals(expression));

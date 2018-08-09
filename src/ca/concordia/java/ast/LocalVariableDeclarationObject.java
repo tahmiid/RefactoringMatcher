@@ -30,8 +30,8 @@ public class LocalVariableDeclarationObject extends VariableDeclarationObject im
 				this.type = new TypeObject(((VariableDeclarationExpression) variableDeclarationParent).getType().toString());
 				if (variableDeclarationParent.getParent() instanceof ForStatement)
 					scope = variableDeclarationParent.getParent();
-				else {
-					throw new NullPointerException();
+				else if (variableDeclarationParent.getParent() != null){
+					scope = variableDeclarationParent.getParent();
 				}
 			} else {
 				throw new NullPointerException();

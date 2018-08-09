@@ -1,10 +1,11 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-public class MethodInvocationObject extends AbstractMethodInvocationObject {
+public class MethodInvocationObject extends AbstractMethodInvocationObject  implements Serializable{
 
     public MethodInvocationObject(TypeObject originClassType, String methodName, TypeObject returnType) {
         super(originClassType, methodName, returnType);
@@ -14,7 +15,11 @@ public class MethodInvocationObject extends AbstractMethodInvocationObject {
         super(originClassType, methodName, returnType, parameterList);
     }
 
-    public void setMethodInvocation(MethodInvocation methodInvocation) {
+    public MethodInvocationObject(String methodInvocationName, TypeObject returnType) {
+    	super(methodInvocationName, returnType);
+	}
+
+	public void setMethodInvocation(MethodInvocation methodInvocation) {
     	//this.methodInvocation = methodInvocation;
     	this.methodInvocation = ASTInformationGenerator.generateASTInformation(methodInvocation);
     }

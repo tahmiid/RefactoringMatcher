@@ -64,13 +64,13 @@ public class GraphVsSourcererCCExperiment {
 			
 			GraphBasedSimilarRefactoringFinder gbsrf = new GraphBasedSimilarRefactoringFinder();
 
-			List<RefactoringPair> similarRefactoringPairsByGraphMatching = gbsrf.getSimilarRefactoringPairs(refactorings, gitService);
+	/*		List<RefactoringPair> similarRefactoringPairsByGraphMatching = gbsrf.getSimilarRefactoringPairs(refactorings, gitService);
 			
 			for (RefactoringPair refactoringPair : similarRefactoringPairsByGraphMatching) {
 				System.out.println(refactoringPair.toString());
 				System.out.println(refactoringPair.getRefactoringOne().getRefactoredCode().getText());
 				System.out.println(refactoringPair.getRefactoringTwo().getRefactoredCode().getText());
-			}
+			}*/
 			assertEquals(true, true);
 		} catch (
 

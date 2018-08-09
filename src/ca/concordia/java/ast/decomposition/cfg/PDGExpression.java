@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -8,7 +9,7 @@ import ca.concordia.java.ast.CreationObject;
 import ca.concordia.java.ast.VariableDeclarationObject;
 import ca.concordia.java.ast.decomposition.AbstractExpression;
 
-public class PDGExpression {
+public class PDGExpression  implements Serializable{
 	private Set<AbstractVariable> declaredVariables;
 	private Set<AbstractVariable> definedVariables;
 	private Set<AbstractVariable> usedVariables;

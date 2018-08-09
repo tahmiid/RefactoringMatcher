@@ -1,5 +1,6 @@
 package ca.concordia.refactoringmatcher.graph;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +8,7 @@ import java.util.Set;
 import ca.concordia.java.ast.decomposition.cfg.Graph;
 import ca.concordia.java.ast.decomposition.cfg.GraphNode;
 
-public class GraphPair {
+public class GraphPair  implements Serializable{
 	private Graph graph1;
 	private Graph graph2;
 	private int largestGraphSize;

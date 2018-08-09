@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -9,7 +10,7 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-public class FieldObject extends VariableDeclarationObject {
+public class FieldObject extends VariableDeclarationObject  implements Serializable{
 
     private String name;
     private TypeObject type;

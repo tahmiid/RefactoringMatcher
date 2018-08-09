@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jgit.lib.Repository;
@@ -11,8 +12,12 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.refactoringminer.api.RefactoringHandler;
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl implements ExtendedRefactoringMiner {
+
+	private static Logger logger = LoggerFactory.getLogger(ExtendedRefactoringMinerImpl.class);
 
 	public ExtendedRefactoringMinerImpl() {
 		super();
@@ -35,19 +40,29 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 		int i = 1;
 		int splitSize = (int) Math.ceil(commits.size() / splits);
 		ArrayList<Thread> repoThreads = new ArrayList<>();
+		ArrayList<String> copyAddress = new ArrayList<>();
 
 		while (i <= splits) {
-			Repository repo = gitService.duplicate(repository);
-			String startCommit = commits.get(Math.max(( (i - 1)*splitSize), 0));
+			Repository repo = gitService.duplicate(repository, "temp");
+			String path = repo.getDirectory().getAbsolutePath().replaceAll("\\.git", "");
+			copyAddress.add(path);
+			String startCommit = commits.get(Math.max(((i - 1) * splitSize), 0));
 			String endCommit = commits.get(Math.min(i * splitSize - 1, commits.size() - 1));
 
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
+						ExtendedGitService gitService = new ExtendedGitServiceImpl() {
+							@Override
+							public boolean isCommitAnalyzed(String sha1) {
+								return handler.skipCommit(sha1);
+							}
+						};
 						RevWalk walk = gitService.createRevsWalkBetweenCommits(repo, startCommit, endCommit);
 						detect(repo, handler, new ExtendedGitServiceImpl(), walk.iterator());
-//						FileUtils.deleteDirectory(repo.getDirectory());
+						repo.close();
 					} catch (Exception e) {
+						logger.error(e.getStackTrace().toString());
 						e.printStackTrace();
 					}
 				}
@@ -57,7 +72,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 			i++;
 		}
 
-		while (repoThreads.size() >= splits) {
+		while (repoThreads.size() > 0) {
 			Thread threadToRemove = null;
 			for (Thread thread : repoThreads) {
 				if (!thread.isAlive()) {
@@ -72,6 +87,19 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 				threadToRemove = null;
 			}
 		}
+
+		Thread.sleep(2000);
+		for (String string : copyAddress) {
+			File directory = new File(string);
+			for (File file : directory.listFiles()) {
+				try {
+					FileDeleteStrategy.FORCE.delete(file);
+				} catch (Exception e) {
+					logger.warn("Could not delete temporary file: " + file);
+				}
+			}
+
+		}
 	}
 
 	private void detect(Repository repository, RefactoringHandler handler, ExtendedGitService gitService,
@@ -81,7 +109,6 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 			File projectFolder = metadataFolder.getParentFile();
 			ArrayList<Pair<Long, Thread>> threads = new ArrayList<Pair<Long, Thread>>();
 
-
 			while (i.hasNext()) {
 				RevCommit currentCommit = i.next();
 				try {
@@ -90,7 +117,8 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 							try {
 								detectRefactorings(gitService, repository, handler, projectFolder, currentCommit);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
+								logger.error("RefactoringMiner error. Skipping commit: " + currentCommit.getName());
+								logger.error(e.getStackTrace().toString());
 								e.printStackTrace();
 							}
 						}
@@ -98,7 +126,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 					t.start();
 					threads.add(Pair.of(System.currentTimeMillis(), t));
 
-					while (threads.size() > 3) {
+					while (threads.size() >= 2) {
 						Pair<Long, Thread> threadToRemove = null;
 						for (Pair<Long, Thread> thread : threads) {
 							if (!thread.getRight().isAlive()) {
@@ -119,6 +147,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 						}
 					}
 				} catch (Exception e) {
+					logger.error(e.getStackTrace().toString());
 					handler.handleException(currentCommit.getId().getName(), e);
 				}
 			}

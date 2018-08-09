@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public abstract class PDGDependence extends GraphEdge {
+import java.io.Serializable;
+
+public abstract class PDGDependence extends GraphEdge  implements Serializable{
 	private PDGDependenceType type;
 	
 	public PDGDependence(PDGNode src, PDGNode dst, PDGDependenceType type) {

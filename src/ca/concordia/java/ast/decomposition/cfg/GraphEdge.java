@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public class GraphEdge {
+import java.io.Serializable;
+
+public class GraphEdge  implements Serializable{
 	protected GraphNode src;
 	protected GraphNode dst;
 	
@@ -15,5 +17,9 @@ public class GraphEdge {
 
 	public GraphNode getDst() {
 		return dst;
+	}
+	
+	public String toString() {
+		return src + "->" + dst;
 	}
 }

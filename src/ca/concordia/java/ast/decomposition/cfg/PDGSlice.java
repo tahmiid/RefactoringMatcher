@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import ca.concordia.java.ast.AbstractMethodDeclaration;
 
-public class PDGSlice extends Graph {
+public class PDGSlice extends Graph  implements Serializable{
 	private PDG pdg;
 	private AbstractMethodDeclaration method;
 	private BasicBlock boundaryBlock;

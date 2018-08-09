@@ -691,4 +691,8 @@ public class CFG extends Graph implements Serializable {
 		}
 		return null;
 	}
+	
+	public String toString() {
+		return edges.toString();
+	}
 }

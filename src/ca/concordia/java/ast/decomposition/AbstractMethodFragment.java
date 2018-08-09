@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.Type;
@@ -37,13 +39,14 @@ import ca.concordia.java.ast.LiteralObject;
 import ca.concordia.java.ast.LocalVariableDeclarationObject;
 import ca.concordia.java.ast.LocalVariableInstructionObject;
 import ca.concordia.java.ast.MethodInvocationObject;
+import ca.concordia.java.ast.MethodObject;
 import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.SuperMethodInvocationObject;
 import ca.concordia.java.ast.TypeObject;
 import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 import ca.concordia.java.ast.util.MethodDeclarationUtility;
 
-public abstract class AbstractMethodFragment {
+public abstract class AbstractMethodFragment implements Serializable{
 	private AbstractMethodFragment parent;
 	private List<ParameterObject> parameters;
 
@@ -58,7 +61,7 @@ public abstract class AbstractMethodFragment {
 	private Set<PlainVariable> definedLocalVariables;
 	private Set<PlainVariable> usedLocalVariables;
 
-	private List<MethodInvocation> methodInvocationList;
+	private List<MethodInvocationObject> methodInvocationList;
 	private List<SuperMethodInvocationObject> superMethodInvocationList;
 	
 	protected AbstractMethodFragment(AbstractMethodFragment parent, List<ParameterObject> parameters) {
@@ -75,7 +78,7 @@ public abstract class AbstractMethodFragment {
 		this.definedLocalVariables = new LinkedHashSet<PlainVariable>();
 		this.usedLocalVariables = new LinkedHashSet<PlainVariable>();
 		
-		this.methodInvocationList = new LinkedList<MethodInvocation>();
+		this.methodInvocationList = new LinkedList<MethodInvocationObject>();
 	}
 
 	public AbstractMethodFragment getParent() {
@@ -166,10 +169,10 @@ public abstract class AbstractMethodFragment {
 	protected void processVariablesWithoutBindingInfo(List<Expression> variableInstructions, List<Expression> assignments, List<Expression> postfixExpressions, List<Expression> prefixExpressions) {
 		for (Expression variableInstruction : variableInstructions) {
 			SimpleName simpleName = (SimpleName) variableInstruction;
-			if(simpleName.getIdentifier() == "one")
+/*			if(simpleName.getIdentifier() == "one")
 			{
 				System.out.println(simpleName.getParent());
-			}
+			}*/
 			if (simpleName.isDeclaration()) {
 				// declaration
 				VariableDeclaration variableDeclaration = (VariableDeclaration) simpleName.getParent();
@@ -287,33 +290,47 @@ public abstract class AbstractMethodFragment {
 
 
 	protected void processMethodInvocations(List<Expression> methodInvocations) {
-		for(Expression expression : methodInvocations) {
-			if(expression instanceof MethodInvocation) {
-				MethodInvocation methodInvocation = (MethodInvocation)expression;
-				addMethodInvocation(methodInvocation);
-				
-				/*IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
-				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
-				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
-				String methodInvocationName = methodBinding.getName();
-				String qualifiedName = methodBinding.getReturnType().getQualifiedName();
-				TypeObject returnType = TypeObject.extractTypeObject(qualifiedName);
-				MethodInvocationObject methodInvocationObject = new MethodInvocationObject(originClassTypeObject, methodInvocationName, returnType);
-				methodInvocationObject.setMethodInvocation(methodInvocation);
-				ITypeBinding[] parameterTypes = methodBinding.getParameterTypes();
-				for(ITypeBinding parameterType : parameterTypes) {
-					String qualifiedParameterName = parameterType.getQualifiedName();
-					TypeObject typeObject = TypeObject.extractTypeObject(qualifiedParameterName);
-					methodInvocationObject.addParameter(typeObject);
+		try {
+			for(Expression expression : methodInvocations) {
+				if(expression instanceof MethodInvocation) {
+					MethodInvocation methodInvocation = (MethodInvocation)expression;
+//				addMethodInvocation(methodInvocation);
+					
+//				IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
+//				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
+//				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
+					String methodInvocationName = methodInvocation.getName().getIdentifier();
+					String qualifiedName = methodInvocation.getName().getFullyQualifiedName();
+					TypeObject returnType = TypeObject.extractTypeObject(qualifiedName);
+					MethodInvocationObject methodInvocationObject = new MethodInvocationObject(methodInvocationName, returnType);
+					methodInvocationObject.setMethodInvocation(methodInvocation);
+					
+					List<SingleVariableDeclaration> parameters = methodInvocation.arguments();
+					for(SingleVariableDeclaration parameter : parameters) {
+						Type parameterType = parameter.getType();
+						SimpleName parameterName = parameter.getName();
+						String qualifiedName1 = parameterName.getFullyQualifiedName();
+						TypeObject typeObject = TypeObject.extractTypeObject(qualifiedName1);
+						methodInvocationObject.addParameter(typeObject);
+					}
+					
+					/*ITypeBinding[] parameterTypes = methodBinding.getParameterTypes();
+					for(ITypeBinding parameterType : parameterTypes) {
+						String qualifiedParameterName = parameterType.getQualifiedName();
+						TypeObject typeObject = TypeObject.extractTypeObject(qualifiedParameterName);
+						methodInvocationObject.addParameter(typeObject);
+					}*/
+					/*ITypeBinding[] thrownExceptionTypes = methodBinding.getExceptionTypes();
+					for(ITypeBinding thrownExceptionType : thrownExceptionTypes) {
+						methodInvocationObject.addThrownException(thrownExceptionType.getQualifiedName());
+					}
+					if((methodBinding.getModifiers() & Modifier.STATIC) != 0)
+						methodInvocationObject.setStatic(true);*/
+					addMethodInvocation(methodInvocationObject);
 				}
-				ITypeBinding[] thrownExceptionTypes = methodBinding.getExceptionTypes();
-				for(ITypeBinding thrownExceptionType : thrownExceptionTypes) {
-					methodInvocationObject.addThrownException(thrownExceptionType.getQualifiedName());
-				}
-				if((methodBinding.getModifiers() & Modifier.STATIC) != 0)
-					methodInvocationObject.setStatic(true);
-				addMethodInvocation(methodInvocationObject);*/
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -324,7 +341,7 @@ public abstract class AbstractMethodFragment {
 		}
 	}
 	
-	private void addMethodInvocation(MethodInvocation methodInvocation) {
+	private void addMethodInvocation(MethodInvocationObject methodInvocation) {
 		methodInvocationList.add(methodInvocation);
 		if(parent != null) {
 			parent.addMethodInvocation(methodInvocation);
@@ -485,7 +502,7 @@ public abstract class AbstractMethodFragment {
 		return usedLocalVariables;
 	}
 
-	public List<MethodInvocation> getMethodInvocationList() {
+	public List<MethodInvocationObject> getMethodInvocationList() {
 		return methodInvocationList;
 	}
 	

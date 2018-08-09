@@ -1,6 +1,8 @@
 package ca.concordia.refactoringmatcher.clonedetector;
 
-public class HeaderClonePair {
+import java.io.Serializable;
+
+public class HeaderClonePair  implements Serializable{
 	private CodeLocation headerOne;
 	private CodeLocation headerTwo;
 	

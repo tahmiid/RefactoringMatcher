@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public class PDGControlDependence extends PDGDependence {
+import java.io.Serializable;
+
+public class PDGControlDependence extends PDGDependence  implements Serializable{
 	private boolean trueControlDependence;
 	private volatile int hashCode = 0;
 	
@@ -58,6 +60,6 @@ public class PDGControlDependence extends PDGDependence {
 			type.append("T");
 		else
 			type.append("F");
-		return src.toString() + "-->" + type.toString() + "\n" + dst.toString();
+		return src.toString() + "-->" + dst.toString() + " " + type.toString() + "" + "\n";
 	}
 }

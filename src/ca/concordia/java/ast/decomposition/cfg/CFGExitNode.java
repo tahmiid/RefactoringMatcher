@@ -1,11 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGExitNode extends CFGNode {
+public class CFGExitNode extends CFGNode  implements Serializable{
 	private PlainVariable returnedVariable;
 	
 	public CFGExitNode(AbstractStatement statement) {

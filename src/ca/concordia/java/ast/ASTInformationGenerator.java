@@ -1,9 +1,11 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
 
-public class ASTInformationGenerator {
+public class ASTInformationGenerator  implements Serializable{
 
 	private static ITypeRoot iTypeRoot;
 	

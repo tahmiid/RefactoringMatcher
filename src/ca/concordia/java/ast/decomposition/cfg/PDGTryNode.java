@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,7 @@ import ca.concordia.java.ast.decomposition.AbstractStatement;
 import ca.concordia.java.ast.decomposition.CatchClauseObject;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
-public class PDGTryNode extends PDGBlockNode {
+public class PDGTryNode extends PDGBlockNode implements Serializable {
 	public PDGTryNode(CFGTryNode cfgTryNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
 			Set<FieldObject> fieldsAccessedInMethod*/) {
 		super(cfgTryNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);

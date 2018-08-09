@@ -1,8 +1,10 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.SimpleName;
 
-public class SuperFieldInstructionObject {
+public class SuperFieldInstructionObject  implements Serializable{
 
 	private String ownerClass;
 	private TypeObject type;

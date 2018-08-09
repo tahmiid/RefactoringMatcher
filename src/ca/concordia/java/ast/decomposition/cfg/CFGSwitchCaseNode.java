@@ -1,10 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.SwitchCase;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGSwitchCaseNode extends CFGNode {
+public class CFGSwitchCaseNode extends CFGNode  implements Serializable{
 	private boolean isDefault;
 	
 	public CFGSwitchCaseNode(AbstractStatement statement) {

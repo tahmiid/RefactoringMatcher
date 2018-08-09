@@ -29,8 +29,8 @@ public class TestClass {
 		in.close();
 	}
 
-	private void outputMessage(String s) {
-	}
+//	private void outputMessage(String s) {
+//	}
 
 //	private List<XYDataset> getDatasetsMappedToRangeAxis(Integer axisIndex) {
 //		ParamChecks.nullNotPermitted(axisIndex, "axisIndex");

@@ -5,15 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -30,28 +27,40 @@ import org.refactoringminer.util.GitServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.misc.Lock;
-
 public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGitService {
 
-	Logger logger = LoggerFactory.getLogger(ExtendedGitServiceImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(ExtendedGitServiceImpl.class);
+	// private ReentrantLock lock = new ReentrantLock();
 
 	public synchronized void checkout(Repository repository, String commitId) throws Exception {
-		ReentrantLock lock = new ReentrantLock();
 		try {
-			lock.lock();
-			super.checkout(repository, commitId);
-		} catch (CheckoutConflictException e) {
-			lock.unlock();
+			try {
+				// lock.lock();
+				super.checkout(repository, commitId);
+			} catch (UnsupportedOperationException e) {
+				// lock.unlock();
+				logger.error("GitService error. Can not checkout to " + commitId);
+				e.printStackTrace();
+				throw e;
+			} catch (CheckoutConflictException e) {
+				// lock.unlock();
+				logger.error("Checkout conflict error. Can not checkout to " + commitId);
+				e.printStackTrace();
+				throw e;
+			} catch (JGitInternalException e) {
+				// lock.unlock();
+				logger.error("JGitInternal error. Can not checkout to " + commitId);
+				e.printStackTrace();
+				throw e;
+			} finally {
+				// lock.unlock();
+			}
+		} catch (Exception e) {
+			logger.error(e.getStackTrace().toString());
 			e.printStackTrace();
-		} catch (JGitInternalException e) {
-			lock.unlock();
-			checkout(repository, commitId);
-//			e.printStackTrace();
-		} 
-		finally {
-			lock.unlock();
-		} 
+			throw e;
+			// lock = new ReentrantLock();
+		}
 	}
 
 	public String getNextTag(Repository repository, String commitId) throws Exception {
@@ -81,21 +90,22 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 		return nextRelease;
 	}
 
-	public Repository duplicate(Repository repository) throws Exception {
-		String source = repository.getDirectory().getAbsolutePath().replaceAll("\\.git", "");
+	public Repository duplicate(Repository repository, String path) throws Exception {
+		String source = repository.getDirectory().getParent();
 		File srcDir = new File(source);
+		String name = srcDir.getName();
 
 		int rand = ThreadLocalRandom.current().nextInt(1, 1000);
-		String destination = source.substring(0, source.length() - 2) + rand;
+		String destination = Paths.get(srcDir.getParent(), path, name, rand + "").toString();
 		File destDir = new File(destination);
 
 		try {
 			FileUtils.copyDirectory(srcDir, destDir);
 			Repository newRepo = super.openRepository(destination);
-			Files.deleteIfExists(Paths.get(newRepo.getDirectory().getAbsolutePath() , "index.lock") );
+			Files.deleteIfExists(Paths.get(newRepo.getDirectory().getAbsolutePath(), "index.lock"));
 			return newRepo;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		return null;
 	}

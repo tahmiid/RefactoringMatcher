@@ -1,11 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGBranchLoopNode extends CFGBranchNode {
+public class CFGBranchLoopNode extends CFGBranchNode  implements Serializable{
 
 	public CFGBranchLoopNode(AbstractStatement statement) {
 		super(statement);

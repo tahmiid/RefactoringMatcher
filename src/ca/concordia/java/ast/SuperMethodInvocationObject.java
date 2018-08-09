@@ -1,10 +1,11 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
-public class SuperMethodInvocationObject extends AbstractMethodInvocationObject {
+public class SuperMethodInvocationObject extends AbstractMethodInvocationObject  implements Serializable{
 
     public SuperMethodInvocationObject(TypeObject originClassType, String methodName, TypeObject returnType) {
         super(originClassType, methodName, returnType);

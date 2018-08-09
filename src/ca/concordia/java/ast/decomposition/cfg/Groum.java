@@ -1,5 +1,7 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -7,7 +9,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NodeFinder;
 
-public class Groum extends Graph {
+public class Groum extends Graph  implements Serializable{
 
 	public Groum(PDG pdg) {
 		for (GraphNode graphNode : pdg.nodes) {

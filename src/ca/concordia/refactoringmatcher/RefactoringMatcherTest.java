@@ -106,14 +106,14 @@ public class RefactoringMatcherTest {
 //					Release  release = project.getRelease(refactoringData.getAfterCode().getCommit().getId());
 					Release  release = project.getReleases().get(1);
 					
-					for (MethodInvocation methodInvocation : methodObject.getMethodBody().getCompositeStatement().getMethodInvocationList()) {
+					/*for (MethodInvocation methodInvocation : methodObject.getMethodBody().getCompositeStatement().getMethodInvocationList()) {
 						
 
 						if(release.contains(methodInvocation))
 							found++;
 						else 
 							notfount++;
-					}
+					}*/
 				}
 			}
 			System.out.println("Methods found in jar: " + found + " " + (found+notfount));

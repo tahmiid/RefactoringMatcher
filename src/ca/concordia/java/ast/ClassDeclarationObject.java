@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -7,7 +8,7 @@ import java.util.ListIterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ITypeRoot;
 
-public abstract class ClassDeclarationObject {
+public abstract class ClassDeclarationObject  implements Serializable{
 	protected String name;
 	protected List<MethodObject> methodList;
 	protected List<FieldObject> fieldList;

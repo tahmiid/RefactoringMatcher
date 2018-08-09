@@ -1,6 +1,8 @@
 package ca.concordia.java.ast;
 
-public abstract class CreationObject {
+import java.io.Serializable;
+
+public abstract class CreationObject  implements Serializable{
 	private TypeObject type;
 	protected ASTInformation creation;
 	

@@ -3,24 +3,26 @@ package ca.concordia.refactoringmatcher;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import ca.concordia.refactoringdata.IRefactoringData;
+
 public class RefactoringPair implements Serializable{
-	private RefactoringData refactoringOne;
-	private RefactoringData refactoringTwo;
+	private IRefactoringData refactoringOne;
+	private IRefactoringData refactoringTwo;
 	
-	public RefactoringPair(RefactoringData left, RefactoringData right) {
+	public RefactoringPair(IRefactoringData left, IRefactoringData right) {
 		this.refactoringOne = left;
 		this.refactoringTwo = right;
 	}
 	
-	public RefactoringData getRefactoringOne() {
+	public IRefactoringData getRefactoringOne() {
 		return refactoringOne;
 	}
-	public RefactoringData getRefactoringTwo() {
+	public IRefactoringData getRefactoringTwo() {
 		return refactoringTwo;
 	}
 	
-	public ArrayList<RefactoringData> getRefactorings(){
-		ArrayList<RefactoringData> list = new ArrayList<RefactoringData>();
+	public ArrayList<IRefactoringData> getRefactorings(){
+		ArrayList<IRefactoringData> list = new ArrayList<IRefactoringData>();
 		list.add(refactoringOne);
 		list.add(refactoringTwo);
 		return list;
@@ -34,7 +36,13 @@ public class RefactoringPair implements Serializable{
     }
 	
 	public String toString(){
-		return "Pair (" + refactoringOne + ", " + refactoringTwo + ")" ;
+		return "Match:\n" + refactoringOne + "\n" + refactoringTwo;
 	}
 	
+	public boolean fromSameProject(){
+		if(refactoringOne.getProjectLink().toLowerCase().equals(refactoringTwo.getProjectLink().toLowerCase()))
+			return true;
+		else
+			return false;
+	}
 }

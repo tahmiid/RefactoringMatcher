@@ -1,5 +1,7 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -13,7 +15,7 @@ import ca.concordia.java.ast.ASTInformation;
 import ca.concordia.java.ast.ASTInformationGenerator;
 import ca.concordia.java.ast.TypeObject;
 
-public abstract class AbstractVariable {
+public abstract class AbstractVariable  implements Serializable{
 	protected String variableName;
 	protected String variableType;
 	protected ASTInformation variableDeclaration;
@@ -41,8 +43,8 @@ public abstract class AbstractVariable {
 				this.variableType = new TypeObject(((VariableDeclarationExpression) variableDeclarationParent).getType().toString()).getClassType();
 				if (variableDeclarationParent.getParent() instanceof ForStatement)
 					scope = variableDeclarationParent.getParent();
-				else {
-					throw new NullPointerException();
+				else if (variableDeclarationParent.getParent() != null){
+					scope = variableDeclarationParent.getParent();
 				}
 			} else {
 				throw new NullPointerException();

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
-public class ReachingAliasSet {
+public class ReachingAliasSet  implements Serializable{
 
 	private List<LinkedHashSet<VariableDeclaration>> aliasSets;
 	

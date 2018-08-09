@@ -1,10 +1,12 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 
-public class AnonymousClassDeclarationObject extends ClassDeclarationObject {
+public class AnonymousClassDeclarationObject extends ClassDeclarationObject  implements Serializable{
 	private ASTInformation anonymousClassDeclaration;
 	private ClassObject classObject;
 	

@@ -1,5 +1,6 @@
 package ca.concordia.refactoringmatcher;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -7,7 +8,7 @@ import java.util.HashSet;
 
 import org.eclipse.jgit.lib.PersonIdent;
 
-public class RefactoringSet extends HashSet<RefactoringData>{
+public class RefactoringSet extends HashSet<RefactoringData> implements Serializable{
 
 	/**
 	 * 

@@ -31,6 +31,7 @@ public class ASTInformation implements Serializable {
 		this.startPosition = astNode.getStartPosition();
 		this.length = astNode.getLength();
 		this.nodeType = astNode.getNodeType();
+		hashCode();
 	}
 
 	public ASTNode recoverASTNode() {
@@ -91,7 +92,7 @@ public class ASTInformation implements Serializable {
 			result = 37 * result + startPosition;
 			result = 37 * result + length;
 			result = 37 * result + nodeType;
-			result = 37 * result + recoverASTNode().hashCode();
+			result = 37 * result + recoverASTNode().toString().hashCode();
 			hashCode = result;
 		}
 		return hashCode;

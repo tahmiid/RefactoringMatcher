@@ -1,10 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.BreakStatement;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGBreakNode extends CFGNode {
+public class CFGBreakNode extends CFGNode  implements Serializable{
 	private String label;
 	private CFGNode innerMostLoopNode;
 	

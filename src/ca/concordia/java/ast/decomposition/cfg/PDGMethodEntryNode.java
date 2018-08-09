@@ -1,11 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ListIterator;
 
 import ca.concordia.java.ast.AbstractMethodDeclaration;
 import ca.concordia.java.ast.ParameterObject;
 
-public class PDGMethodEntryNode extends PDGNode {
+public class PDGMethodEntryNode extends PDGNode  implements Serializable{
 	private AbstractMethodDeclaration method;
 	
 	public PDGMethodEntryNode(AbstractMethodDeclaration method) {
@@ -45,6 +46,6 @@ public class PDGMethodEntryNode extends PDGNode {
 	}
 
 	public String toString() {
-		return id + "\t" + method.getName();
+		return id + "";
 	}
 }

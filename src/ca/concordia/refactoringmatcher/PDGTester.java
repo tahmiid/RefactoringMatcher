@@ -26,8 +26,12 @@ public class PDGTester {
 	}
 
 	private static void testFile() throws IOException {   
-		String wholeText = readFile("/RefactoringMatcher/src/ca/concordia/refactoringmatcher/TestClass.java",
+		String path = "E:\\Repositories\\RefactoringMatcher\\src\\ca\\concordia\\refactoringmatcher\\TestClass.java";
+		String wholeText = readFile(path,
 				StandardCharsets.UTF_8);
+		Cache.currentFile = path;
+		Cache.currentFileText = wholeText;
+
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(wholeText.toCharArray());

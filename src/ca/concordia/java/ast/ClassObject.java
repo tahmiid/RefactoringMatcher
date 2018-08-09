@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -10,7 +11,7 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-public class ClassObject extends ClassDeclarationObject {
+public class ClassObject extends ClassDeclarationObject  implements Serializable{
 
 	private List<ConstructorObject> constructorList;
 	private List<EnumConstantDeclarationObject> enumConstantDeclarationList;

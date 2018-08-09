@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 
-public class ClassInstanceCreationObject extends CreationObject {
+public class ClassInstanceCreationObject extends CreationObject  implements Serializable{
 
 	private List<TypeObject> parameterList;
 	private Set<String> thrownExceptions;

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,7 @@ import ca.concordia.java.ast.decomposition.AbstractStatement;
 import ca.concordia.java.ast.decomposition.CompositeStatementObject;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
-public class CFGBranchIfNode extends CFGBranchConditionalNode {
+public class CFGBranchIfNode extends CFGBranchConditionalNode  implements Serializable{
 
 	public CFGBranchIfNode(AbstractStatement statement) {
 		super(statement);

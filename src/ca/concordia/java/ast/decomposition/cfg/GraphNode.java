@@ -1,14 +1,23 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class GraphNode {
+public class GraphNode  implements Serializable{
 	private static int nodeNum = 0;
 	protected int id;
+	protected String value = "";
 	protected Set<GraphEdge> incomingEdges;
 	protected Set<GraphEdge> outgoingEdges;
-
+	
+	public GraphNode(String value, int id) {
+		this.value = value;
+		this.id = id;
+		this.incomingEdges = new LinkedHashSet<GraphEdge>();
+		this.outgoingEdges = new LinkedHashSet<GraphEdge>();
+	}
+	
 	public GraphNode() {
 		nodeNum++;
 		this.id = nodeNum;
@@ -39,7 +48,17 @@ public class GraphNode {
 	public int getOutDegree() {
 		return outgoingEdges.size();
 	}
+	
+	public String getValue() {
+		return value;
+	}
 
+	public String toString() {
+		if(value.isEmpty())
+			return id + "";
+		return id + ":" + value;
+	}
+	
 	public boolean isSuccessorOf(GraphNode graphNode) {
 		boolean isSuccessorOf = false;
 		for (GraphEdge graphEdge : incomingEdges) {

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 
 import ca.concordia.java.ast.decomposition.AbstractExpression;
 
-public class EnumConstantDeclarationObject {
+public class EnumConstantDeclarationObject  implements Serializable{
 	private String name;
 	private List<AbstractExpression> arguments;
 	private String enumName;

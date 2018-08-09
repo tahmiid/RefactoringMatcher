@@ -1,8 +1,10 @@
 package ca.concordia.refactoringmatcher.graph;
 
+import java.io.Serializable;
+
 import ca.concordia.java.ast.decomposition.cfg.GraphNode;
 
-public class GraphNodePair {
+public class GraphNodePair  implements Serializable{
     public final GraphNode node1;
     public final GraphNode node2;
 

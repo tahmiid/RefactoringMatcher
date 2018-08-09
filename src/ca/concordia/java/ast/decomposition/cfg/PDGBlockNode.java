@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -7,7 +8,7 @@ import ca.concordia.java.ast.VariableDeclarationObject;
 import ca.concordia.java.ast.decomposition.AbstractExpression;
 import ca.concordia.java.ast.decomposition.CompositeStatementObject;
 
-public class PDGBlockNode extends PDGNode {
+public class PDGBlockNode extends PDGNode  implements Serializable{
 	protected CFGNode controlParent;
 
 	public PDGBlockNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,

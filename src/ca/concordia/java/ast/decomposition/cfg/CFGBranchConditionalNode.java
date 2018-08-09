@@ -1,11 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public abstract class CFGBranchConditionalNode extends CFGBranchNode {
+public abstract class CFGBranchConditionalNode extends CFGBranchNode  implements Serializable{
 	private CFGNode joinNode;
 	
 	public CFGBranchConditionalNode(AbstractStatement statement) {

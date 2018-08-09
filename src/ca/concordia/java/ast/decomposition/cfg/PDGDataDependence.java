@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public class PDGDataDependence extends PDGAbstractDataDependence {
+import java.io.Serializable;
+
+public class PDGDataDependence extends PDGAbstractDataDependence  implements Serializable{
 
 	public PDGDataDependence(PDGNode src, PDGNode dst,
 			AbstractVariable data, CFGBranchNode loop) {

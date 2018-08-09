@@ -2,6 +2,7 @@ package ca.concordia.refactoringmatcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +31,7 @@ import ca.concordia.jaranalyzer.JarAnalyzer;
 import ca.concordia.jaranalyzer.JarInfo;
 import ca.concordia.jaranalyzer.MethodInfo;
 
-public class Release {
+public class Release  implements Serializable{
 	public Release(Ref ref, ExtendedGitService gitService, Repository repository, Path directory) throws Exception {
 		commitId = ref.getObjectId().getName();
 		gitService.checkout(repository, commitId);

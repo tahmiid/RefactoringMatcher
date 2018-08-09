@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.Statement;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializable {
+	private String statementString;
 	private AbstractStatement statement;
 	private BasicBlock basicBlock;
 	private PDGNode pdgNode;
@@ -15,6 +16,7 @@ public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializa
 	public CFGNode(AbstractStatement statement) {
 		super();
 		this.statement = statement;
+		this.statementString = statement.toString();
 	}
 
 	public AbstractStatement getStatement() {
@@ -100,9 +102,9 @@ public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializa
 		return hashCode;
 	}
 
-	public String toString() {
-		return id + "\t" + statement.toString();
-	}
+//	public String toString() {
+//		return id + "\t" + statementString;
+//	}
 
 	public int compareTo(CFGNode node) {
 		if(this.getId() > node.getId())

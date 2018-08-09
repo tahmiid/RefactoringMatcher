@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,7 +14,7 @@ import ca.concordia.java.ast.decomposition.AbstractStatement;
 import ca.concordia.java.ast.decomposition.CompositeStatementObject;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
-public abstract class CFGBranchNode extends CFGNode {
+public abstract class CFGBranchNode extends CFGNode  implements Serializable{
 
 	public CFGBranchNode(AbstractStatement statement) {
 		super(statement);

@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public abstract class PDGAbstractDataDependence extends PDGDependence {
+import java.io.Serializable;
+
+public abstract class PDGAbstractDataDependence extends PDGDependence  implements Serializable{
 	private AbstractVariable data;
 	private CFGBranchNode loop;
 	private volatile int hashCode = 0;
@@ -62,10 +64,10 @@ public abstract class PDGAbstractDataDependence extends PDGDependence {
 	}
 
 	public String toString() {
-		String loopInfo = isLoopCarried() ? " through loop " + loop.getId() : "";
-		return src.toString() + "-->" + data.toString() +
-				" <" + getType().toString().toLowerCase() + ">" +
-				loopInfo +
-				"\n" + dst.toString();
+		String loopInfo = isLoopCarried() ? " (through loop " + loop.getId() + ")": "";
+		return src.toString() + "-->" + dst.toString() 
+		+ " <" + getType().toString().toLowerCase() + "> " + data.toString() 
+		+	loopInfo 
+		+	"\n";
 	}
 }

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import org.eclipse.jdt.core.dom.Statement;
 import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.decomposition.cfg.AbstractVariable;
 
-public class TryStatementObject extends CompositeStatementObject {
+public class TryStatementObject extends CompositeStatementObject  implements Serializable{
 	private List<CatchClauseObject> catchClauses;
 	private CompositeStatementObject finallyClause;
 	

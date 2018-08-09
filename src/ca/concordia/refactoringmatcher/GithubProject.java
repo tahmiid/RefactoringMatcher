@@ -25,7 +25,7 @@ import java.util.Set;
  * @author tahmiid
  *
  */
-public class GithubProject {
+public class GithubProject  implements Serializable{
 
 	private String link;
 	private String name;

@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import ca.concordia.java.ast.util.ExpressionExtractor;
  * 11.	ThrowStatement
  */
 
-public class StatementObject extends AbstractStatement {
+public class StatementObject extends AbstractStatement  implements Serializable{
 	
 	public StatementObject(Statement statement, List<ParameterObject> parameters, StatementType type, AbstractMethodFragment parent) {
 		super(statement, parameters, type, parent);

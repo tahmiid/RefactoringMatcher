@@ -1,5 +1,6 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class PDGSliceUnionCollection {
+public class PDGSliceUnionCollection  implements Serializable{
 	private Map<BasicBlock, PDGSliceUnion> sliceUnionMap;
 	
 	public PDGSliceUnionCollection(PDG pdg, PlainVariable localVariableCriterion) {

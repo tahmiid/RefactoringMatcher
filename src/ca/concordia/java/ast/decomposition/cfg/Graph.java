@@ -1,9 +1,10 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Graph {
+public class Graph  implements Serializable{
 	protected Set<GraphNode> nodes;
 	protected Set<GraphEdge> edges;
 	

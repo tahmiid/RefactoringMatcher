@@ -1,10 +1,12 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.ContinueStatement;
 
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
-public class CFGContinueNode extends CFGNode {
+public class CFGContinueNode extends CFGNode  implements Serializable{
 	private String label;
 	private CFGNode innerMostLoopNode;
 	

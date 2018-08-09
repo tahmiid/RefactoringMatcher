@@ -1,6 +1,8 @@
 package ca.concordia.java.ast.decomposition.cfg;
 
-public class Flow extends GraphEdge {
+import java.io.Serializable;
+
+public class Flow extends GraphEdge  implements Serializable{
 	private boolean loopbackFlow = false;
 	private boolean trueControlFlow = false;
 	private boolean falseControlFlow = false;
@@ -43,6 +45,6 @@ public class Flow extends GraphEdge {
 			type.append("F");
 		if(loopbackFlow)
 			type.append("LB");
-		return src.toString() + "-->" + type.toString() + "\n" + dst.toString();
+		return src.toString() + "-->" + type.toString() + " " + dst.toString() + "\n";
 	}
 }

@@ -1,10 +1,12 @@
 package ca.concordia.java.ast;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 
-public class LocalVariableInstructionObject {
+public class LocalVariableInstructionObject  implements Serializable{
     private String name;
     private ASTInformation simpleName;
     private volatile int hashCode = 0;

@@ -10,17 +10,27 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
-public class SourcererCCTest {
+import ca.concordia.refactoringdata.IRefactoringData;
+import ca.concordia.refactoringmatcher.graph.GraphBasedSimilarRefactoringFinder;
 
+public class SourcererCCTest {
+	private static Logger logger = Logger.getLogger(SourcererCCTest.class);
+
+	public static void main(String[] args) throws Exception {
+		test();
+	}
+	
 	@Test
-	public void test() {
+	public static void test() {
 		try {
 			Path outputDirectory = Files.createDirectories(Paths.get("E:\\SerializedProjects"));
 			Path projectsDirectory = Files.createDirectories(Paths.get("E:\\ProjectDataset"));
 
 			ArrayList<GitProject> projects = new ArrayList<GitProject>();
+			ArrayList<IRefactoringData> refactorings = new ArrayList<IRefactoringData>();
 
 			for (String projectLink : projectLinks) {
 				GitProject project;
@@ -28,27 +38,35 @@ public class SourcererCCTest {
 					project = new GitProject(projectLink, projectsDirectory, outputDirectory);
 					project.printReport();
 					projects.add(project);
-
-//					SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
-//					List<RefactoringPair> similarRefactoringPairs = patternFinder
-//							.getSimilarRefactoringPairs(project.getRefactorings());
-//					for (RefactoringPair refactoringPair : similarRefactoringPairs) {
-//						System.out.println(refactoringPair.toString());
-//					}
+					refactorings.addAll(project.getAllRefactoringData());
 				} catch (Exception e) {
+					logger.error("Error analyzing project: " + projectLink);
+					logger.error(e.getStackTrace().toString());
 					e.printStackTrace();
-					fail("Exception Thrown");
 				}
 			}
+			
+			GraphBasedSimilarRefactoringFinder gbsrf = new GraphBasedSimilarRefactoringFinder();
+			List<RefactoringPair> similarRefactoringPairs = gbsrf.getSimilarRefactoringPairs(refactorings);
+			
+//			SimilarRefactoringFinder patternFinder = new TokenBasedSimilarRefactoringFinder();
+//			List<RefactoringPair> similarRefactoringPairs = patternFinder
+//					.getSimilarRefactoringPairs(project.getRefactorings());
+
+			for (RefactoringPair refactoringPair : similarRefactoringPairs) {
+				logger.info(refactoringPair.toString());
+			}
+			logger.info("Matches: " + similarRefactoringPairs.size());
+
 			assertEquals(true, true);
 		} catch (
 		IOException e) {
+			logger.error(e.getStackTrace().toString());
 			e.printStackTrace();
-			fail("Exception Thrown");
 		}
 	}
 
-	String[] projectLinks = {
+	static String[] projectLinks = {
 
 			// "https://github.com/iluwatar/java-design-patterns.git",
 			// "https://github.com/JakeWharton/ActionBarSherlock.git",

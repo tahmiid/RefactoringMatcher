@@ -1,9 +1,10 @@
 package ca.concordia.java.ast.decomposition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatchClauseObject {
+public class CatchClauseObject  implements Serializable{
 	
 	private CompositeStatementObject body;
 	private List<AbstractExpression> expressionList;
