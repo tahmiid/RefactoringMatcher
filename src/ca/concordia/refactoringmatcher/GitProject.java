@@ -191,7 +191,7 @@ public class GitProject implements Serializable {
 					ExtractOperationRefactoring extractOperationRefactoring = (ExtractOperationRefactoring) refactoringFromRM.getLeft();
 					String commitId = refactoringFromRM.getRight();
 					ExtractMethod extractMethodRefactoring = new ExtractMethod(extractOperationRefactoring, link,
-							commitId, lastCommit(commitId), repository);
+							commitId, repository);
 					try {
 						extractMethodRefactoring.retrieveCode(repository);
 						extractedRefactorings.add(extractMethodRefactoring);

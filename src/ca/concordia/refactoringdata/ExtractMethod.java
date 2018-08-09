@@ -47,12 +47,11 @@ public class ExtractMethod implements IRefactoringData, Serializable {
 	private PDG sourceMethodBeforeExtractionPDG;
 	private PDG sourceMethodAfterExtractionPDG;
 
-	public ExtractMethod(ExtractOperationRefactoring refactoring, String projectLink, String commitId,
-			String previousCommitId, Repository repository) throws IOException, Exception {
+	public ExtractMethod(ExtractOperationRefactoring refactoring, String projectLink, String commitId, Repository repository) throws IOException, Exception {
 		this.refactoring = refactoring;
 		this.projectLink = projectLink;
 		this.commitId = commitId;
-		this.previousCommitId = previousCommitId;
+		this.previousCommitId = new ExtendedGitServiceImpl().getParentCommit(repository, commitId);
 		// retrieveCode(repository);
 	}
 

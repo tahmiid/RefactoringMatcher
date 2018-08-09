@@ -32,6 +32,7 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 	private static Logger logger = LoggerFactory.getLogger(ExtendedGitServiceImpl.class);
 	// private ReentrantLock lock = new ReentrantLock();
 
+	@Override
 	public synchronized void checkout(Repository repository, String commitId) throws Exception {
 		try {
 			try {
@@ -63,6 +64,7 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 		}
 	}
 
+	@Override
 	public String getNextTag(Repository repository, String commitId) throws Exception {
 		String nextRelease = "";
 		final Set<Ref> tags = new HashSet<Ref>();
@@ -90,6 +92,7 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 		return nextRelease;
 	}
 
+	@Override
 	public Repository duplicate(Repository repository, String path) throws Exception {
 		String source = repository.getDirectory().getParent();
 		File srcDir = new File(source);
@@ -110,6 +113,7 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 		return null;
 	}
 
+	@Override
 	public Set<Ref> getAllReleaseTags(Repository repository) throws Exception {
 		final Set<Ref> tags = new HashSet<Ref>();
 		final RevWalk walk = new RevWalk(repository);
@@ -137,5 +141,15 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 			throw e;
 		}
 		return commits;
+	}
+
+	
+	@Override
+	public String getParentCommit(Repository repository, String commitId) throws Exception {
+		final RevWalk walk = new RevWalk(repository);
+		walk.reset();
+		ObjectId id = repository.resolve(commitId);
+		RevCommit commit = walk.parseCommit(id);
+		return commit.getParents()[0].getName();
 	}
 }

@@ -11,6 +11,8 @@ public interface ExtendedGitService extends GitService{
 	
 	public String getNextTag(Repository repository, String commitId) throws Exception;
 	
+	public String getParentCommit(Repository repository, String commitId) throws Exception;
+	
 	public Repository duplicate(Repository repository, String string) throws Exception;
 	
 	public Set<Ref> getAllReleaseTags(Repository repository) throws Exception;
