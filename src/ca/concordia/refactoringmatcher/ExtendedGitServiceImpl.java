@@ -6,12 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -19,6 +23,8 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
@@ -30,37 +36,58 @@ import org.slf4j.LoggerFactory;
 public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGitService {
 
 	private static Logger logger = LoggerFactory.getLogger(ExtendedGitServiceImpl.class);
-	// private ReentrantLock lock = new ReentrantLock();
+
+	@Override
+	public Repository cloneIfNotExists(String projectPath, String cloneUrl) throws Exception {
+		return cloneIfNotExists(projectPath, cloneUrl, "master");
+	}
+
+	@Override
+	public Repository cloneIfNotExists(String projectPath, String cloneUrl, String branch) throws Exception {
+		File folder = new File(projectPath);
+		Repository repository;
+		if (folder.exists()) {
+			RepositoryBuilder builder = new RepositoryBuilder();
+			repository = builder.setGitDir(new File(folder, ".git")).readEnvironment().findGitDir().build();
+		} else {
+			logger.info("Cloning {} ...", cloneUrl);
+			Git git = Git.cloneRepository().setDirectory(folder).setURI(cloneUrl).setCloneAllBranches(true)
+					.setBranch(branch).call();
+			repository = git.getRepository();
+		}
+		return repository;
+	}
 
 	@Override
 	public synchronized void checkout(Repository repository, String commitId) throws Exception {
 		try {
-			try {
-				// lock.lock();
-				super.checkout(repository, commitId);
-			} catch (UnsupportedOperationException e) {
-				// lock.unlock();
-				logger.error("GitService error. Can not checkout to " + commitId);
-				e.printStackTrace();
-				throw e;
-			} catch (CheckoutConflictException e) {
-				// lock.unlock();
-				logger.error("Checkout conflict error. Can not checkout to " + commitId);
-				e.printStackTrace();
-				throw e;
-			} catch (JGitInternalException e) {
-				// lock.unlock();
-				logger.error("JGitInternal error. Can not checkout to " + commitId);
-				e.printStackTrace();
-				throw e;
-			} finally {
-				// lock.unlock();
-			}
-		} catch (Exception e) {
-			logger.error(e.getStackTrace().toString());
-			e.printStackTrace();
+			super.checkout(repository, commitId);
+		} catch (UnsupportedOperationException e) {
+			revert(repository);
+			logger.error("GitService error. Can not checkout to " + commitId);
 			throw e;
-			// lock = new ReentrantLock();
+		} catch (CheckoutConflictException e) {
+			revert(repository);
+			logger.error("Checkout conflict error. Can not checkout to " + commitId);
+			throw e;
+		} catch (JGitInternalException e) {
+			revert(repository);
+			logger.error("JGitInternal error. Can not checkout to " + commitId);
+			throw e;
+		} catch (Exception e) {
+			revert(repository);
+			logger.error(e.getMessage());
+			throw e;
+		}
+	}
+
+	private boolean revert(Repository repository) {
+		try (Git git = new Git(repository)) {
+			git.revert().setStrategy(MergeStrategy.THEIRS).call();
+			return true;
+		} catch (Exception ex) {
+			logger.error(ex.getMessage());
+			return false;
 		}
 	}
 
@@ -137,13 +164,12 @@ public class ExtendedGitServiceImpl extends GitServiceImpl implements ExtendedGi
 				commits.add(commit.getName());
 			}
 		} catch (RevisionSyntaxException | GitAPIException | IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			throw e;
 		}
 		return commits;
 	}
 
-	
 	@Override
 	public String getParentCommit(Repository repository, String commitId) throws Exception {
 		final RevWalk walk = new RevWalk(repository);

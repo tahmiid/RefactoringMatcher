@@ -18,4 +18,6 @@ public interface ExtendedGitService extends GitService{
 	public Set<Ref> getAllReleaseTags(Repository repository) throws Exception;
 	
 	public ArrayList<String> getAllCommits(Repository repository) throws Exception;
+
+	Repository cloneIfNotExists(String projectPath, String cloneUrl, String branch) throws Exception;
 }

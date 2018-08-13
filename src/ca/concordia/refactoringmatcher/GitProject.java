@@ -57,7 +57,7 @@ public class GitProject implements Serializable {
 		this.localPath = Paths.get(projectsDirectory + "/" + name + "." + organization);
 		this.outputPath = Files.createDirectories(Paths.get(outputDirectory + "/" + name + "." + organization));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
-		this.repository = gitService.cloneIfNotExists(localPath.toString(), link);
+		this.repository = gitService.cloneIfNotExists(localPath.toString(), link, "master");
 		this.commits = getCommits();
 		this.commitCount = commits.size();
 		this.allRefactoringData = mineOrLoadRefactoringData();
@@ -116,7 +116,7 @@ public class GitProject implements Serializable {
 							refactoringsFromRM.add(Pair.of(ref,commitId));
 						} catch (Exception e) {
 							e.printStackTrace();
-							logger.error(e.getStackTrace().toString());
+							logger.error(e.getMessage());
 						}
 					}
 				}
@@ -147,13 +147,13 @@ public class GitProject implements Serializable {
 				ois.close();
 				fis.close();
 				allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
-				serializeAllRefactoringData(allRefactoringData);
+//				serializeAllRefactoringData(allRefactoringData);
 			}
 			ois.close();
 			fis.close();
 		} else {
 			allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
-			serializeAllRefactoringData(allRefactoringData);
+//			serializeAllRefactoringData(allRefactoringData);
 		}
 		return allRefactoringData;
 	}
@@ -185,28 +185,28 @@ public class GitProject implements Serializable {
 
 	private List<IRefactoringData> generateRefactoringData(List<Pair<Refactoring,String>> refactoringsFromRM) {
 		List<IRefactoringData> extractedRefactorings = new ArrayList<IRefactoringData>();
-		for (Pair<Refactoring, String> refactoringFromRM : refactoringsFromRM) {
-			try {
-				if (refactoringFromRM.getLeft().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) { 
-					ExtractOperationRefactoring extractOperationRefactoring = (ExtractOperationRefactoring) refactoringFromRM.getLeft();
-					String commitId = refactoringFromRM.getRight();
-					ExtractMethod extractMethodRefactoring = new ExtractMethod(extractOperationRefactoring, link,
-							commitId, repository);
-					try {
-						extractMethodRefactoring.retrieveCode(repository);
-						extractedRefactorings.add(extractMethodRefactoring);
-					} catch (Exception e) {
-						logger.error("Could not retrive refactoring details. Skipping Refactoring: " + extractMethodRefactoring.toString());
-						logger.error(e.getStackTrace().toString());
-						e.printStackTrace();
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Could not retrive refactoring details. Skipping Refactoring: " + refactoringFromRM.getLeft());
-				logger.error(e.getStackTrace().toString());
-				e.printStackTrace();
-			}
-		}
+//		for (Pair<Refactoring, String> refactoringFromRM : refactoringsFromRM) {
+//			try {
+//				if (refactoringFromRM.getLeft().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) { 
+//					ExtractOperationRefactoring extractOperationRefactoring = (ExtractOperationRefactoring) refactoringFromRM.getLeft();
+//					String commitId = refactoringFromRM.getRight();
+//					ExtractMethod extractMethodRefactoring = new ExtractMethod(extractOperationRefactoring, link,
+//							commitId, repository);
+//					try {
+//						extractMethodRefactoring.retrieveCode(repository);
+//						extractedRefactorings.add(extractMethodRefactoring);
+//					} catch (Exception e) {
+//						logger.error("Could not retrive refactoring details. Skipping Refactoring: " + extractMethodRefactoring.toString());
+//						logger.error(e.getStackTrace().toString());
+//						e.printStackTrace();
+//					}
+//				}
+//			} catch (Exception e) {
+//				logger.error("Could not retrive refactoring details. Skipping Refactoring: " + refactoringFromRM.getLeft());
+//				logger.error(e.getStackTrace().toString());
+//				e.printStackTrace();
+//			}
+//		}
 		return extractedRefactorings;
 	}
 

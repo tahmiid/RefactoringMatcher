@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -17,7 +18,10 @@ import org.slf4j.LoggerFactory;
 
 public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl implements ExtendedRefactoringMiner {
 
+	private static final int gitfaultTolerance = 5;
 	private static Logger logger = LoggerFactory.getLogger(ExtendedRefactoringMinerImpl.class);
+	private static boolean gitfault = false;
+	private static int gitfaultCount = 0;
 
 	public ExtendedRefactoringMinerImpl() {
 		super();
@@ -26,7 +30,8 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 	@Override
 	public void detectAllWithTimeOut(Repository repository, String branch, RefactoringHandler handler)
 			throws Exception {
-
+		gitfault = false;
+		gitfaultCount = 0;
 		ExtendedGitService gitService = new ExtendedGitServiceImpl() {
 			@Override
 			public boolean isCommitAnalyzed(String sha1) {
@@ -36,7 +41,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 
 		ArrayList<String> commits = gitService.getAllCommits(repository);
 
-		double splits = 3;
+		double splits = 1;
 		int i = 1;
 		int splitSize = (int) Math.ceil(commits.size() / splits);
 		ArrayList<Thread> repoThreads = new ArrayList<>();
@@ -61,12 +66,15 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 						RevWalk walk = gitService.createRevsWalkBetweenCommits(repo, startCommit, endCommit);
 						detect(repo, handler, new ExtendedGitServiceImpl(), walk.iterator());
 						repo.close();
+					} catch (CheckoutConflictException e) {
 					} catch (Exception e) {
-						logger.error(e.getStackTrace().toString());
+						logger.error(e.getMessage());
 						e.printStackTrace();
 					}
 				}
 			});
+			if(gitfault)
+				break;
 			t.start();
 			repoThreads.add(t);
 			i++;
@@ -100,6 +108,9 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 			}
 
 		}
+		
+		if(gitfault)
+			throw new Exception("Git Fault");
 	}
 
 	private void detect(Repository repository, RefactoringHandler handler, ExtendedGitService gitService,
@@ -110,12 +121,22 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 			ArrayList<Pair<Long, Thread>> threads = new ArrayList<Pair<Long, Thread>>();
 
 			while (i.hasNext()) {
+				if(gitfault)
+					break;
+				
 				RevCommit currentCommit = i.next();
 				try {
 					Thread t = new Thread(new Runnable() {
 						public void run() {
 							try {
 								detectRefactorings(gitService, repository, handler, projectFolder, currentCommit);
+							} catch (CheckoutConflictException e) {
+								logger.error("RefactoringMiner error. Skipping commit: " + currentCommit.getName());
+								gitfaultCount++;
+								e.printStackTrace();
+								
+								if(gitfaultCount > gitfaultTolerance)
+									gitfault = true;
 							} catch (Exception e) {
 								logger.error("RefactoringMiner error. Skipping commit: " + currentCommit.getName());
 								logger.error(e.getStackTrace().toString());
@@ -123,6 +144,9 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 							}
 						}
 					});
+					
+					if(gitfault)
+						break;
 					t.start();
 					threads.add(Pair.of(System.currentTimeMillis(), t));
 
@@ -147,7 +171,7 @@ public class ExtendedRefactoringMinerImpl extends GitHistoryRefactoringMinerImpl
 						}
 					}
 				} catch (Exception e) {
-					logger.error(e.getStackTrace().toString());
+					logger.error(e.getMessage());
 					handler.handleException(currentCommit.getId().getName(), e);
 				}
 			}
