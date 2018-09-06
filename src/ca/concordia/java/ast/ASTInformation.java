@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -19,7 +18,7 @@ public class ASTInformation implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1592516912019481596L;
 	private ITypeRoot iTypeRoot;
 	private int startPosition;
 	private int length;

@@ -12,8 +12,12 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import indexbased.SearchManager;
+import com.mondego.indexbased.SearchManager;
+
 import input.logic.InputBuilderClassic;
+
+//import indexbased.SearchManager;
+//import input.logic.InputBuilderClassic;
 
 public class SourcererCCDetector implements CloneDetector {
 

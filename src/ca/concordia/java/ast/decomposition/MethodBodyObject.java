@@ -44,6 +44,10 @@ import ca.concordia.java.ast.util.ExpressionExtractor;
 
 public class MethodBodyObject implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3183146798042270617L;
 	private CompositeStatementObject compositeStatement;
 	private List<ParameterObject> parameters;
 	

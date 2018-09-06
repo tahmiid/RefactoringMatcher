@@ -8,6 +8,11 @@ import ca.concordia.java.ast.decomposition.StatementObject;
 
 public class PDGStatementNode extends PDGNode  implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -969841599050995394L;
+
 	public PDGStatementNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod) {
 		super(cfgNode, variableDeclarationsInMethod);
 		determineDefinedAndUsedVariables();

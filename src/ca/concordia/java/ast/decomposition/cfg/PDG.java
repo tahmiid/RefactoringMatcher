@@ -28,7 +28,10 @@ public class PDG extends Graph implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1848411678771390730L;
+	/**
+	 * 
+	 */
 	private CFG cfg;
 	private PDGMethodEntryNode entryNode;
 	private Map<CFGBranchNode, Set<CFGNode>> nestingMap;
@@ -42,6 +45,13 @@ public class PDG extends Graph implements Serializable {
 
 	public PDG(CFG cfg) {
 		createPDG(cfg);
+
+//		for (GraphNode node : cfg.nodes) {
+//			CFGNode cfgNode = ((CFGNode) node);
+//			PDGNode pdgNode = cfgNode.getPDGNode();
+//			pdgNode.initializeAll();
+//			cfgNode.setPDGNode(null);
+//		}
 	}
 
 	private void createPDG(CFG cfg) {
@@ -229,7 +239,7 @@ public class PDG extends Graph implements Serializable {
 									|| isControlDependent(pdgNode, directlyNestedNode.getPDGNode())) {
 								matchingTryNode = true;
 								PDGControlDependence cd = new PDGControlDependence(tryNode.getPDGNode(),
-										directlyNestedNode.getPDGNode(), true);
+										directlyNestedNode.getPDGNode(), true, this);
 								edges.add(cd);
 								break;
 							}
@@ -238,7 +248,7 @@ public class PDG extends Graph implements Serializable {
 							for (CFGNode directlyNestedNode : directlyNestedNodes) {
 								if (directlyNestedNode.getPDGNode().getId() > pdgNode.getId()) {
 									PDGControlDependence cd = new PDGControlDependence(pdgNode,
-											directlyNestedNode.getPDGNode(), false);
+											directlyNestedNode.getPDGNode(), false, this);
 									edges.add(cd);
 								}
 							}
@@ -255,7 +265,7 @@ public class PDG extends Graph implements Serializable {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
 				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
-				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.getSrc();
 				if (srcPDGNode.equals(targetNode))
 					return true;
 				return isControlDependent(srcPDGNode, targetNode);
@@ -291,7 +301,7 @@ public class PDG extends Graph implements Serializable {
 						if (switchCaseMap.containsKey(currentSwitchNode)) {
 							Set<PDGNode> switchCaseSet = switchCaseMap.get(currentSwitchNode);
 							for (PDGNode switchCase : switchCaseSet) {
-								PDGControlDependence cd = new PDGControlDependence(pdgNode, switchCase, false);
+								PDGControlDependence cd = new PDGControlDependence(pdgNode, switchCase, false, this);
 								edges.add(cd);
 							}
 							switchCaseMap.get(currentSwitchNode).clear();
@@ -300,7 +310,7 @@ public class PDG extends Graph implements Serializable {
 						if (switchCaseMap.containsKey(currentSwitchNode)) {
 							Set<PDGNode> switchCaseSet = switchCaseMap.get(currentSwitchNode);
 							for (PDGNode switchCase : switchCaseSet) {
-								PDGControlDependence cd = new PDGControlDependence(switchCase, pdgNode, true);
+								PDGControlDependence cd = new PDGControlDependence(switchCase, pdgNode, true, this);
 								edges.add(cd);
 							}
 						}
@@ -318,7 +328,7 @@ public class PDG extends Graph implements Serializable {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
 				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
-				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.getSrc();
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
 				if (srcCFGNode instanceof CFGBranchSwitchNode && srcPDGNode.equals(switchNode))
 					return true;
@@ -339,14 +349,14 @@ public class PDG extends Graph implements Serializable {
 					PDGDependence dependence = (PDGDependence) edge;
 					if (dependence instanceof PDGControlDependence) {
 						PDGControlDependence controlDependence = (PDGControlDependence) dependence;
-						PDGNode dstPDGNode = (PDGNode) controlDependence.dst;
+						PDGNode dstPDGNode = (PDGNode) controlDependence.getDst();
 						if (dstPDGNode.getId() > jumpNode.getId()) {
-							PDGControlDependence cd = new PDGControlDependence(jumpNode, dstPDGNode, false);
+							PDGControlDependence cd = new PDGControlDependence(jumpNode, dstPDGNode, false, this);
 							edges.add(cd);
 						}
 					}
 				}
-				PDGControlDependence cd = new PDGControlDependence(jumpNode, innerMostLoopNode, false);
+				PDGControlDependence cd = new PDGControlDependence(jumpNode, innerMostLoopNode, false, this);
 				edges.add(cd);
 				CFGNode jumpCFGNode = jumpNode.getCFGNode();
 				if (jumpCFGNode instanceof CFGBreakNode) {
@@ -397,7 +407,7 @@ public class PDG extends Graph implements Serializable {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
 				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
-				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.getSrc();
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
 				if (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode
 						|| srcCFGNode instanceof CFGBranchSwitchNode) {
@@ -419,7 +429,7 @@ public class PDG extends Graph implements Serializable {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
 				PDGControlDependence controlDependence = (PDGControlDependence) dependence;
-				PDGNode srcPDGNode = (PDGNode) controlDependence.src;
+				PDGNode srcPDGNode = (PDGNode) controlDependence.getSrc();
 				CFGNode srcCFGNode = srcPDGNode.getCFGNode();
 				if (isBreak && (srcCFGNode instanceof CFGBranchLoopNode || srcCFGNode instanceof CFGBranchDoLoopNode
 						|| srcCFGNode instanceof CFGBranchSwitchNode))
@@ -454,17 +464,17 @@ public class PDG extends Graph implements Serializable {
 				if (blockNode instanceof CFGTryNode) {
 					CFGTryNode tryNode = (CFGTryNode) blockNode;
 					pdgBlockNode = new PDGTryNode(
-							tryNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
+							tryNode, variableDeclarationsInMethod /*, fieldsAccessedInMethod*/ );
 				} else if (blockNode instanceof CFGSynchronizedNode) {
 					CFGSynchronizedNode synchronizedNode = (CFGSynchronizedNode) blockNode;
 					pdgBlockNode = new PDGSynchronizedNode(
-							synchronizedNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
+							synchronizedNode, variableDeclarationsInMethod /* , fieldsAccessedInMethod */);
 				}
 				if (pdgBlockNode != null) {
 					nodes.add(pdgBlockNode);
 					PDGNode parent = findParentOfBlockNode(pdgBlockNode);
 					if (parent != null) {
-						PDGControlDependence controlDependence = new PDGControlDependence(parent, pdgBlockNode, true);
+						PDGControlDependence controlDependence = new PDGControlDependence(parent, pdgBlockNode, true, this);
 						edges.add(controlDependence);
 						if (parent.equals(entryNode)) {
 							createDataDependenciesFromEntryNode(pdgBlockNode);
@@ -476,7 +486,7 @@ public class PDG extends Graph implements Serializable {
 								for (AbstractVariable variableInstruction : pdgNode.definedVariables) {
 									if (pdgBlockNode.usesLocalVariable(variableInstruction)) {
 										PDGDataDependence dataDependence = new PDGDataDependence(pdgNode, pdgBlockNode,
-												variableInstruction, null);
+												variableInstruction, null, this);
 										edges.add(dataDependence);
 									}
 								}
@@ -494,7 +504,7 @@ public class PDG extends Graph implements Serializable {
 		while (parent instanceof Block) {
 			parent = parent.getParent();
 		}
-		if (entryNode.getMethod().getMethodDeclaration().equals(parent)) {
+		if (entryNode.getMethod().getMethodDeclaration().toString().equals(parent.toString())) {
 			return entryNode;
 		}
 		for (GraphNode node : nodes) {
@@ -511,7 +521,7 @@ public class PDG extends Graph implements Serializable {
 			PDGControlPredicateNode predicateNode = new PDGControlPredicateNode(cfgNode,
 					variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
 			nodes.add(predicateNode);
-			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, predicateNode, controlType);
+			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, predicateNode, controlType, this);
 			edges.add(controlDependence);
 			processControlPredicate(predicateNode);
 		} else {
@@ -531,7 +541,7 @@ public class PDG extends Graph implements Serializable {
 				pdgNode = new PDGStatementNode(
 						cfgNode, variableDeclarationsInMethod/* , fieldsAccessedInMethod */);
 			nodes.add(pdgNode);
-			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, pdgNode, controlType);
+			PDGControlDependence controlDependence = new PDGControlDependence(previousNode, pdgNode, controlType, this);
 			edges.add(controlDependence);
 		}
 	}
@@ -590,14 +600,14 @@ public class PDG extends Graph implements Serializable {
 	private void createDataDependenciesFromEntryNode(PDGNode pdgNode) {
 		for (AbstractVariable variableInstruction : entryNode.definedVariables) {
 			if (pdgNode.usesLocalVariable(variableInstruction)) {
-				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null);
+				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null, this);
 				edges.add(dataDependence);
 			}
 			if (!pdgNode.definesLocalVariable(variableInstruction)) {
 				dataDependenceSearch(entryNode, variableInstruction, pdgNode, new LinkedHashSet<PDGNode>(), null);
 			} else if (entryNode.declaresLocalVariable(variableInstruction)) {
 				// create def-order data dependence edge
-				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null);
+				PDGDataDependence dataDependence = new PDGDataDependence(entryNode, pdgNode, variableInstruction, null, this);
 				edges.add(dataDependence);
 			}
 		}
@@ -613,8 +623,8 @@ public class PDG extends Graph implements Serializable {
 		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
 			Flow flow = (Flow) edge;
 			if (!visitedFromLoopbackFlow || (visitedFromLoopbackFlow && flow.isFalseControlFlow())) {
-				CFGNode srcCFGNode = (CFGNode) flow.src;
-				CFGNode dstCFGNode = (CFGNode) flow.dst;
+				CFGNode srcCFGNode = (CFGNode) flow.getSrc();
+				CFGNode dstCFGNode = (CFGNode) flow.getDst();
 				PDGNode dstPDGNode = dstCFGNode.getPDGNode();
 				ReachingAliasSet reachingAliasSetCopy = reachingAliasSet.copy();
 				dstPDGNode.applyReachingAliasSet(reachingAliasSetCopy);
@@ -638,8 +648,8 @@ public class PDG extends Graph implements Serializable {
 		CFGNode currentCFGNode = currentNode.getCFGNode();
 		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
 			Flow flow = (Flow) edge;
-			CFGNode srcCFGNode = (CFGNode) flow.src;
-			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			CFGNode srcCFGNode = (CFGNode) flow.getSrc();
+			CFGNode dstCFGNode = (CFGNode) flow.getDst();
 			if (flow.isLoopbackFlow()) {
 				if (dstCFGNode instanceof CFGBranchLoopNode)
 					loop = (CFGBranchLoopNode) dstCFGNode;
@@ -649,7 +659,7 @@ public class PDG extends Graph implements Serializable {
 			PDGNode dstPDGNode = dstCFGNode.getPDGNode();
 			if (dstPDGNode.usesLocalVariable(variableInstruction)) {
 				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction,
-						loop);
+						loop, this);
 				edges.add(dataDependence);
 			}
 			if (!dstPDGNode.definesLocalVariable(variableInstruction)) {
@@ -657,7 +667,7 @@ public class PDG extends Graph implements Serializable {
 			} else if (initialNode.declaresLocalVariable(variableInstruction) && !initialNode.equals(dstPDGNode)) {
 				// create def-order data dependence edge
 				PDGDataDependence dataDependence = new PDGDataDependence(initialNode, dstPDGNode, variableInstruction,
-						loop);
+						loop, this);
 				edges.add(dataDependence);
 			}
 		}
@@ -672,8 +682,8 @@ public class PDG extends Graph implements Serializable {
 		CFGNode currentCFGNode = currentNode.getCFGNode();
 		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
 			Flow flow = (Flow) edge;
-			CFGNode srcCFGNode = (CFGNode) flow.src;
-			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			CFGNode srcCFGNode = (CFGNode) flow.getSrc();
+			CFGNode dstCFGNode = (CFGNode) flow.getDst();
 			if (flow.isLoopbackFlow()) {
 				if (dstCFGNode instanceof CFGBranchLoopNode)
 					loop = (CFGBranchLoopNode) dstCFGNode;
@@ -683,7 +693,7 @@ public class PDG extends Graph implements Serializable {
 			PDGNode dstPDGNode = dstCFGNode.getPDGNode();
 			if (dstPDGNode.definesLocalVariable(variableInstruction)) {
 				PDGAntiDependence antiDependence = new PDGAntiDependence(initialNode, dstPDGNode, variableInstruction,
-						loop);
+						loop, this);
 				edges.add(antiDependence);
 			} else
 				antiDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
@@ -699,8 +709,8 @@ public class PDG extends Graph implements Serializable {
 		CFGNode currentCFGNode = currentNode.getCFGNode();
 		for (GraphEdge edge : currentCFGNode.outgoingEdges) {
 			Flow flow = (Flow) edge;
-			CFGNode srcCFGNode = (CFGNode) flow.src;
-			CFGNode dstCFGNode = (CFGNode) flow.dst;
+			CFGNode srcCFGNode = (CFGNode) flow.getSrc();
+			CFGNode dstCFGNode = (CFGNode) flow.getDst();
 			if (flow.isLoopbackFlow()) {
 				if (dstCFGNode instanceof CFGBranchLoopNode)
 					loop = (CFGBranchLoopNode) dstCFGNode;
@@ -714,7 +724,7 @@ public class PDG extends Graph implements Serializable {
 					outputDependenceSearch(initialNode, variableInstruction, dstPDGNode, visitedNodes, loop);
 				} else {
 					PDGOutputDependence outputDependence = new PDGOutputDependence(initialNode, dstPDGNode,
-							variableInstruction, loop);
+							variableInstruction, loop, this);
 					edges.add(outputDependence);
 				}
 			} else
@@ -738,7 +748,7 @@ public class PDG extends Graph implements Serializable {
 		for (GraphEdge edge : leaderPDGNode.incomingEdges) {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
-				PDGNode srcNode = (PDGNode) dependence.src;
+				PDGNode srcNode = (PDGNode) dependence.getSrc();
 				return srcNode;
 			}
 		}
@@ -761,7 +771,7 @@ public class PDG extends Graph implements Serializable {
 		for (GraphEdge edge : branchNode.outgoingEdges) {
 			PDGDependence dependence = (PDGDependence) edge;
 			if (dependence instanceof PDGControlDependence) {
-				PDGNode dstNode = (PDGNode) dependence.dst;
+				PDGNode dstNode = (PDGNode) dependence.getDst();
 				BasicBlock dstBlock = dstNode.getBasicBlock();
 				dominatedBlocks.add(dstBlock);
 				PDGNode dstBlockLastNode = dstBlock.getLastNode().getPDGNode();
@@ -833,6 +843,10 @@ public class PDG extends Graph implements Serializable {
 		return null;
 	}
 
+	public CFG getCFG() {
+		return cfg;
+	}
+
 	public Graph getGraph() {
 		Graph graph = new Graph();
 
@@ -844,26 +858,34 @@ public class PDG extends Graph implements Serializable {
 			GraphNode src = null;
 			GraphNode dst = null;
 			for (GraphNode node : graph.nodes) {
-				if (graphEdge.src.id == node.id) {
+				if (graphEdge.getSrc().id == node.id) {
 					src = node;
 				}
-				if (graphEdge.dst.id == node.id) {
+				if (graphEdge.getDst().id == node.id) {
 					dst = node;
 				}
 			}
 			if (src == null) {
-				src = new GraphNode(graphEdge.src.toString(), graphEdge.src.getId());
+				src = new GraphNode(graphEdge.getSrc().toString(), graphEdge.getSrc().getId());
 				graph.addNode(src);
 			}
 			if (dst == null) {
-				dst = new GraphNode(graphEdge.dst.toString(), graphEdge.dst.getId());
+				dst = new GraphNode(graphEdge.getDst().toString(), graphEdge.getDst().getId());
 				graph.addNode(dst);
 			}
-			graph.addEdge(new GraphEdge(src, dst));
+			graph.addEdge(new GraphEdge(src, dst, this));
 		}
 		return graph;
 	}
 	
+	@Override
+	public GraphNode getNode(int nodeId) {
+		if(entryNode.id == nodeId)
+			return entryNode;
+		else
+			return super.getNode(nodeId);
+	}
+
 	public String toString() {
 		return edges.toString();
 	}

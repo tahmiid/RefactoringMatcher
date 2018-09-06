@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import ca.concordia.java.ast.FieldObject;
 import ca.concordia.java.ast.VariableDeclarationObject;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 import ca.concordia.java.ast.decomposition.CatchClauseObject;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
 public class PDGTryNode extends PDGBlockNode implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3268570732551427034L;
+
 	public PDGTryNode(CFGTryNode cfgTryNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,
 			Set<FieldObject> fieldsAccessedInMethod*/) {
 		super(cfgTryNode, variableDeclarationsInMethod/*, fieldsAccessedInMethod*/);

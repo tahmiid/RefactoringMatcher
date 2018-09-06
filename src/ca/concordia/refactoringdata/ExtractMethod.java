@@ -43,9 +43,9 @@ public class ExtractMethod implements IRefactoringData, Serializable {
 	private String sourceMethodBeforeExtractionCode;
 	private String sourceMethodAfterExtractionCode;
 
-	private PDG extractedMethodPDG;
-	private PDG sourceMethodBeforeExtractionPDG;
-	private PDG sourceMethodAfterExtractionPDG;
+	private Graph extractedMethodPDG;
+	private Graph sourceMethodBeforeExtractionPDG;
+	private Graph sourceMethodAfterExtractionPDG;
 
 	public ExtractMethod(ExtractOperationRefactoring refactoring, String projectLink, String commitId, Repository repository) throws IOException, Exception {
 		this.refactoring = refactoring;
@@ -192,15 +192,15 @@ public class ExtractMethod implements IRefactoringData, Serializable {
 		return sourceMethodAfterExtractionCode;
 	}
 
-	public PDG getExtractedOperationPDG() {
+	public Graph getExtractedOperationPDG() {
 		return extractedMethodPDG;
 	}
 
-	public PDG getSourceOperationBeforeExtractionPDG() {
+	public Graph getSourceOperationBeforeExtractionPDG() {
 		return sourceMethodBeforeExtractionPDG;
 	}
 
-	public PDG getSourceOperationAfterExtractionPDG() {
+	public Graph getSourceOperationAfterExtractionPDG() {
 		return sourceMethodAfterExtractionPDG;
 	}
 
@@ -235,5 +235,25 @@ public class ExtractMethod implements IRefactoringData, Serializable {
 			projectLink = projectLink.substring(0, splitIndex2);
 		}
 		return projectLink;
+	}
+
+	@Override
+	public void prepareForSerialization() {
+		if(extractedMethodPDG!=null)
+			extractedMethodPDG.removeCyclicReferences();
+		if(sourceMethodAfterExtractionPDG!=null)
+			sourceMethodAfterExtractionPDG.removeCyclicReferences();
+		if(sourceMethodBeforeExtractionPDG!=null)
+			sourceMethodBeforeExtractionPDG.removeCyclicReferences();
+	}
+
+	@Override
+	public void recoverAfterDeserialization() {
+		if(extractedMethodPDG!=null)
+			extractedMethodPDG.recoverCyclicReferences(extractedMethodPDG);
+		if(sourceMethodAfterExtractionPDG!=null)
+			sourceMethodAfterExtractionPDG.recoverCyclicReferences(sourceMethodAfterExtractionPDG);
+		if(sourceMethodBeforeExtractionPDG!=null)
+			sourceMethodBeforeExtractionPDG.recoverCyclicReferences(sourceMethodBeforeExtractionPDG);
 	}
 }

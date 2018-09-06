@@ -15,6 +15,11 @@ import ca.concordia.java.ast.decomposition.TryStatementObject;
 
 public class CFGBranchIfNode extends CFGBranchConditionalNode  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6158246514523055752L;
+
 	public CFGBranchIfNode(AbstractStatement statement) {
 		super(statement);
 	}

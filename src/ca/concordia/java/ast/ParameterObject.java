@@ -7,6 +7,10 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class ParameterObject extends VariableDeclarationObject implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5268148924924318457L;
 	private TypeObject type;
 	private String name;
 	private boolean varargs;

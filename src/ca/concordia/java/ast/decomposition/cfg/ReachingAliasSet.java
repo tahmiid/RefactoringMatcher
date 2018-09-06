@@ -10,6 +10,10 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class ReachingAliasSet  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 583405146250932071L;
 	private List<LinkedHashSet<VariableDeclaration>> aliasSets;
 	
 	public ReachingAliasSet() {

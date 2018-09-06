@@ -8,13 +8,18 @@ import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public class CFGBranchDoLoopNode extends CFGBranchNode  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8144140382435399439L;
+
 	public CFGBranchDoLoopNode(AbstractStatement statement) {
 		super(statement);
 	}
 
 	public CFGNode getJoinNode() {
 		Flow flow = getTrueControlFlow();
-		return (CFGNode)flow.dst;
+		return (CFGNode)flow.getDst();
 	}
 
 	public List<BasicBlock> getNestedBasicBlocks() {

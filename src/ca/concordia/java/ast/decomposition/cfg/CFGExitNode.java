@@ -7,6 +7,10 @@ import java.util.List;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public class CFGExitNode extends CFGNode  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3080329717472802024L;
 	private PlainVariable returnedVariable;
 	
 	public CFGExitNode(AbstractStatement statement) {

@@ -1,16 +1,9 @@
 package ca.concordia.refactoringmatcher;
 
-import ca.concordia.java.ast.ConstructorObject;
-import ca.concordia.java.ast.MethodObject;
-import ca.concordia.java.ast.decomposition.cfg.CFG;
-import ca.concordia.java.ast.decomposition.cfg.PDG;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jgit.lib.Repository;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
@@ -19,6 +12,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jgit.lib.Repository;
+
+import ca.concordia.java.ast.ConstructorObject;
+import ca.concordia.java.ast.MethodObject;
+import ca.concordia.java.ast.decomposition.cfg.CFG;
+import ca.concordia.java.ast.decomposition.cfg.PDG;
 
 public class RefactoringMatcherTest {
 

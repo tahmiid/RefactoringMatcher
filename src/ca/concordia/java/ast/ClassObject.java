@@ -13,6 +13,10 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class ClassObject extends ClassDeclarationObject  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8200380705834891351L;
 	private List<ConstructorObject> constructorList;
 	private List<EnumConstantDeclarationObject> enumConstantDeclarationList;
 	private TypeObject superclass;

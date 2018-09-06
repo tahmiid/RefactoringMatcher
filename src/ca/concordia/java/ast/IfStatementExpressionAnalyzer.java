@@ -19,6 +19,10 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Type;
 
 public class IfStatementExpressionAnalyzer  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3157505293250158893L;
 	//parent nodes are CONDITIONAL_AND (&&), CONDITIONAL_OR (||) infix operators, while leaf nodes are expressions
 	private DefaultMutableTreeNode root;
 	private Expression completeExpression;

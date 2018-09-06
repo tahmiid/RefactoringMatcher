@@ -17,7 +17,7 @@ public class TestClass {
 //		  return size;
 //		}
 	
-	private void GroumTestMethod() throws IOException {
+	private void GroumTestMethod(int x) throws IOException {
 		StringBuffer strbuf = new StringBuffer();
 		BufferedReader in = new BufferedReader(new FileReader(""));
 		String str;
@@ -26,7 +26,7 @@ public class TestClass {
 		}
 		if(strbuf.length() > 0)
 			outputMessage(strbuf.toString());
-		in.close();
+		in.close(x);
 	}
 
 //	private void outputMessage(String s) {

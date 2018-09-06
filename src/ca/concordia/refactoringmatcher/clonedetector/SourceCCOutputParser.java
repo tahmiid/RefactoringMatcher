@@ -1,7 +1,6 @@
 package ca.concordia.refactoringmatcher.clonedetector;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,17 +10,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
-
-import ca.concordia.refactoringmatcher.RefactoringData;
 
 public class SourceCCOutputParser {
 	List<CodeLocation> codeBlocks;

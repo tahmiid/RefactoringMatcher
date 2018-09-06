@@ -1,25 +1,29 @@
 package ca.concordia.refactoringmatcher;
 
-import gr.uom.java.xmi.LocationInfo;
-import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
-import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
-import gr.uom.java.xmi.diff.InlineOperationRefactoring;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.refactoringminer.api.GitHistoryRefactoringMiner;
-import org.refactoringminer.api.Refactoring;
-import org.refactoringminer.api.RefactoringHandler;
-import org.refactoringminer.api.RefactoringType;
-import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
-
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.refactoringminer.api.GitHistoryRefactoringMiner;
+import org.refactoringminer.api.Refactoring;
+import org.refactoringminer.api.RefactoringHandler;
+import org.refactoringminer.api.RefactoringType;
+import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
+
+import gr.uom.java.xmi.LocationInfo;
+import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
+import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
 
 /**
  * @author tahmiid

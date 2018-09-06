@@ -11,6 +11,10 @@ import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
 public class LiteralObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8308235837695131645L;
 	private LiteralType literalType;
 	private String value;
 	private TypeObject type;

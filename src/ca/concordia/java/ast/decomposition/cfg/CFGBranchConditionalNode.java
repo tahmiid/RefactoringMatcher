@@ -7,6 +7,10 @@ import java.util.List;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public abstract class CFGBranchConditionalNode extends CFGBranchNode  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4472248431709735158L;
 	private CFGNode joinNode;
 	
 	public CFGBranchConditionalNode(AbstractStatement statement) {
@@ -30,7 +34,7 @@ public abstract class CFGBranchConditionalNode extends CFGBranchNode  implements
 				CFGBranchLoopNode loopNode = (CFGBranchLoopNode)joinNode;
 				Flow falseControlFlow = loopNode.getFalseControlFlow();
 				if(falseControlFlow != null)
-					dstNode = (CFGNode)falseControlFlow.dst;
+					dstNode = (CFGNode)falseControlFlow.getDst();
 				else
 					return getNestedBasicBlocksToEnd();
 			}

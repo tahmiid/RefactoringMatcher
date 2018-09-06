@@ -7,7 +7,12 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class MethodInvocationObject extends AbstractMethodInvocationObject  implements Serializable{
 
-    public MethodInvocationObject(TypeObject originClassType, String methodName, TypeObject returnType) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3309327924574581472L;
+
+	public MethodInvocationObject(TypeObject originClassType, String methodName, TypeObject returnType) {
         super(originClassType, methodName, returnType);
     }
 

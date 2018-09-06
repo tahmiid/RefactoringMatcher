@@ -6,13 +6,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import ca.concordia.java.ast.AbstractMethodDeclaration;
 
 public class PDGSlice extends Graph  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4181278171603616282L;
 	private PDG pdg;
 	private AbstractMethodDeclaration method;
 	private BasicBlock boundaryBlock;
@@ -39,7 +42,7 @@ public class PDGSlice extends Graph  implements Serializable{
 		}
 		for(GraphEdge edge : pdg.edges) {
 			PDGDependence dependence = (PDGDependence)edge;
-			if(nodes.contains(dependence.src) && nodes.contains(dependence.dst)) {
+			if(nodes.contains(dependence.getSrc()) && nodes.contains(dependence.getDst())) {
 				if(dependence instanceof PDGDataDependence) {
 					PDGDataDependence dataDependence = (PDGDataDependence)dependence;
 					if(dataDependence.isLoopCarried()) {
@@ -94,8 +97,8 @@ public class PDGSlice extends Graph  implements Serializable{
 		Set<PDGNode> nDD = new LinkedHashSet<PDGNode>();
 		for(GraphEdge edge : pdg.edges) {
 			PDGDependence dependence = (PDGDependence)edge;
-			PDGNode srcPDGNode = (PDGNode)dependence.src;
-			PDGNode dstPDGNode = (PDGNode)dependence.dst;
+			PDGNode srcPDGNode = (PDGNode)dependence.getSrc();
+			PDGNode dstPDGNode = (PDGNode)dependence.getDst();
 			if(dependence instanceof PDGDataDependence) {
 				PDGDataDependence dataDependence = (PDGDataDependence)dependence;
 				if(remainingNodes.contains(srcPDGNode) && sliceNodes.contains(dstPDGNode))
@@ -296,7 +299,7 @@ public class PDGSlice extends Graph  implements Serializable{
 			PDGDependence dependence = (PDGDependence)edge;
 			if(dependence instanceof PDGControlDependence) {
 				PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-				PDGNode srcPDGNode = (PDGNode)controlDependence.src;
+				PDGNode srcPDGNode = (PDGNode)controlDependence.getSrc();
 				if(sliceNodes.contains(srcPDGNode))
 					return true;
 				else
@@ -316,7 +319,7 @@ public class PDGSlice extends Graph  implements Serializable{
 					PDGDependence dependence = (PDGDependence)edge;
 					if(edges.contains(dependence) && dependence instanceof PDGAntiDependence) {
 						PDGAntiDependence antiDependence = (PDGAntiDependence)dependence;
-						PDGNode srcPDGNode = (PDGNode)antiDependence.src;
+						PDGNode srcPDGNode = (PDGNode)antiDependence.getSrc();
 						if(!removableNodes.contains(srcPDGNode) && !nodeDependsOnNonRemovableNode(srcPDGNode, antiDependence.getData()))
 							return true;
 					}
@@ -332,7 +335,7 @@ public class PDGSlice extends Graph  implements Serializable{
 			if(edges.contains(dependence) && dependence instanceof PDGDataDependence) {
 				PDGDataDependence dataDependence = (PDGDataDependence)dependence;
 				if(dataDependence.getData().equals(variable)) {
-					PDGNode srcPDGNode = (PDGNode)dataDependence.src;
+					PDGNode srcPDGNode = (PDGNode)dataDependence.getSrc();
 					if(!removableNodes.contains(srcPDGNode))
 						return true;
 				}
@@ -351,7 +354,7 @@ public class PDGSlice extends Graph  implements Serializable{
 					PDGDependence dependence = (PDGDependence)edge;
 					if(edges.contains(dependence) && dependence instanceof PDGOutputDependence) {
 						PDGOutputDependence outputDependence = (PDGOutputDependence)dependence;
-						PDGNode srcPDGNode = (PDGNode)outputDependence.src;
+						PDGNode srcPDGNode = (PDGNode)outputDependence.getSrc();
 						if(!removableNodes.contains(srcPDGNode))
 							return true;
 					}
@@ -373,7 +376,7 @@ public class PDGSlice extends Graph  implements Serializable{
 						PDGDependence dependence = (PDGDependence)edge;
 						if(edges.contains(dependence) && dependence instanceof PDGDependence) {
 							PDGDependence dataDependence = (PDGDependence)dependence;
-							PDGNode dstPDGNode = (PDGNode)dataDependence.dst;
+							PDGNode dstPDGNode = (PDGNode)dataDependence.getDst();
 							if(removableNodes.contains(dstPDGNode)) {
 								if(dstPDGNode.changesStateOfReference(variableDeclaration) ||
 										dstPDGNode.assignsReference(variableDeclaration) || dstPDGNode.accessesReference(variableDeclaration))
@@ -456,7 +459,7 @@ public class PDGSlice extends Graph  implements Serializable{
 			if(edges.contains(dependence) && dependence instanceof PDGDataDependence) {
 				PDGDataDependence dataDependence = (PDGDataDependence)dependence;
 				if(dataDependence.getData().equals(localVariable)) {
-					PDGNode srcPDGNode = (PDGNode)dependence.src;
+					PDGNode srcPDGNode = (PDGNode)dependence.getSrc();
 					defNodes.add(srcPDGNode);
 				}
 			}
@@ -471,7 +474,7 @@ public class PDGSlice extends Graph  implements Serializable{
 		for(GraphEdge edge : node.incomingEdges) {
 			PDGDependence dependence = (PDGDependence)edge;
 			if(edges.contains(dependence) && !(dependence instanceof PDGAntiDependence) && !(dependence instanceof PDGOutputDependence)) {
-				PDGNode srcPDGNode = (PDGNode)dependence.src;
+				PDGNode srcPDGNode = (PDGNode)dependence.getSrc();
 				if(!visitedNodes.contains(srcPDGNode))
 					sliceNodes.addAll(traverseBackward(srcPDGNode, visitedNodes));
 			}

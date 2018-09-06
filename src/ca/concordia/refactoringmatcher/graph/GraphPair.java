@@ -14,6 +14,7 @@ public class GraphPair  implements Serializable{
 	private int largestGraphSize;
 	private boolean areIsomorph;
 	private ArrayList<Set<GraphNodePair>> subgraphs;
+	private long startTime;
 
 	public GraphPair(Graph graph1, Graph graph2) {
 		this.graph1 = graph1;
@@ -141,6 +142,7 @@ public class GraphPair  implements Serializable{
 		if ((graph1Size() != graph2Size()) || (graph1.getEdges().size() != graph2.getEdges().size())) {
 			return;
 		}
+		startTime = System.currentTimeMillis();
 		int[][] currentGraphMatrix = new int[graph1Size()][graph2Size()];
 		GraphNode[] graph1Nodes = graph1.getNodes().toArray(new GraphNode[0]);
 		GraphNode[] graph2Nodes = graph2.getNodes().toArray(new GraphNode[0]);
@@ -171,6 +173,11 @@ public class GraphPair  implements Serializable{
 		if (areIsomorph)
 			return;
 
+		
+		//infinity loop check
+		if(System.currentTimeMillis() - startTime > 10000)
+			return;
+		
 		if (index > graph1Size() - 1) {
 			if (nodePairs.size() == largestGraphSize)
 				areIsomorph = true;

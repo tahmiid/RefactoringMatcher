@@ -11,14 +11,17 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
 
 import ca.concordia.java.ast.decomposition.MethodBodyObject;
 import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
 public class ConstructorObject implements AbstractMethodDeclaration, Serializable {
 
-    protected String name;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5081012349402108295L;
+	protected String name;
 	protected List<ParameterObject> parameterList;
     protected Access access;
     protected String className;

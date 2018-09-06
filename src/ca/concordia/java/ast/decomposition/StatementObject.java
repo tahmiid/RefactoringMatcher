@@ -28,6 +28,11 @@ import ca.concordia.java.ast.util.ExpressionExtractor;
 
 public class StatementObject extends AbstractStatement  implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1572661510460765186L;
+
 	public StatementObject(Statement statement, List<ParameterObject> parameters, StatementType type, AbstractMethodFragment parent) {
 		super(statement, parameters, type, parent);
 		

@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeObject implements Serializable{
-    private String classType;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2085777326947491085L;
+	private String classType;
     private String genericType;
     private int arrayDimension;
     private volatile int hashCode = 0;

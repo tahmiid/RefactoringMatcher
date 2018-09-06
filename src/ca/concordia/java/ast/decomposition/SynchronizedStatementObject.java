@@ -10,6 +10,11 @@ import ca.concordia.java.ast.ParameterObject;
 
 public class SynchronizedStatementObject extends CompositeStatementObject  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8532291980665623839L;
+
 	public SynchronizedStatementObject(Statement statement, List<ParameterObject> parameters, AbstractMethodFragment parent) {
 		super(statement, parameters, StatementType.SYNCHRONIZED, parent);
 		AbstractExpression abstractExpression = new AbstractExpression(

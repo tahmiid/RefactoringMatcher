@@ -1,11 +1,11 @@
 package ca.concordia.refactoringmatcher;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +23,9 @@ import org.refactoringminer.api.RefactoringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.thoughtworks.xstream.XStream;
+
+import ca.concordia.java.ast.decomposition.cfg.PDG;
 import ca.concordia.refactoringdata.ExtractMethod;
 import ca.concordia.refactoringdata.IRefactoringData;
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
@@ -45,7 +48,6 @@ public class GitProject implements Serializable {
 	private Repository repository;
 	private int commitCount;
 	private List<IRefactoringData> allRefactoringData;
-	private List<Pair<Refactoring, String>> refactorings;
 	private List<String> commits;
 	private List<Release> releases;
 	private String organization;
@@ -57,9 +59,9 @@ public class GitProject implements Serializable {
 		this.localPath = Paths.get(projectsDirectory + "/" + name + "." + organization);
 		this.outputPath = Files.createDirectories(Paths.get(outputDirectory + "/" + name + "." + organization));
 		ExtendedGitService gitService = new ExtendedGitServiceImpl();
-		this.repository = gitService.cloneIfNotExists(localPath.toString(), link, "master");
-		this.commits = getCommits();
-		this.commitCount = commits.size();
+//		this.repository = gitService.cloneIfNotExists(localPath.toString(), link, "master");
+//		this.commits = getCommits();
+//		this.commitCount = commits.size();
 		this.allRefactoringData = mineOrLoadRefactoringData();
 	}
 
@@ -142,17 +144,22 @@ public class GitProject implements Serializable {
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			try {
 				allRefactoringData = (List<IRefactoringData>) ois.readObject();
+				for (IRefactoringData iRefactoringData : allRefactoringData) {
+					iRefactoringData.recoverAfterDeserialization();
+				}
 			} catch (Exception e) {
 				logger.error("Could not load serialized object: " + refactoringDataPath);
 				ois.close();
 				fis.close();
-				allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
+				throw e;
+//				allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
 //				serializeAllRefactoringData(allRefactoringData);
 			}
 			ois.close();
 			fis.close();
 		} else {
-			allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
+			throw new Exception("No serialized refactoring data found");
+//			allRefactoringData = generateRefactoringData(mineOrLoadRefactoringsFromRM());
 //			serializeAllRefactoringData(allRefactoringData);
 		}
 		return allRefactoringData;
@@ -185,28 +192,28 @@ public class GitProject implements Serializable {
 
 	private List<IRefactoringData> generateRefactoringData(List<Pair<Refactoring,String>> refactoringsFromRM) {
 		List<IRefactoringData> extractedRefactorings = new ArrayList<IRefactoringData>();
-//		for (Pair<Refactoring, String> refactoringFromRM : refactoringsFromRM) {
-//			try {
-//				if (refactoringFromRM.getLeft().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) { 
-//					ExtractOperationRefactoring extractOperationRefactoring = (ExtractOperationRefactoring) refactoringFromRM.getLeft();
-//					String commitId = refactoringFromRM.getRight();
-//					ExtractMethod extractMethodRefactoring = new ExtractMethod(extractOperationRefactoring, link,
-//							commitId, repository);
-//					try {
-//						extractMethodRefactoring.retrieveCode(repository);
-//						extractedRefactorings.add(extractMethodRefactoring);
-//					} catch (Exception e) {
-//						logger.error("Could not retrive refactoring details. Skipping Refactoring: " + extractMethodRefactoring.toString());
-//						logger.error(e.getStackTrace().toString());
-//						e.printStackTrace();
-//					}
-//				}
-//			} catch (Exception e) {
-//				logger.error("Could not retrive refactoring details. Skipping Refactoring: " + refactoringFromRM.getLeft());
-//				logger.error(e.getStackTrace().toString());
-//				e.printStackTrace();
-//			}
-//		}
+		for (Pair<Refactoring, String> refactoringFromRM : refactoringsFromRM) {
+			try {
+				if (refactoringFromRM.getLeft().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) { 
+					ExtractOperationRefactoring extractOperationRefactoring = (ExtractOperationRefactoring) refactoringFromRM.getLeft();
+					String commitId = refactoringFromRM.getRight();
+					ExtractMethod extractMethodRefactoring = new ExtractMethod(extractOperationRefactoring, link,
+							commitId, repository);
+					try {
+						extractMethodRefactoring.retrieveCode(repository);
+						extractedRefactorings.add(extractMethodRefactoring);
+					} catch (Exception e) {
+						logger.error("Could not retrive refactoring details. Skipping Refactoring: " + extractMethodRefactoring.toString());
+						logger.error(e.getStackTrace().toString());
+						e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Could not retrive refactoring details. Skipping Refactoring: " + refactoringFromRM.getLeft());
+				logger.error(e.getStackTrace().toString());
+				e.printStackTrace();
+			}
+		}
 		return extractedRefactorings;
 	}
 
@@ -215,10 +222,25 @@ public class GitProject implements Serializable {
 		FileOutputStream fos = new FileOutputStream(outputPath + "/" + "refactoringdata");
 		ObjectOutputStream oos = null;
 		try {
+			for (IRefactoringData iRefactoringData : refactorings) {
+				iRefactoringData.prepareForSerialization();
+			}
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(refactorings);
 			oos.close();
 			fos.close();
+			
+//			XStream xstream = new XStream();
+//			String xml = null;
+//			xml = xstream.toXML(refactorings);
+//			try (PrintStream out = new PrintStream(new FileOutputStream("xml"))) {
+//			    out.print(xml);
+//			}
+//			refactorings = (List<IRefactoringData>) xstream.fromXML(xml);
+			
+			for (IRefactoringData iRefactoringData : refactorings) {
+				iRefactoringData.recoverAfterDeserialization();
+			}
 		} catch (IOException e) {
 			logger.error(e.getStackTrace().toString());
 			logger.error("Failed to serialize");

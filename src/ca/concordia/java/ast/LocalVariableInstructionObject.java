@@ -7,7 +7,11 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 
 public class LocalVariableInstructionObject  implements Serializable{
-    private String name;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4680603151753351907L;
+	private String name;
     private ASTInformation simpleName;
     private volatile int hashCode = 0;
 

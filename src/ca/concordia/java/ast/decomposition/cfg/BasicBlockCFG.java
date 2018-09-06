@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class BasicBlockCFG implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3545383663375900007L;
 	private List<BasicBlock> basicBlocks;
 	private Map<BasicBlock, Set<BasicBlock>> forwardReachableBlocks;
 	
@@ -74,7 +78,7 @@ public class BasicBlockCFG implements Serializable{
 		for(GraphEdge edge : lastNode.outgoingEdges) {
 			Flow flow = (Flow)edge;
 			if(!flow.isLoopbackFlow()) {
-				CFGNode dstNode = (CFGNode)flow.dst;
+				CFGNode dstNode = (CFGNode)flow.getDst();
 				BasicBlock dstBasicBlock = dstNode.getBasicBlock();
 				reachableBlocks.add(dstBasicBlock);
 				reachableBlocks.addAll(forwardReachableBlocks(dstBasicBlock));

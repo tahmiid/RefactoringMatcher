@@ -11,6 +11,10 @@ import ca.concordia.java.ast.ParameterObject;
 
 public abstract class AbstractStatement extends AbstractMethodFragment implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5213743545756726382L;
 	private ASTInformation statement;
 	private StatementType type;
 	

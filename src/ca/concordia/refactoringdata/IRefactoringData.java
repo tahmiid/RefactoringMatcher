@@ -12,6 +12,10 @@ public interface IRefactoringData extends Serializable {
 	public String getCommitId();
 
 	public String getProjectLink();
+	
+	public void prepareForSerialization();
+
+	public void recoverAfterDeserialization();
 
 	public void retrieveCode(Repository repository) throws Exception;
 }

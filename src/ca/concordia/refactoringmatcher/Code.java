@@ -1,11 +1,5 @@
 package ca.concordia.refactoringmatcher;
 
-import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jgit.lib.Repository;
-import org.refactoringminer.api.GitService;
-
-import gr.uom.java.xmi.LocationInfo;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -14,6 +8,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jgit.lib.Repository;
+import org.refactoringminer.api.GitService;
+
+import gr.uom.java.xmi.LocationInfo;
 
 public class Code implements Serializable {
 	/**

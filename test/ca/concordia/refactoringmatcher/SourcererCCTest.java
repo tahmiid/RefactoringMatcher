@@ -1,7 +1,6 @@
 package ca.concordia.refactoringmatcher;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;

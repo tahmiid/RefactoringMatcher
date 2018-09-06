@@ -5,6 +5,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class GraphNode  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5761935198073644799L;
 	private static int nodeNum = 0;
 	protected int id;
 	protected String value = "";
@@ -62,7 +66,7 @@ public class GraphNode  implements Serializable{
 	public boolean isSuccessorOf(GraphNode graphNode) {
 		boolean isSuccessorOf = false;
 		for (GraphEdge graphEdge : incomingEdges) {
-			if (graphEdge.src.id == graphNode.id) {
+			if (graphEdge.getSrc().id == graphNode.id) {
 				isSuccessorOf = true;
 				break;
 			}
@@ -73,7 +77,7 @@ public class GraphNode  implements Serializable{
 	public boolean isPredecessorOf(GraphNode graphNode) {
 		boolean isPredecessorOf = false;
 		for (GraphEdge graphEdge : outgoingEdges) {
-			if (graphEdge.dst.id == graphNode.id) {
+			if (graphEdge.getDst().id == graphNode.id) {
 				isPredecessorOf = true;
 				break;
 			}

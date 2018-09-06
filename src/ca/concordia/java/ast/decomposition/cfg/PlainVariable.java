@@ -5,6 +5,10 @@ import java.io.Serializable;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class PlainVariable extends AbstractVariable implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6318741105215089221L;
 	private volatile int hashCode = 0;
 	
 	public PlainVariable(VariableDeclaration variableDeclaration) {

@@ -10,6 +10,10 @@ import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.decomposition.cfg.AbstractVariable;
 
 public class TryStatementObject extends CompositeStatementObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8153901357137185823L;
 	private List<CatchClauseObject> catchClauses;
 	private CompositeStatementObject finallyClause;
 	

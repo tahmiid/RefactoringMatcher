@@ -12,6 +12,10 @@ import ca.concordia.java.ast.util.ExpressionExtractor;
 
 public class AbstractExpression extends AbstractMethodFragment implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4279401240403763374L;
 	private ASTInformation expression;
 	
 /*	public AbstractExpression(Expression expression) {

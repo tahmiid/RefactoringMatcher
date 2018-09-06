@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class PDGSliceUnionCollection  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7366897860208421547L;
 	private Map<BasicBlock, PDGSliceUnion> sliceUnionMap;
 	
 	public PDGSliceUnionCollection(PDG pdg, PlainVariable localVariableCriterion) {

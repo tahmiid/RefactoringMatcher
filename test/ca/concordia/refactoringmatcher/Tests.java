@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -19,22 +18,12 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
-import org.refactoringminer.api.GitHistoryRefactoringMiner;
-import org.refactoringminer.api.Refactoring;
-import org.refactoringminer.api.RefactoringHandler;
-import org.refactoringminer.api.RefactoringType;
-import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl;
 
 import ca.concordia.java.ast.ConstructorObject;
 import ca.concordia.java.ast.MethodObject;
 import ca.concordia.java.ast.decomposition.cfg.CFG;
-import ca.concordia.java.ast.decomposition.cfg.Groum;
 import ca.concordia.java.ast.decomposition.cfg.PDG;
 import ca.concordia.refactoringmatcher.graph.GraphPair;
-import gr.uom.java.xmi.LocationInfo;
-import gr.uom.java.xmi.diff.ExtractAndMoveOperationRefactoring;
-import gr.uom.java.xmi.diff.ExtractOperationRefactoring;
-import gr.uom.java.xmi.diff.InlineOperationRefactoring;
 
 public class Tests {
 	

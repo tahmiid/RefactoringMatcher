@@ -7,6 +7,10 @@ import ca.concordia.java.ast.AbstractMethodDeclaration;
 import ca.concordia.java.ast.ParameterObject;
 
 public class PDGMethodEntryNode extends PDGNode  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2050485918750951938L;
 	private AbstractMethodDeclaration method;
 	
 	public PDGMethodEntryNode(AbstractMethodDeclaration method) {

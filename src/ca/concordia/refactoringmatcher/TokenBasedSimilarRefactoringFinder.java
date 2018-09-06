@@ -39,10 +39,10 @@ public class TokenBasedSimilarRefactoringFinder implements SimilarRefactoringFin
 					refactoredCodeMaping.add(Pair.of(fileNumber, refactoringData));
 					fileNumber++;
 				}
-				CloneDetector detector = new SourcererCCDetector();
-				List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(refactoredCodeDirectory);
-				refactoringPairs.addAll(getRefactoringPairsFromClonePairs(clonePairs, refactoredCodeMaping));
 			}
+			CloneDetector detector = new SourcererCCDetector();
+			List<Pair<CodeLocation, CodeLocation>> clonePairs = detector.detectClonePairs(refactoredCodeDirectory);
+			refactoringPairs.addAll(getRefactoringPairsFromClonePairs(clonePairs, refactoredCodeMaping));
 		} catch (Exception e) {
 			System.out.println(e);
 		}

@@ -25,6 +25,10 @@ import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
 public class MethodObject implements AbstractMethodDeclaration, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8073230851903060259L;
 	private TypeObject returnType;
 	private boolean _abstract;
 	private boolean _static;

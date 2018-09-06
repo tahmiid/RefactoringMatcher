@@ -2,10 +2,6 @@ package ca.concordia.refactoringmatcher;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.eclipse.jgit.lib.PersonIdent;
 
 public class Commit implements Serializable{
 	

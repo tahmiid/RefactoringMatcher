@@ -9,6 +9,10 @@ import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import ca.concordia.java.ast.decomposition.AbstractExpression;
 
 public class EnumConstantDeclarationObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1918528772980669084L;
 	private String name;
 	private List<AbstractExpression> arguments;
 	private String enumName;

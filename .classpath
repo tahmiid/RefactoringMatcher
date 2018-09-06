@@ -18,11 +18,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="lib/indexbased.SearchManager.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.8.0.201705170830-rc1.jar"/>
+	<classpathentry kind="lib" path="lib/InputBuilderClassic.jar" sourcepath="/SourcererCC"/>
+	<classpathentry kind="lib" path="lib/indexbased.SearchManager.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/RefactoringMiner"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar"/>
-	<classpathentry kind="lib" path="lib/InputBuilderClassic.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.core.jobs_3.7.0.v20150330-2103.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.core.resources_3.10.1.v20150725-1910.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.core.runtime_3.11.1.v20150903-1804.jar"/>
@@ -31,14 +31,6 @@
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jdt.core_3.12.1.v20160829-0950.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JarAnalyzer"/>
 	<classpathentry kind="lib" path="C:/Users/Ahmad Tahmid/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/4.7.0.201704051617-r/99be65d1827276b97d4f51668b60f4a38f282bda/org.eclipse.jgit-4.7.0.201704051617-r.jar" sourcepath="C:/Users/Ahmad Tahmid/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/4.7.0.201704051617-r/de519d6f352aaf12e4c65f7590591326ac24d2e8/org.eclipse.jgit-4.7.0.201704051617-r-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ahmad Tahmid/.m2/repository/org/eclipse/jgit/org.eclipse.jgit/3.7.1.201504261725-r/org.eclipse.jgit-3.7.1.201504261725-r.jar" sourcepath="C:/Users/Ahmad Tahmid/.m2/repository/org/eclipse/jgit/org.eclipse.jgit/3.7.1.201504261725-r/org.eclipse.jgit-3.7.1.201504261725-r-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.eclipse.jgit"/>
-			<attribute name="maven.artifactId" value="org.eclipse.jgit"/>
-			<attribute name="maven.version" value="3.7.1.201504261725-r"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/SourcererCC"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

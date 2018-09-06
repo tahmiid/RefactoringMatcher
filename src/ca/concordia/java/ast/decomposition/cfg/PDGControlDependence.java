@@ -3,11 +3,15 @@ package ca.concordia.java.ast.decomposition.cfg;
 import java.io.Serializable;
 
 public class PDGControlDependence extends PDGDependence  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7782234636584145199L;
 	private boolean trueControlDependence;
 	private volatile int hashCode = 0;
 	
-	public PDGControlDependence(PDGNode src, PDGNode dst, boolean trueControlDependence) {
-		super(src, dst, PDGDependenceType.CONTROL);
+	public PDGControlDependence(PDGNode src, PDGNode dst, boolean trueControlDependence, Graph graph) {
+		super(src, dst, PDGDependenceType.CONTROL, graph);
 		this.trueControlDependence = trueControlDependence;
 		src.addOutgoingEdge(this);
 		dst.addIncomingEdge(this);
@@ -37,7 +41,7 @@ public class PDGControlDependence extends PDGDependence  implements Serializable
 		
 		if(o instanceof PDGControlDependence) {
 			PDGControlDependence controlDependence = (PDGControlDependence)o;
-			return this.src.equals(controlDependence.src) && this.dst.equals(controlDependence.dst) &&
+			return this.getSrc().equals(controlDependence.getSrc()) && this.getDst().equals(controlDependence.getDst()) &&
 				this.trueControlDependence == controlDependence.trueControlDependence;
 		}
 		return false;
@@ -46,8 +50,8 @@ public class PDGControlDependence extends PDGDependence  implements Serializable
 	public int hashCode() {
 		if(hashCode == 0) {
 			int result = 17;
-			result = 37*result + src.hashCode();
-			result = 37*result + dst.hashCode();
+			result = 37*result + srcId;
+			result = 37*result + dstId;
 			result = 37*result + Boolean.valueOf(trueControlDependence).hashCode();
 			hashCode = result;
 		}
@@ -60,6 +64,6 @@ public class PDGControlDependence extends PDGDependence  implements Serializable
 			type.append("T");
 		else
 			type.append("F");
-		return src.toString() + "-->" + dst.toString() + " " + type.toString() + "" + "\n";
+		return getSrc().toString() + "-->" + getDst().toString() + " " + type.toString() + "" + "\n";
 	}
 }

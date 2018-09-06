@@ -9,6 +9,10 @@ import ca.concordia.java.ast.decomposition.AbstractExpression;
 import ca.concordia.java.ast.decomposition.CompositeStatementObject;
 
 public class PDGBlockNode extends PDGNode  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3536763719125848838L;
 	protected CFGNode controlParent;
 
 	public PDGBlockNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod/*,

@@ -6,6 +6,10 @@ import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public class CFGBlockNode extends CFGNode  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1870756685073196928L;
 	private CFGNode controlParent;
 
 	public CFGBlockNode(AbstractStatement statement) {

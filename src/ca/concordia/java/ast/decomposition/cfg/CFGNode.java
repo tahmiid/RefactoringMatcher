@@ -7,6 +7,10 @@ import org.eclipse.jdt.core.dom.Statement;
 import ca.concordia.java.ast.decomposition.AbstractStatement;
 
 public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6195287475035045492L;
 	private String statementString;
 	private AbstractStatement statement;
 	private BasicBlock basicBlock;
@@ -35,7 +39,7 @@ public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializa
 
 	public boolean immediatelyFollowsBranchNode() {
 		for(GraphEdge edge : incomingEdges) {
-			CFGNode srcNode = (CFGNode)edge.src;
+			CFGNode srcNode = (CFGNode)edge.getSrc();
 			if(srcNode.isBranch())
 				return true;
 		}

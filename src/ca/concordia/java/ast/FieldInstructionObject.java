@@ -6,7 +6,11 @@ import org.eclipse.jdt.core.dom.SimpleName;
 
 public class FieldInstructionObject  implements Serializable{
 
-    private String ownerClass;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1066754937066939180L;
+	private String ownerClass;
     private TypeObject type;
     private String name;
     private boolean _static;

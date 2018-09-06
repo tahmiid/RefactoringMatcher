@@ -17,10 +17,11 @@ import ca.concordia.java.ast.decomposition.StatementType;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
 public class CFG extends Graph implements Serializable {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5505187017014211591L;
 	private static final int PUSH_NEW_LIST = 0;
 	private static final int JOIN_TOP_LIST = 1;
 	private static final int PLACE_NEW_LIST_SECOND_FROM_TOP = 2;
@@ -42,7 +43,7 @@ public class CFG extends Graph implements Serializable {
 			process(new ArrayList<CFGNode>(), composite);
 			GraphNode.resetNodeNum();
 			this.basicBlockCFG = new BasicBlockCFG(this);
-		}
+		}		
 	}
 
 	public AbstractMethodDeclaration getMethod() {
@@ -212,7 +213,7 @@ public class CFG extends Graph implements Serializable {
 		CFGNode topNode = getCommonNextNode(tmpNodes);
 		if (topNode == null)
 			topNode = (CFGNode) nodes.toArray()[0];
-		Flow flow = new Flow(currentNode, topNode);
+		Flow flow = new Flow(currentNode, topNode, this);
 		flow.setTrueControlFlow(true);
 		flow.setLoopbackFlow(true);
 		edges.add(flow);
@@ -233,7 +234,7 @@ public class CFG extends Graph implements Serializable {
 		currentNodes.add(currentNode);
 		previousNodes.addAll(process(currentNodes, compositeStatement));
 		for (CFGNode previousNode : previousNodes) {
-			Flow flow = new Flow(previousNode, currentNode);
+			Flow flow = new Flow(previousNode, currentNode, this);
 			if (previousNode instanceof CFGBranchNode) {
 				if (previousNode.equals(currentNode))
 					flow.setTrueControlFlow(true);
@@ -434,7 +435,7 @@ public class CFG extends Graph implements Serializable {
 			CFGSwitchCaseNode switchCase = (CFGSwitchCaseNode) currentNode;
 			if (previousNodesContainBreakOrReturn(previousNodes, composite)) {
 				CFGBranchSwitchNode switchNode = getMostRecentSwitchNode();
-				Flow flow = new Flow(switchNode, currentNode);
+				Flow flow = new Flow(switchNode, currentNode, this);
 				if (switchCase.isDefault())
 					flow.setFalseControlFlow(true);
 				else
@@ -625,7 +626,7 @@ public class CFG extends Graph implements Serializable {
 
 	private void createTopDownFlow(List<CFGNode> previousNodes, CFGNode currentNode) {
 		for (CFGNode previousNode : previousNodes) {
-			Flow flow = new Flow(previousNode, currentNode);
+			Flow flow = new Flow(previousNode, currentNode, this);
 			int numberOfImmediateBlocks = getNumberOfImmediateBlocks(currentNode);
 			if (previousNode instanceof CFGBranchNode) {
 				if (currentNode.getId() == previousNode.getId() + 1 + numberOfImmediateBlocks
@@ -665,7 +666,7 @@ public class CFG extends Graph implements Serializable {
 		HashMap<CFGNode, Integer> nextNodeCounterMap = new HashMap<CFGNode, Integer>();
 		for (CFGNode node : nodes) {
 			for (GraphEdge edge : node.outgoingEdges) {
-				CFGNode nextNode = (CFGNode) edge.dst;
+				CFGNode nextNode = (CFGNode) edge.getDst();
 				if (nextNodeCounterMap.containsKey(nextNode))
 					nextNodeCounterMap.put(nextNode, nextNodeCounterMap.get(nextNode) + 1);
 				else

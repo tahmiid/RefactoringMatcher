@@ -15,18 +15,23 @@ public class GraphBasedSimilarRefactoringFinder implements SimilarRefactoringFin
 	public List<RefactoringPair> getSimilarRefactoringPairs(List<IRefactoringData> refactorings) {
 		List<RefactoringPair> refactoringPairs = new ArrayList<RefactoringPair>();
 		for (int i = 0; i < refactorings.size() - 1; i++) {
+			if (refactorings.get(i).getRefactoring().getRefactoringType() != RefactoringType.EXTRACT_OPERATION)
+				continue;
+			ExtractMethod em1 = (ExtractMethod) refactorings.get(i);
+			if (em1.getExtractionSize() < 4)
+				continue;
+			if(em1.getExtractedOperationPDG() == null)
+				 continue;
+			
 			for (int j = i + 1; j < refactorings.size(); j++) {
-				if (refactorings.get(i).getRefactoring().getRefactoringType() == RefactoringType.EXTRACT_OPERATION
-						&& refactorings.get(j).getRefactoring()
-								.getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
-					ExtractMethod em1 = (ExtractMethod) refactorings.get(i);
+				if (refactorings.get(j).getRefactoring().getRefactoringType() == RefactoringType.EXTRACT_OPERATION) {
 					ExtractMethod em2 = (ExtractMethod) refactorings.get(j);
-
+					if (em1.getExtractionSize() < 4)
+						continue;
 					if (em1.isPartofSameRefactoring(em2))
-						continue;
-					
-					if (em1.getExtractionSize() < 2)
-						continue;
+						continue;				
+					if(em2.getExtractedOperationPDG() == null)
+					 continue;
 
 					try {
 						GraphPair pair = new GraphPair(em1.getExtractedOperationPDG(), em2.getExtractedOperationPDG());

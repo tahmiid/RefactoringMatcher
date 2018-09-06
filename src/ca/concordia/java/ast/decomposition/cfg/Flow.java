@@ -3,12 +3,16 @@ package ca.concordia.java.ast.decomposition.cfg;
 import java.io.Serializable;
 
 public class Flow extends GraphEdge  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5161486289445769959L;
 	private boolean loopbackFlow = false;
 	private boolean trueControlFlow = false;
 	private boolean falseControlFlow = false;
 	
-	public Flow(CFGNode src, CFGNode dst) {
-		super(src, dst);
+	public Flow(CFGNode src, CFGNode dst, Graph graph) {
+		super(src, dst, graph);
 		src.addOutgoingEdge(this);
 		dst.addIncomingEdge(this);
 	}
@@ -45,6 +49,6 @@ public class Flow extends GraphEdge  implements Serializable{
 			type.append("F");
 		if(loopbackFlow)
 			type.append("LB");
-		return src.toString() + "-->" + type.toString() + " " + dst.toString() + "\n";
+		return getSrc().toString() + "-->" + type.toString() + " " + getDst().toString() + "\n";
 	}
 }

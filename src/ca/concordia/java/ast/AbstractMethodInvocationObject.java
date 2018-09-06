@@ -8,6 +8,10 @@ import java.util.ListIterator;
 import java.util.Set;
 
 public abstract class AbstractMethodInvocationObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 671745145529603529L;
 	private TypeObject originClassType;
     private String methodName;
     private TypeObject returnType;

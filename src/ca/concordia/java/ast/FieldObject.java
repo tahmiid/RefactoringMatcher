@@ -1,9 +1,6 @@
 package ca.concordia.java.ast;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -12,7 +9,11 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class FieldObject extends VariableDeclarationObject  implements Serializable{
 
-    private String name;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5674105161961986298L;
+	private String name;
     private TypeObject type;
     private boolean _static;
     private Access access;

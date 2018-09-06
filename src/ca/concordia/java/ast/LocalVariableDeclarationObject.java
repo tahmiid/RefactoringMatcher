@@ -12,6 +12,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 public class LocalVariableDeclarationObject extends VariableDeclarationObject implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7784713561398969073L;
 	private TypeObject type;
 	private String name;
 	private ASTInformation scope;

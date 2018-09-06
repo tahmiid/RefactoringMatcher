@@ -9,6 +9,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ITypeRoot;
 
 public abstract class ClassDeclarationObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2767006496579305752L;
 	protected String name;
 	protected List<MethodObject> methodList;
 	protected List<FieldObject> fieldList;

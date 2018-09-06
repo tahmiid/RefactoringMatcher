@@ -11,6 +11,10 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 
 public class ClassInstanceCreationObject extends CreationObject  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5126929643854770040L;
 	private List<TypeObject> parameterList;
 	private Set<String> thrownExceptions;
 	

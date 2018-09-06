@@ -16,6 +16,11 @@ import ca.concordia.java.ast.decomposition.TryStatementObject;
 
 public abstract class CFGBranchNode extends CFGNode  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -425230970728338200L;
+
 	public CFGBranchNode(AbstractStatement statement) {
 		super(statement);
 	}

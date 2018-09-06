@@ -7,26 +7,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -39,7 +30,6 @@ import ca.concordia.java.ast.LiteralObject;
 import ca.concordia.java.ast.LocalVariableDeclarationObject;
 import ca.concordia.java.ast.LocalVariableInstructionObject;
 import ca.concordia.java.ast.MethodInvocationObject;
-import ca.concordia.java.ast.MethodObject;
 import ca.concordia.java.ast.ParameterObject;
 import ca.concordia.java.ast.SuperMethodInvocationObject;
 import ca.concordia.java.ast.TypeObject;
@@ -47,6 +37,10 @@ import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 import ca.concordia.java.ast.util.MethodDeclarationUtility;
 
 public abstract class AbstractMethodFragment implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8919299678903843123L;
 	private AbstractMethodFragment parent;
 	private List<ParameterObject> parameters;
 

@@ -6,6 +6,10 @@ import org.eclipse.jdt.core.dom.SimpleName;
 
 public class SuperFieldInstructionObject  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4577035054295802673L;
 	private String ownerClass;
 	private TypeObject type;
 	private String name;

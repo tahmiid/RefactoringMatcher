@@ -10,6 +10,11 @@ import ca.concordia.java.ast.decomposition.CompositeStatementObject;
 
 public class PDGControlPredicateNode extends PDGNode implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1963548772530957086L;
+
 	public PDGControlPredicateNode(CFGNode cfgNode, Set<VariableDeclarationObject> variableDeclarationsInMethod) {
 		super(cfgNode, variableDeclarationsInMethod);
 		determineDefinedAndUsedVariables();

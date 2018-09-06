@@ -9,6 +9,10 @@ import ca.concordia.java.ast.decomposition.CatchClauseObject;
 import ca.concordia.java.ast.decomposition.TryStatementObject;
 
 public class CFGTryNode extends CFGBlockNode implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8872167447275377513L;
 	private List<String> handledExceptions;
 	private boolean hasResources;
 	public CFGTryNode(AbstractStatement statement) {

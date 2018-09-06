@@ -2,10 +2,7 @@ package ca.concordia.java.ast.decomposition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.core.dom.Statement;
 
@@ -17,7 +14,6 @@ import ca.concordia.java.ast.LiteralObject;
 import ca.concordia.java.ast.LocalVariableDeclarationObject;
 import ca.concordia.java.ast.LocalVariableInstructionObject;
 import ca.concordia.java.ast.ParameterObject;
-import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
 /*
  * CompositeStatementObject represents the following AST Statement subclasses:
@@ -35,6 +31,10 @@ import ca.concordia.java.ast.decomposition.cfg.PlainVariable;
 
 public class CompositeStatementObject extends AbstractStatement implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6980865230667645041L;
 	private List<AbstractStatement> statementList;
 	private List<AbstractExpression> expressionList;
 

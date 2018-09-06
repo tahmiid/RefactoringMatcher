@@ -7,6 +7,10 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 
 public class AnonymousClassDeclarationObject extends ClassDeclarationObject  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1758804424797822243L;
 	private ASTInformation anonymousClassDeclaration;
 	private ClassObject classObject;
 	

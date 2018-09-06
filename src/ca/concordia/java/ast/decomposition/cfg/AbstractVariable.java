@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ForStatement;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
@@ -16,6 +15,10 @@ import ca.concordia.java.ast.ASTInformationGenerator;
 import ca.concordia.java.ast.TypeObject;
 
 public abstract class AbstractVariable  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1331711440860601891L;
 	protected String variableName;
 	protected String variableType;
 	protected ASTInformation variableDeclaration;

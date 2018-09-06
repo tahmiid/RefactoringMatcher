@@ -5,11 +5,14 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import ca.concordia.java.ast.CreationObject;
 import ca.concordia.java.ast.VariableDeclarationObject;
 import ca.concordia.java.ast.decomposition.AbstractExpression;
 
 public class PDGExpression  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6824012855154218708L;
 	private Set<AbstractVariable> declaredVariables;
 	private Set<AbstractVariable> definedVariables;
 	private Set<AbstractVariable> usedVariables;
