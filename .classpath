@@ -30,7 +30,10 @@
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.equinox.preferences_3.5.300.v20150408-1437.jar"/>
 	<classpathentry kind="lib" path="/RefactoringMiner/lib/org.eclipse.jdt.core_3.12.1.v20160829-0950.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JarAnalyzer"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/Ahmad Tahmid/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/4.7.0.201704051617-r/99be65d1827276b97d4f51668b60f4a38f282bda/org.eclipse.jgit-4.7.0.201704051617-r.jar" sourcepath="C:/Users/Ahmad Tahmid/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/4.7.0.201704051617-r/de519d6f352aaf12e4c65f7590591326ac24d2e8/org.eclipse.jgit-4.7.0.201704051617-r-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SourcererCC"/>
+=======
+>>>>>>> 6705c466de203bf28b13c6cdb7adac1e577cd8c1
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
