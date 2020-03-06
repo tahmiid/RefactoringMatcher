@@ -1,0 +1,1453 @@
+<ca.concordia.java.ast.decomposition.cfg.PDG>
+  <nodes class="linked-hash-set">
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode>
+      <id>1</id>
+      <value></value>
+      <incomingEdges class="linked-hash-set">
+        <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+          <srcId>0</srcId>
+          <dstId>1</dstId>
+          <type>CONTROL</type>
+          <trueControlDependence>true</trueControlDependence>
+          <hashCode>862369</hashCode>
+        </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+      </incomingEdges>
+      <outgoingEdges class="linked-hash-set">
+        <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+          <srcId>1</srcId>
+          <dstId>5</dstId>
+          <type>DATA</type>
+          <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable">
+            <variableName>strbuf</variableName>
+            <variableType>StringBuffer</variableType>
+            <variableDeclaration>
+              <startPosition>607</startPosition>
+              <length>27</length>
+              <nodeType>59</nodeType>
+              <hashCode>-1564444645</hashCode>
+            </variableDeclaration>
+            <scope>
+              <startPosition>589</startPosition>
+              <length>288</length>
+              <nodeType>8</nodeType>
+              <hashCode>2025107499</hashCode>
+            </scope>
+            <hashCode>848577930</hashCode>
+          </data>
+          <hashCode>-1686884470</hashCode>
+        </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+        <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+          <srcId>1</srcId>
+          <dstId>6</dstId>
+          <type>DATA</type>
+          <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+          <hashCode>-1686883101</hashCode>
+        </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+        <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+          <srcId>1</srcId>
+          <dstId>7</dstId>
+          <type>DATA</type>
+          <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+          <hashCode>-1686881732</hashCode>
+        </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+      </outgoingEdges>
+      <cfgNode>
+        <id>1</id>
+        <value></value>
+        <incomingEdges class="linked-hash-set"/>
+        <outgoingEdges class="linked-hash-set">
+          <ca.concordia.java.ast.decomposition.cfg.Flow>
+            <srcId>1</srcId>
+            <dstId>2</dstId>
+            <graph class="ca.concordia.java.ast.decomposition.cfg.CFG">
+              <nodes class="linked-hash-set">
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../../../../.."/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode>
+                  <id>2</id>
+                  <value></value>
+                  <incomingEdges class="linked-hash-set">
+                    <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../.."/>
+                  </incomingEdges>
+                  <outgoingEdges class="linked-hash-set">
+                    <ca.concordia.java.ast.decomposition.cfg.Flow>
+                      <srcId>2</srcId>
+                      <dstId>3</dstId>
+                      <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../.."/>
+                      <loopbackFlow>false</loopbackFlow>
+                      <trueControlFlow>false</trueControlFlow>
+                      <falseControlFlow>false</falseControlFlow>
+                    </ca.concordia.java.ast.decomposition.cfg.Flow>
+                  </outgoingEdges>
+                  <statementString>BufferedReader in=new BufferedReader(new FileReader(&quot;&quot;));
+</statementString>
+                  <statement class="ca.concordia.java.ast.decomposition.StatementObject">
+                    <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject">
+                      <parameters>
+                        <ca.concordia.java.ast.ParameterObject>
+                          <type>
+                            <classType>int</classType>
+                            <arrayDimension>0</arrayDimension>
+                            <hashCode>3887220</hashCode>
+                          </type>
+                          <name>x</name>
+                          <varargs>false</varargs>
+                          <singleVariableDeclaration>
+                            <startPosition>563</startPosition>
+                            <length>5</length>
+                            <nodeType>44</nodeType>
+                            <hashCode>160746152</hashCode>
+                          </singleVariableDeclaration>
+                          <hashCode>1225322133</hashCode>
+                        </ca.concordia.java.ast.ParameterObject>
+                      </parameters>
+                      <localVariableDeclarationList>
+                        <ca.concordia.java.ast.LocalVariableDeclarationObject>
+                          <type>
+                            <classType>StringBuffer</classType>
+                            <arrayDimension>0</arrayDimension>
+                            <hashCode>-325810146</hashCode>
+                          </type>
+                          <name>strbuf</name>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <variableDeclaration>
+                            <startPosition>607</startPosition>
+                            <length>27</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>-1564444645</hashCode>
+                          </variableDeclaration>
+                          <hashCode>-411299203</hashCode>
+                        </ca.concordia.java.ast.LocalVariableDeclarationObject>
+                        <ca.concordia.java.ast.LocalVariableDeclarationObject>
+                          <type>
+                            <classType>BufferedReader</classType>
+                            <arrayDimension>0</arrayDimension>
+                            <hashCode>982214739</hashCode>
+                          </type>
+                          <name>in</name>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <variableDeclaration>
+                            <startPosition>654</startPosition>
+                            <length>43</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>1967749804</hashCode>
+                          </variableDeclaration>
+                          <hashCode>321821430</hashCode>
+                        </ca.concordia.java.ast.LocalVariableDeclarationObject>
+                        <ca.concordia.java.ast.LocalVariableDeclarationObject>
+                          <type>
+                            <classType>String</classType>
+                            <arrayDimension>0</arrayDimension>
+                            <hashCode>1819106814</hashCode>
+                          </type>
+                          <name>str</name>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <variableDeclaration>
+                            <startPosition>709</startPosition>
+                            <length>3</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>67894229</hashCode>
+                          </variableDeclaration>
+                          <hashCode>-983951182</hashCode>
+                        </ca.concordia.java.ast.LocalVariableDeclarationObject>
+                      </localVariableDeclarationList>
+                      <localVariableInstructionList>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>str</name>
+                          <simpleName>
+                            <startPosition>724</startPosition>
+                            <length>3</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>68653395</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>in</name>
+                          <simpleName>
+                            <startPosition>730</startPosition>
+                            <length>2</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>68845084</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>strbuf</name>
+                          <simpleName>
+                            <startPosition>761</startPosition>
+                            <length>6</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>-821574976</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>str</name>
+                          <simpleName>
+                            <startPosition>775</startPosition>
+                            <length>3</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>71236698</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>strbuf</name>
+                          <simpleName>
+                            <startPosition>799</startPosition>
+                            <length>6</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>-819650162</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>strbuf</name>
+                          <simpleName>
+                            <startPosition>838</startPosition>
+                            <length>6</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>-817674695</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>in</name>
+                          <simpleName>
+                            <startPosition>861</startPosition>
+                            <length>2</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>75480627</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                        <ca.concordia.java.ast.LocalVariableInstructionObject>
+                          <name>x</name>
+                          <simpleName>
+                            <startPosition>870</startPosition>
+                            <length>1</length>
+                            <nodeType>42</nodeType>
+                            <hashCode>75931890</hashCode>
+                          </simpleName>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LocalVariableInstructionObject>
+                      </localVariableInstructionList>
+                      <creationList/>
+                      <literalList>
+                        <ca.concordia.java.ast.LiteralObject>
+                          <literalType>STRING</literalType>
+                          <value></value>
+                          <literal>
+                            <startPosition>693</startPosition>
+                            <length>2</length>
+                            <nodeType>45</nodeType>
+                            <hashCode>66968757</hashCode>
+                          </literal>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LiteralObject>
+                        <ca.concordia.java.ast.LiteralObject>
+                          <literalType>NULL</literalType>
+                          <value>null</value>
+                          <literal>
+                            <startPosition>748</startPosition>
+                            <length>4</length>
+                            <nodeType>33</nodeType>
+                            <hashCode>73148781</hashCode>
+                          </literal>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LiteralObject>
+                        <ca.concordia.java.ast.LiteralObject>
+                          <literalType>STRING</literalType>
+                          <value>
+</value>
+                          <literal>
+                            <startPosition>781</startPosition>
+                            <length>4</length>
+                            <nodeType>45</nodeType>
+                            <hashCode>72532621</hashCode>
+                          </literal>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LiteralObject>
+                        <ca.concordia.java.ast.LiteralObject>
+                          <literalType>NUMBER</literalType>
+                          <value>0</value>
+                          <literal>
+                            <startPosition>817</startPosition>
+                            <length>1</length>
+                            <nodeType>34</nodeType>
+                            <hashCode>73246913</hashCode>
+                          </literal>
+                          <hashCode>0</hashCode>
+                        </ca.concordia.java.ast.LiteralObject>
+                      </literalList>
+                      <anonymousClassDeclarationList/>
+                      <exceptionsInThrowStatements class="linked-hash-set"/>
+                      <declaredLocalVariables class="linked-hash-set">
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>in</variableName>
+                          <variableType>BufferedReader</variableType>
+                          <variableDeclaration>
+                            <startPosition>654</startPosition>
+                            <length>43</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>1967749804</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>1967870456</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>str</variableName>
+                          <variableType>String</variableType>
+                          <variableDeclaration>
+                            <startPosition>709</startPosition>
+                            <length>3</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>67894229</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>71451541</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                      </declaredLocalVariables>
+                      <definedLocalVariables class="linked-hash-set">
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>str</variableName>
+                          <variableType>String</variableType>
+                          <variableDeclaration>
+                            <startPosition>709</startPosition>
+                            <length>3</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>67894229</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>71451541</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                      </definedLocalVariables>
+                      <usedLocalVariables class="linked-hash-set">
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>in</variableName>
+                          <variableType>BufferedReader</variableType>
+                          <variableDeclaration>
+                            <startPosition>654</startPosition>
+                            <length>43</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>1967749804</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>1967870456</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>strbuf</variableName>
+                          <variableType>StringBuffer</variableType>
+                          <variableDeclaration>
+                            <startPosition>607</startPosition>
+                            <length>27</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>-1564444645</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>848577930</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>str</variableName>
+                          <variableType>String</variableType>
+                          <variableDeclaration>
+                            <startPosition>709</startPosition>
+                            <length>3</length>
+                            <nodeType>59</nodeType>
+                            <hashCode>67894229</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>589</startPosition>
+                            <length>288</length>
+                            <nodeType>8</nodeType>
+                            <hashCode>2025107499</hashCode>
+                          </scope>
+                          <hashCode>71451541</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          <variableName>x</variableName>
+                          <variableType>int</variableType>
+                          <variableDeclaration>
+                            <startPosition>563</startPosition>
+                            <length>5</length>
+                            <nodeType>44</nodeType>
+                            <hashCode>160746152</hashCode>
+                          </variableDeclaration>
+                          <scope>
+                            <startPosition>534</startPosition>
+                            <length>343</length>
+                            <nodeType>31</nodeType>
+                            <hashCode>620251438</hashCode>
+                          </scope>
+                          <hashCode>160766209</hashCode>
+                        </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                      </usedLocalVariables>
+                      <methodInvocationList class="linked-list"/>
+                      <statement>
+                        <startPosition>589</startPosition>
+                        <length>288</length>
+                        <nodeType>8</nodeType>
+                        <hashCode>2025107499</hashCode>
+                      </statement>
+                      <type>BLOCK</type>
+                      <statementList>
+                        <ca.concordia.java.ast.decomposition.StatementObject>
+                          <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                          <parameters reference="../../../parameters"/>
+                          <localVariableDeclarationList>
+                            <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../../../localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject"/>
+                          </localVariableDeclarationList>
+                          <localVariableInstructionList/>
+                          <creationList/>
+                          <literalList/>
+                          <anonymousClassDeclarationList/>
+                          <exceptionsInThrowStatements class="linked-hash-set"/>
+                          <declaredLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+                          </declaredLocalVariables>
+                          <definedLocalVariables class="linked-hash-set"/>
+                          <usedLocalVariables class="linked-hash-set"/>
+                          <methodInvocationList class="linked-list"/>
+                          <statement>
+                            <startPosition>594</startPosition>
+                            <length>41</length>
+                            <nodeType>60</nodeType>
+                            <hashCode>-1550941435</hashCode>
+                          </statement>
+                          <type>VARIABLE_DECLARATION</type>
+                        </ca.concordia.java.ast.decomposition.StatementObject>
+                        <ca.concordia.java.ast.decomposition.StatementObject reference="../../.."/>
+                        <ca.concordia.java.ast.decomposition.StatementObject>
+                          <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                          <parameters reference="../../../parameters"/>
+                          <localVariableDeclarationList>
+                            <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../../../localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject[3]"/>
+                          </localVariableDeclarationList>
+                          <localVariableInstructionList/>
+                          <creationList/>
+                          <literalList/>
+                          <anonymousClassDeclarationList/>
+                          <exceptionsInThrowStatements class="linked-hash-set"/>
+                          <declaredLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                          </declaredLocalVariables>
+                          <definedLocalVariables class="linked-hash-set"/>
+                          <usedLocalVariables class="linked-hash-set"/>
+                          <methodInvocationList class="linked-list"/>
+                          <statement>
+                            <startPosition>702</startPosition>
+                            <length>11</length>
+                            <nodeType>60</nodeType>
+                            <hashCode>-1148341257</hashCode>
+                          </statement>
+                          <type>VARIABLE_DECLARATION</type>
+                        </ca.concordia.java.ast.decomposition.StatementObject>
+                        <ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                          <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                          <parameters reference="../../../parameters"/>
+                          <localVariableDeclarationList/>
+                          <localVariableInstructionList>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject"/>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[2]"/>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[3]"/>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[4]"/>
+                          </localVariableInstructionList>
+                          <creationList/>
+                          <literalList>
+                            <ca.concordia.java.ast.LiteralObject reference="../../../../literalList/ca.concordia.java.ast.LiteralObject[2]"/>
+                            <ca.concordia.java.ast.LiteralObject reference="../../../../literalList/ca.concordia.java.ast.LiteralObject[3]"/>
+                          </literalList>
+                          <anonymousClassDeclarationList/>
+                          <exceptionsInThrowStatements class="linked-hash-set"/>
+                          <declaredLocalVariables class="linked-hash-set"/>
+                          <definedLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../definedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                          </definedLocalVariables>
+                          <usedLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                          </usedLocalVariables>
+                          <methodInvocationList class="linked-list"/>
+                          <statement>
+                            <startPosition>717</startPosition>
+                            <length>75</length>
+                            <nodeType>61</nodeType>
+                            <hashCode>2054864014</hashCode>
+                          </statement>
+                          <type>WHILE</type>
+                          <statementList>
+                            <ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                              <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                              <parameters reference="../../../../../parameters"/>
+                              <localVariableDeclarationList/>
+                              <localVariableInstructionList>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[3]"/>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[4]"/>
+                              </localVariableInstructionList>
+                              <creationList/>
+                              <literalList>
+                                <ca.concordia.java.ast.LiteralObject reference="../../../../../../literalList/ca.concordia.java.ast.LiteralObject[3]"/>
+                              </literalList>
+                              <anonymousClassDeclarationList/>
+                              <exceptionsInThrowStatements class="linked-hash-set"/>
+                              <declaredLocalVariables class="linked-hash-set"/>
+                              <definedLocalVariables class="linked-hash-set"/>
+                              <usedLocalVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                              </usedLocalVariables>
+                              <methodInvocationList class="linked-list"/>
+                              <statement>
+                                <startPosition>755</startPosition>
+                                <length>37</length>
+                                <nodeType>8</nodeType>
+                                <hashCode>702706223</hashCode>
+                              </statement>
+                              <type>BLOCK</type>
+                              <statementList>
+                                <ca.concordia.java.ast.decomposition.StatementObject>
+                                  <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                                  <parameters reference="../../../../../../../parameters"/>
+                                  <localVariableDeclarationList/>
+                                  <localVariableInstructionList>
+                                    <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[3]"/>
+                                    <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[4]"/>
+                                  </localVariableInstructionList>
+                                  <creationList/>
+                                  <literalList>
+                                    <ca.concordia.java.ast.LiteralObject reference="../../../../../../../../literalList/ca.concordia.java.ast.LiteralObject[3]"/>
+                                  </literalList>
+                                  <anonymousClassDeclarationList/>
+                                  <exceptionsInThrowStatements class="linked-hash-set"/>
+                                  <declaredLocalVariables class="linked-hash-set"/>
+                                  <definedLocalVariables class="linked-hash-set"/>
+                                  <usedLocalVariables class="linked-hash-set">
+                                    <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                                    <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                                  </usedLocalVariables>
+                                  <methodInvocationList class="linked-list"/>
+                                  <statement>
+                                    <startPosition>761</startPosition>
+                                    <length>26</length>
+                                    <nodeType>21</nodeType>
+                                    <hashCode>-1642778867</hashCode>
+                                  </statement>
+                                  <type>EXPRESSION</type>
+                                </ca.concordia.java.ast.decomposition.StatementObject>
+                              </statementList>
+                              <expressionList/>
+                            </ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                          </statementList>
+                          <expressionList>
+                            <ca.concordia.java.ast.decomposition.AbstractExpression>
+                              <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                              <parameters reference="../../../../../parameters"/>
+                              <localVariableDeclarationList/>
+                              <localVariableInstructionList>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject"/>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[2]"/>
+                              </localVariableInstructionList>
+                              <creationList/>
+                              <literalList>
+                                <ca.concordia.java.ast.LiteralObject reference="../../../../../../literalList/ca.concordia.java.ast.LiteralObject[2]"/>
+                              </literalList>
+                              <anonymousClassDeclarationList/>
+                              <exceptionsInThrowStatements class="linked-hash-set"/>
+                              <declaredLocalVariables class="linked-hash-set"/>
+                              <definedLocalVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../definedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              </definedLocalVariables>
+                              <usedLocalVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              </usedLocalVariables>
+                              <methodInvocationList class="linked-list"/>
+                              <expression>
+                                <startPosition>723</startPosition>
+                                <length>29</length>
+                                <nodeType>27</nodeType>
+                                <hashCode>-787982760</hashCode>
+                              </expression>
+                            </ca.concordia.java.ast.decomposition.AbstractExpression>
+                          </expressionList>
+                        </ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                        <ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                          <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                          <parameters reference="../../../parameters"/>
+                          <localVariableDeclarationList/>
+                          <localVariableInstructionList>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[5]"/>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[6]"/>
+                          </localVariableInstructionList>
+                          <creationList/>
+                          <literalList>
+                            <ca.concordia.java.ast.LiteralObject reference="../../../../literalList/ca.concordia.java.ast.LiteralObject[4]"/>
+                          </literalList>
+                          <anonymousClassDeclarationList/>
+                          <exceptionsInThrowStatements class="linked-hash-set"/>
+                          <declaredLocalVariables class="linked-hash-set"/>
+                          <definedLocalVariables class="linked-hash-set"/>
+                          <usedLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                              <variableName>strbuf</variableName>
+                              <variableType>StringBuffer</variableType>
+                              <variableDeclaration>
+                                <startPosition>607</startPosition>
+                                <length>27</length>
+                                <nodeType>59</nodeType>
+                                <hashCode>-1564444645</hashCode>
+                              </variableDeclaration>
+                              <scope>
+                                <startPosition>589</startPosition>
+                                <length>288</length>
+                                <nodeType>8</nodeType>
+                                <hashCode>2025107499</hashCode>
+                              </scope>
+                              <hashCode>848577930</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                          </usedLocalVariables>
+                          <methodInvocationList class="linked-list"/>
+                          <statement>
+                            <startPosition>796</startPosition>
+                            <length>61</length>
+                            <nodeType>25</nodeType>
+                            <hashCode>-1701944557</hashCode>
+                          </statement>
+                          <type>IF</type>
+                          <statementList>
+                            <ca.concordia.java.ast.decomposition.StatementObject>
+                              <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                              <parameters reference="../../../../../parameters"/>
+                              <localVariableDeclarationList/>
+                              <localVariableInstructionList>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[6]"/>
+                              </localVariableInstructionList>
+                              <creationList/>
+                              <literalList/>
+                              <anonymousClassDeclarationList/>
+                              <exceptionsInThrowStatements class="linked-hash-set"/>
+                              <declaredLocalVariables class="linked-hash-set"/>
+                              <definedLocalVariables class="linked-hash-set"/>
+                              <usedLocalVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                                  <variableName>strbuf</variableName>
+                                  <variableType>StringBuffer</variableType>
+                                  <variableDeclaration>
+                                    <startPosition>607</startPosition>
+                                    <length>27</length>
+                                    <nodeType>59</nodeType>
+                                    <hashCode>-1564444645</hashCode>
+                                  </variableDeclaration>
+                                  <scope>
+                                    <startPosition>589</startPosition>
+                                    <length>288</length>
+                                    <nodeType>8</nodeType>
+                                    <hashCode>2025107499</hashCode>
+                                  </scope>
+                                  <hashCode>848577930</hashCode>
+                                </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                              </usedLocalVariables>
+                              <methodInvocationList class="linked-list"/>
+                              <statement>
+                                <startPosition>824</startPosition>
+                                <length>33</length>
+                                <nodeType>21</nodeType>
+                                <hashCode>577585724</hashCode>
+                              </statement>
+                              <type>EXPRESSION</type>
+                            </ca.concordia.java.ast.decomposition.StatementObject>
+                          </statementList>
+                          <expressionList>
+                            <ca.concordia.java.ast.decomposition.AbstractExpression>
+                              <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                              <parameters reference="../../../../../parameters"/>
+                              <localVariableDeclarationList/>
+                              <localVariableInstructionList>
+                                <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[5]"/>
+                              </localVariableInstructionList>
+                              <creationList/>
+                              <literalList>
+                                <ca.concordia.java.ast.LiteralObject reference="../../../../../../literalList/ca.concordia.java.ast.LiteralObject[4]"/>
+                              </literalList>
+                              <anonymousClassDeclarationList/>
+                              <exceptionsInThrowStatements class="linked-hash-set"/>
+                              <declaredLocalVariables class="linked-hash-set"/>
+                              <definedLocalVariables class="linked-hash-set"/>
+                              <usedLocalVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              </usedLocalVariables>
+                              <methodInvocationList class="linked-list"/>
+                              <expression>
+                                <startPosition>799</startPosition>
+                                <length>19</length>
+                                <nodeType>27</nodeType>
+                                <hashCode>487089575</hashCode>
+                              </expression>
+                            </ca.concordia.java.ast.decomposition.AbstractExpression>
+                          </expressionList>
+                        </ca.concordia.java.ast.decomposition.CompositeStatementObject>
+                        <ca.concordia.java.ast.decomposition.StatementObject>
+                          <parent class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../.."/>
+                          <parameters reference="../../../parameters"/>
+                          <localVariableDeclarationList/>
+                          <localVariableInstructionList>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[7]"/>
+                            <ca.concordia.java.ast.LocalVariableInstructionObject reference="../../../../localVariableInstructionList/ca.concordia.java.ast.LocalVariableInstructionObject[8]"/>
+                          </localVariableInstructionList>
+                          <creationList/>
+                          <literalList/>
+                          <anonymousClassDeclarationList/>
+                          <exceptionsInThrowStatements class="linked-hash-set"/>
+                          <declaredLocalVariables class="linked-hash-set"/>
+                          <definedLocalVariables class="linked-hash-set"/>
+                          <usedLocalVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                              <variableName>in</variableName>
+                              <variableType>BufferedReader</variableType>
+                              <variableDeclaration>
+                                <startPosition>654</startPosition>
+                                <length>43</length>
+                                <nodeType>59</nodeType>
+                                <hashCode>1967749804</hashCode>
+                              </variableDeclaration>
+                              <scope>
+                                <startPosition>589</startPosition>
+                                <length>288</length>
+                                <nodeType>8</nodeType>
+                                <hashCode>2025107499</hashCode>
+                              </scope>
+                              <hashCode>1967870456</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PlainVariable>
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[4]"/>
+                          </usedLocalVariables>
+                          <methodInvocationList class="linked-list"/>
+                          <statement>
+                            <startPosition>861</startPosition>
+                            <length>12</length>
+                            <nodeType>21</nodeType>
+                            <hashCode>1774432952</hashCode>
+                          </statement>
+                          <type>EXPRESSION</type>
+                        </ca.concordia.java.ast.decomposition.StatementObject>
+                      </statementList>
+                      <expressionList/>
+                    </parent>
+                    <parameters reference="../parent/parameters"/>
+                    <localVariableDeclarationList>
+                      <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../parent/localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject[2]"/>
+                    </localVariableDeclarationList>
+                    <localVariableInstructionList/>
+                    <creationList/>
+                    <literalList>
+                      <ca.concordia.java.ast.LiteralObject reference="../../parent/literalList/ca.concordia.java.ast.LiteralObject"/>
+                    </literalList>
+                    <anonymousClassDeclarationList/>
+                    <exceptionsInThrowStatements class="linked-hash-set"/>
+                    <declaredLocalVariables class="linked-hash-set">
+                      <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                    </declaredLocalVariables>
+                    <definedLocalVariables class="linked-hash-set"/>
+                    <usedLocalVariables class="linked-hash-set"/>
+                    <methodInvocationList class="linked-list"/>
+                    <statement>
+                      <startPosition>639</startPosition>
+                      <length>59</length>
+                      <nodeType>60</nodeType>
+                      <hashCode>1172816991</hashCode>
+                    </statement>
+                    <type>VARIABLE_DECLARATION</type>
+                  </statement>
+                  <basicBlock>
+                    <id>1</id>
+                    <leader reference="../../../../../../.."/>
+                    <nodes>
+                      <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../../.."/>
+                      <ca.concordia.java.ast.decomposition.cfg.CFGNode>
+                        <id>3</id>
+                        <value></value>
+                        <incomingEdges class="linked-hash-set">
+                          <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                        </incomingEdges>
+                        <outgoingEdges class="linked-hash-set">
+                          <ca.concordia.java.ast.decomposition.cfg.Flow>
+                            <srcId>3</srcId>
+                            <dstId>4</dstId>
+                            <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../.."/>
+                            <loopbackFlow>false</loopbackFlow>
+                            <trueControlFlow>false</trueControlFlow>
+                            <falseControlFlow>false</falseControlFlow>
+                          </ca.concordia.java.ast.decomposition.cfg.Flow>
+                        </outgoingEdges>
+                        <statementString>String str;
+</statementString>
+                        <statement class="ca.concordia.java.ast.decomposition.StatementObject" reference="../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.StatementObject[3]"/>
+                        <basicBlock reference="../../.."/>
+                        <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode">
+                          <id>3</id>
+                          <value></value>
+                          <incomingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                              <srcId>0</srcId>
+                              <dstId>3</dstId>
+                              <type>CONTROL</type>
+                              <trueControlDependence>true</trueControlDependence>
+                              <hashCode>862443</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                          </incomingEdges>
+                          <outgoingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                              <srcId>3</srcId>
+                              <dstId>4</dstId>
+                              <type>DATA</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                              <hashCode>-375689854</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence>
+                              <srcId>3</srcId>
+                              <dstId>4</dstId>
+                              <type>OUTPUT</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                              <hashCode>198876965</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence>
+                          </outgoingEdges>
+                          <cfgNode reference="../.."/>
+                          <declaredVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                          </declaredVariables>
+                          <definedVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                          </definedVariables>
+                          <usedVariables class="linked-hash-set"/>
+                          <createdTypes class="linked-hash-set"/>
+                          <thrownExceptionTypes class="linked-hash-set"/>
+                          <variableDeclarationsInMethod class="linked-hash-set">
+                            <ca.concordia.java.ast.ParameterObject reference="../../../../../../statement/parent/parameters/ca.concordia.java.ast.ParameterObject"/>
+                            <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../../../../../statement/parent/localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject"/>
+                            <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../../../../../statement/parent/localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject[2]"/>
+                            <ca.concordia.java.ast.LocalVariableDeclarationObject reference="../../../../../../statement/parent/localVariableDeclarationList/ca.concordia.java.ast.LocalVariableDeclarationObject[3]"/>
+                          </variableDeclarationsInMethod>
+                          <originalDefinedVariables class="linked-hash-set"/>
+                          <originalUsedVariables class="linked-hash-set"/>
+                        </pdgNode>
+                        <hashCode>632</hashCode>
+                      </ca.concordia.java.ast.decomposition.cfg.CFGNode>
+                    </nodes>
+                    <tryNodes/>
+                    <nextBasicBlock>
+                      <id>2</id>
+                      <leader class="ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode">
+                        <id>4</id>
+                        <value></value>
+                        <incomingEdges class="linked-hash-set">
+                          <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                          <ca.concordia.java.ast.decomposition.cfg.Flow>
+                            <srcId>5</srcId>
+                            <dstId>4</dstId>
+                            <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../.."/>
+                            <loopbackFlow>true</loopbackFlow>
+                            <trueControlFlow>false</trueControlFlow>
+                            <falseControlFlow>false</falseControlFlow>
+                          </ca.concordia.java.ast.decomposition.cfg.Flow>
+                        </incomingEdges>
+                        <outgoingEdges class="linked-hash-set">
+                          <ca.concordia.java.ast.decomposition.cfg.Flow>
+                            <srcId>4</srcId>
+                            <dstId>5</dstId>
+                            <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../.."/>
+                            <loopbackFlow>false</loopbackFlow>
+                            <trueControlFlow>true</trueControlFlow>
+                            <falseControlFlow>false</falseControlFlow>
+                          </ca.concordia.java.ast.decomposition.cfg.Flow>
+                          <ca.concordia.java.ast.decomposition.cfg.Flow>
+                            <srcId>4</srcId>
+                            <dstId>6</dstId>
+                            <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../.."/>
+                            <loopbackFlow>false</loopbackFlow>
+                            <trueControlFlow>false</trueControlFlow>
+                            <falseControlFlow>true</falseControlFlow>
+                          </ca.concordia.java.ast.decomposition.cfg.Flow>
+                        </outgoingEdges>
+                        <statementString>while((str=in.readLine()) != null)
+</statementString>
+                        <statement class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject"/>
+                        <basicBlock reference="../.."/>
+                        <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGControlPredicateNode">
+                          <id>4</id>
+                          <value></value>
+                          <incomingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                              <srcId>0</srcId>
+                              <dstId>4</dstId>
+                              <type>CONTROL</type>
+                              <trueControlDependence>true</trueControlDependence>
+                              <hashCode>862480</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                              <srcId>2</srcId>
+                              <dstId>4</dstId>
+                              <type>DATA</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                              <hashCode>1072282612</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                              <srcId>2</srcId>
+                              <dstId>4</dstId>
+                              <type>DATA</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                              <loop class="ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode" reference="../../../.."/>
+                              <hashCode>379552421</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence reference="../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence"/>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence>
+                              <srcId>4</srcId>
+                              <dstId>4</dstId>
+                              <type>OUTPUT</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/definedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              <loop class="ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode" reference="../../../.."/>
+                              <hashCode>-1079380289</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence>
+                              <srcId>5</srcId>
+                              <dstId>4</dstId>
+                              <type>ANTI</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                              <loop class="ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode" reference="../../../.."/>
+                              <hashCode>1440869780</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence>
+                          </incomingEdges>
+                          <outgoingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                              <srcId>4</srcId>
+                              <dstId>5</dstId>
+                              <type>CONTROL</type>
+                              <trueControlDependence>true</trueControlDependence>
+                              <hashCode>867993</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                              <srcId>4</srcId>
+                              <dstId>5</dstId>
+                              <type>DATA</type>
+                              <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../statement/parent/definedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              <hashCode>-375637832</hashCode>
+                            </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                            <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence reference="../../incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence[2]"/>
+                          </outgoingEdges>
+                          <cfgNode class="ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode" reference="../.."/>
+                          <declaredVariables class="linked-hash-set"/>
+                          <definedVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../statement/parent/definedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                          </definedVariables>
+                          <usedVariables class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../statement/parent/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                          </usedVariables>
+                          <createdTypes class="linked-hash-set"/>
+                          <thrownExceptionTypes class="linked-hash-set"/>
+                          <variableDeclarationsInMethod class="linked-hash-set" reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                          <originalDefinedVariables class="linked-hash-set"/>
+                          <originalUsedVariables class="linked-hash-set"/>
+                        </pdgNode>
+                        <hashCode>633</hashCode>
+                      </leader>
+                      <nodes/>
+                      <tryNodes/>
+                      <previousBasicBlock reference="../.."/>
+                      <nextBasicBlock>
+                        <id>3</id>
+                        <leader>
+                          <id>5</id>
+                          <value></value>
+                          <incomingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                          </incomingEdges>
+                          <outgoingEdges class="linked-hash-set">
+                            <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../leader/incomingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+                          </outgoingEdges>
+                          <statementString>strbuf.append(str + &quot;\n&quot;);
+</statementString>
+                          <statement class="ca.concordia.java.ast.decomposition.StatementObject" reference="../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject/statementList/ca.concordia.java.ast.decomposition.StatementObject"/>
+                          <basicBlock reference="../.."/>
+                          <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode">
+                            <id>5</id>
+                            <value></value>
+                            <incomingEdges class="linked-hash-set">
+                              <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../../../leader/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+                              <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../../../../../../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+                              <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../../../leader/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+                            </incomingEdges>
+                            <outgoingEdges class="linked-hash-set">
+                              <ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence reference="../../../../../leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence"/>
+                            </outgoingEdges>
+                            <cfgNode reference="../.."/>
+                            <declaredVariables class="linked-hash-set"/>
+                            <definedVariables class="linked-hash-set"/>
+                            <usedVariables class="linked-hash-set">
+                              <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../statement/parent/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                              <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../statement/parent/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[3]"/>
+                            </usedVariables>
+                            <createdTypes class="linked-hash-set"/>
+                            <thrownExceptionTypes class="linked-hash-set"/>
+                            <variableDeclarationsInMethod class="linked-hash-set" reference="../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                            <originalDefinedVariables class="linked-hash-set"/>
+                            <originalUsedVariables class="linked-hash-set"/>
+                          </pdgNode>
+                          <hashCode>634</hashCode>
+                        </leader>
+                        <nodes/>
+                        <tryNodes/>
+                        <previousBasicBlock reference="../.."/>
+                        <nextBasicBlock>
+                          <id>4</id>
+                          <leader class="ca.concordia.java.ast.decomposition.cfg.CFGBranchIfNode">
+                            <id>6</id>
+                            <value></value>
+                            <incomingEdges class="linked-hash-set">
+                              <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../../leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+                            </incomingEdges>
+                            <outgoingEdges class="linked-hash-set">
+                              <ca.concordia.java.ast.decomposition.cfg.Flow>
+                                <srcId>6</srcId>
+                                <dstId>7</dstId>
+                                <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../../../.."/>
+                                <loopbackFlow>false</loopbackFlow>
+                                <trueControlFlow>true</trueControlFlow>
+                                <falseControlFlow>false</falseControlFlow>
+                              </ca.concordia.java.ast.decomposition.cfg.Flow>
+                              <ca.concordia.java.ast.decomposition.cfg.Flow>
+                                <srcId>6</srcId>
+                                <dstId>8</dstId>
+                                <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../../../.."/>
+                                <loopbackFlow>false</loopbackFlow>
+                                <trueControlFlow>false</trueControlFlow>
+                                <falseControlFlow>true</falseControlFlow>
+                              </ca.concordia.java.ast.decomposition.cfg.Flow>
+                            </outgoingEdges>
+                            <statementString>if(strbuf.length() &gt; 0)
+</statementString>
+                            <statement class="ca.concordia.java.ast.decomposition.CompositeStatementObject" reference="../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject[2]"/>
+                            <basicBlock reference="../.."/>
+                            <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGControlPredicateNode">
+                              <id>6</id>
+                              <value></value>
+                              <incomingEdges class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                                  <srcId>0</srcId>
+                                  <dstId>6</dstId>
+                                  <type>CONTROL</type>
+                                  <trueControlDependence>true</trueControlDependence>
+                                  <hashCode>862554</hashCode>
+                                </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                                <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../../../../../../../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+                              </incomingEdges>
+                              <outgoingEdges class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                                  <srcId>6</srcId>
+                                  <dstId>7</dstId>
+                                  <type>CONTROL</type>
+                                  <trueControlDependence>true</trueControlDependence>
+                                  <hashCode>870805</hashCode>
+                                </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                              </outgoingEdges>
+                              <cfgNode class="ca.concordia.java.ast.decomposition.cfg.CFGBranchIfNode" reference="../.."/>
+                              <declaredVariables class="linked-hash-set"/>
+                              <definedVariables class="linked-hash-set"/>
+                              <usedVariables class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject[2]/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                              </usedVariables>
+                              <createdTypes class="linked-hash-set"/>
+                              <thrownExceptionTypes class="linked-hash-set"/>
+                              <variableDeclarationsInMethod class="linked-hash-set" reference="../../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                              <originalDefinedVariables class="linked-hash-set"/>
+                              <originalUsedVariables class="linked-hash-set"/>
+                            </pdgNode>
+                            <hashCode>635</hashCode>
+                            <joinNode>
+                              <id>8</id>
+                              <value></value>
+                              <incomingEdges class="linked-hash-set">
+                                <ca.concordia.java.ast.decomposition.cfg.Flow>
+                                  <srcId>7</srcId>
+                                  <dstId>8</dstId>
+                                  <graph class="ca.concordia.java.ast.decomposition.cfg.CFG" reference="../../../../../../../../../../.."/>
+                                  <loopbackFlow>false</loopbackFlow>
+                                  <trueControlFlow>false</trueControlFlow>
+                                  <falseControlFlow>false</falseControlFlow>
+                                </ca.concordia.java.ast.decomposition.cfg.Flow>
+                                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+                              </incomingEdges>
+                              <outgoingEdges class="linked-hash-set"/>
+                              <statementString>in.close(x);
+</statementString>
+                              <statement class="ca.concordia.java.ast.decomposition.StatementObject" reference="../../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.StatementObject[4]"/>
+                              <basicBlock>
+                                <id>6</id>
+                                <leader reference="../.."/>
+                                <nodes/>
+                                <tryNodes/>
+                                <previousBasicBlock>
+                                  <id>5</id>
+                                  <leader>
+                                    <id>7</id>
+                                    <value></value>
+                                    <incomingEdges class="linked-hash-set">
+                                      <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                                    </incomingEdges>
+                                    <outgoingEdges class="linked-hash-set">
+                                      <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../../../../incomingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                                    </outgoingEdges>
+                                    <statementString>outputMessage(strbuf.toString());
+</statementString>
+                                    <statement class="ca.concordia.java.ast.decomposition.StatementObject" reference="../../../../../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject[2]/statementList/ca.concordia.java.ast.decomposition.StatementObject"/>
+                                    <basicBlock reference="../.."/>
+                                    <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode">
+                                      <id>7</id>
+                                      <value></value>
+                                      <incomingEdges class="linked-hash-set">
+                                        <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../../../../../pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+                                        <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../../../../../../../../../../../../../../../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[3]"/>
+                                      </incomingEdges>
+                                      <outgoingEdges class="linked-hash-set"/>
+                                      <cfgNode reference="../.."/>
+                                      <declaredVariables class="linked-hash-set"/>
+                                      <definedVariables class="linked-hash-set"/>
+                                      <usedVariables class="linked-hash-set">
+                                        <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.CompositeStatementObject[2]/statementList/ca.concordia.java.ast.decomposition.StatementObject/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                                      </usedVariables>
+                                      <createdTypes class="linked-hash-set"/>
+                                      <thrownExceptionTypes class="linked-hash-set"/>
+                                      <variableDeclarationsInMethod class="linked-hash-set" reference="../../../../../../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                                      <originalDefinedVariables class="linked-hash-set"/>
+                                      <originalUsedVariables class="linked-hash-set"/>
+                                    </pdgNode>
+                                    <hashCode>636</hashCode>
+                                  </leader>
+                                  <nodes/>
+                                  <tryNodes/>
+                                  <previousBasicBlock reference="../../../../.."/>
+                                  <nextBasicBlock reference="../.."/>
+                                </previousBasicBlock>
+                              </basicBlock>
+                              <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode">
+                                <id>8</id>
+                                <value></value>
+                                <incomingEdges class="linked-hash-set">
+                                  <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                                    <srcId>0</srcId>
+                                    <dstId>8</dstId>
+                                    <type>CONTROL</type>
+                                    <trueControlDependence>true</trueControlDependence>
+                                    <hashCode>862628</hashCode>
+                                  </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                                  <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                                    <srcId>0</srcId>
+                                    <dstId>8</dstId>
+                                    <type>DATA</type>
+                                    <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable">
+                                      <variableName>x</variableName>
+                                      <variableType>int</variableType>
+                                      <variableDeclaration>
+                                        <startPosition>563</startPosition>
+                                        <length>5</length>
+                                        <nodeType>44</nodeType>
+                                        <hashCode>160746152</hashCode>
+                                      </variableDeclaration>
+                                      <scope>
+                                        <startPosition>534</startPosition>
+                                        <length>343</length>
+                                        <nodeType>31</nodeType>
+                                        <hashCode>620251438</hashCode>
+                                      </scope>
+                                      <hashCode>160766209</hashCode>
+                                    </data>
+                                    <hashCode>-884996428</hashCode>
+                                  </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                                  <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                                    <srcId>2</srcId>
+                                    <dstId>8</dstId>
+                                    <type>DATA</type>
+                                    <data class="ca.concordia.java.ast.decomposition.cfg.PlainVariable" reference="../../../../../../../../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                                    <hashCode>1072288088</hashCode>
+                                  </ca.concordia.java.ast.decomposition.cfg.PDGDataDependence>
+                                </incomingEdges>
+                                <outgoingEdges class="linked-hash-set"/>
+                                <cfgNode reference="../.."/>
+                                <declaredVariables class="linked-hash-set"/>
+                                <definedVariables class="linked-hash-set"/>
+                                <usedVariables class="linked-hash-set">
+                                  <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../../statement/parent/statementList/ca.concordia.java.ast.decomposition.StatementObject[4]/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable"/>
+                                  <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../../../../../../../statement/parent/usedLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[4]"/>
+                                </usedVariables>
+                                <createdTypes class="linked-hash-set"/>
+                                <thrownExceptionTypes class="linked-hash-set"/>
+                                <variableDeclarationsInMethod class="linked-hash-set" reference="../../../../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                                <originalDefinedVariables class="linked-hash-set"/>
+                                <originalUsedVariables class="linked-hash-set"/>
+                              </pdgNode>
+                              <hashCode>637</hashCode>
+                            </joinNode>
+                          </leader>
+                          <nodes/>
+                          <tryNodes/>
+                          <previousBasicBlock reference="../.."/>
+                          <nextBasicBlock reference="../leader/joinNode/basicBlock/previousBasicBlock"/>
+                        </nextBasicBlock>
+                      </nextBasicBlock>
+                    </nextBasicBlock>
+                  </basicBlock>
+                  <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode">
+                    <id>2</id>
+                    <value></value>
+                    <incomingEdges class="linked-hash-set">
+                      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                        <srcId>0</srcId>
+                        <dstId>2</dstId>
+                        <type>CONTROL</type>
+                        <trueControlDependence>true</trueControlDependence>
+                        <hashCode>862406</hashCode>
+                      </ca.concordia.java.ast.decomposition.cfg.PDGControlDependence>
+                    </incomingEdges>
+                    <outgoingEdges class="linked-hash-set">
+                      <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+                      <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+                      <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+                    </outgoingEdges>
+                    <cfgNode reference="../.."/>
+                    <declaredVariables class="linked-hash-set">
+                      <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                    </declaredVariables>
+                    <definedVariables class="linked-hash-set">
+                      <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../statement/parent/declaredLocalVariables/ca.concordia.java.ast.decomposition.cfg.PlainVariable[2]"/>
+                    </definedVariables>
+                    <usedVariables class="linked-hash-set"/>
+                    <createdTypes class="linked-hash-set"/>
+                    <thrownExceptionTypes class="linked-hash-set"/>
+                    <variableDeclarationsInMethod class="linked-hash-set" reference="../../basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+                    <originalDefinedVariables class="linked-hash-set"/>
+                    <originalUsedVariables class="linked-hash-set"/>
+                  </pdgNode>
+                  <hashCode>631</hashCode>
+                </ca.concordia.java.ast.decomposition.cfg.CFGNode>
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]"/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader"/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/leader"/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGBranchIfNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader"/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/basicBlock/previousBasicBlock/leader"/>
+                <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode"/>
+              </nodes>
+              <edges class="linked-hash-set">
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../.."/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/incomingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.Flow"/>
+                <ca.concordia.java.ast.decomposition.cfg.Flow reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow[2]"/>
+              </edges>
+              <method class="ca.concordia.java.ast.MethodObject">
+                <returnType>
+                  <classType>void</classType>
+                  <arrayDimension>0</arrayDimension>
+                  <hashCode>134161741</hashCode>
+                </returnType>
+                <__abstract>false</__abstract>
+                <__static>false</__static>
+                <__synchronized>false</__synchronized>
+                <__native>false</__native>
+                <constructorObject>
+                  <name>GroumTestMethod</name>
+                  <parameterList reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/statement/parent/parameters"/>
+                  <access>PRIVATE</access>
+                  <methodBody>
+                    <compositeStatement reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/statement/parent"/>
+                    <parameters reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/statement/parent/parameters"/>
+                  </methodBody>
+                  <exceptionsInJavaDocThrows class="linked-hash-set"/>
+                  <methodDeclaration>
+                    <startPosition>534</startPosition>
+                    <length>343</length>
+                    <nodeType>31</nodeType>
+                    <hashCode>620251438</hashCode>
+                  </methodDeclaration>
+                  <hashCode>-2025532088</hashCode>
+                </constructorObject>
+                <testAnnotation>false</testAnnotation>
+                <hashCode>-1356491694</hashCode>
+              </method>
+              <unjoinedConditionalNodes serialization="custom">
+                <unserializable-parents/>
+                <vector>
+                  <default>
+                    <capacityIncrement>0</capacityIncrement>
+                    <elementCount>0</elementCount>
+                    <elementData>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                      <null/>
+                    </elementData>
+                  </default>
+                </vector>
+              </unjoinedConditionalNodes>
+              <switchBreakMap class="linked-hash-map"/>
+              <directlyNestedNodesInBlocks class="linked-hash-map"/>
+              <basicBlockCFG>
+                <basicBlocks>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock"/>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock"/>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock"/>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock"/>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/basicBlock/previousBasicBlock"/>
+                  <ca.concordia.java.ast.decomposition.cfg.BasicBlock reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/basicBlock"/>
+                </basicBlocks>
+                <forwardReachableBlocks class="linked-hash-map"/>
+              </basicBlockCFG>
+            </graph>
+            <loopbackFlow>false</loopbackFlow>
+            <trueControlFlow>false</trueControlFlow>
+            <falseControlFlow>false</falseControlFlow>
+          </ca.concordia.java.ast.decomposition.cfg.Flow>
+        </outgoingEdges>
+        <statementString>StringBuffer strbuf=new StringBuffer();
+</statementString>
+        <statement class="ca.concordia.java.ast.decomposition.StatementObject" reference="../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/statement/parent/statementList/ca.concordia.java.ast.decomposition.StatementObject"/>
+        <basicBlock reference="../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock"/>
+        <pdgNode class="ca.concordia.java.ast.decomposition.cfg.PDGStatementNode" reference="../.."/>
+        <hashCode>630</hashCode>
+      </cfgNode>
+      <declaredVariables class="linked-hash-set">
+        <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+      </declaredVariables>
+      <definedVariables class="linked-hash-set">
+        <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+      </definedVariables>
+      <usedVariables class="linked-hash-set"/>
+      <createdTypes class="linked-hash-set"/>
+      <thrownExceptionTypes class="linked-hash-set"/>
+      <variableDeclarationsInMethod class="linked-hash-set" reference="../cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+      <originalDefinedVariables class="linked-hash-set"/>
+      <originalUsedVariables class="linked-hash-set"/>
+    </ca.concordia.java.ast.decomposition.cfg.PDGStatementNode>
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlPredicateNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/leader/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlPredicateNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/basicBlock/previousBasicBlock/leader/pdgNode"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGStatementNode reference="../ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode"/>
+  </nodes>
+  <edges class="linked-hash-set">
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[3]"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence[2]"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGOutputDependence[2]"/>
+    <ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGAntiDependence"/>
+  </edges>
+  <cfg reference="../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph"/>
+  <entryNode>
+    <id>0</id>
+    <value></value>
+    <incomingEdges class="linked-hash-set"/>
+    <outgoingEdges class="linked-hash-set">
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGControlDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGControlDependence"/>
+      <ca.concordia.java.ast.decomposition.cfg.PDGDataDependence reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence"/>
+    </outgoingEdges>
+    <declaredVariables class="linked-hash-set">
+      <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+    </declaredVariables>
+    <definedVariables class="linked-hash-set">
+      <ca.concordia.java.ast.decomposition.cfg.PlainVariable reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/pdgNode/incomingEdges/ca.concordia.java.ast.decomposition.cfg.PDGDataDependence/data"/>
+    </definedVariables>
+    <usedVariables class="linked-hash-set"/>
+    <createdTypes class="linked-hash-set"/>
+    <thrownExceptionTypes class="linked-hash-set"/>
+    <variableDeclarationsInMethod class="linked-hash-set"/>
+    <originalDefinedVariables class="linked-hash-set"/>
+    <originalUsedVariables class="linked-hash-set"/>
+    <method class="ca.concordia.java.ast.MethodObject" reference="../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/method"/>
+  </entryNode>
+  <nestingMap class="linked-hash-map">
+    <entry>
+      <ca.concordia.java.ast.decomposition.cfg.CFGBranchLoopNode reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/leader"/>
+      <linked-hash-set>
+        <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/leader"/>
+      </linked-hash-set>
+    </entry>
+    <entry>
+      <ca.concordia.java.ast.decomposition.cfg.CFGBranchIfNode reference="../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader"/>
+      <linked-hash-set>
+        <ca.concordia.java.ast.decomposition.cfg.CFGNode reference="../../../../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nextBasicBlock/nextBasicBlock/nextBasicBlock/leader/joinNode/basicBlock/previousBasicBlock/leader"/>
+      </linked-hash-set>
+    </entry>
+  </nestingMap>
+  <variableDeclarationsInMethod class="linked-hash-set" reference="../nodes/ca.concordia.java.ast.decomposition.cfg.PDGStatementNode/cfgNode/outgoingEdges/ca.concordia.java.ast.decomposition.cfg.Flow/graph/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/basicBlock/nodes/ca.concordia.java.ast.decomposition.cfg.CFGNode[2]/pdgNode/variableDeclarationsInMethod"/>
+  <dominatedBlockMap class="linked-hash-map"/>
+</ca.concordia.java.ast.decomposition.cfg.PDG>

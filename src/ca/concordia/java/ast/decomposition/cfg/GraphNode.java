@@ -13,7 +13,7 @@ public class GraphNode  implements Serializable{
 	protected int id;
 	protected String value = "";
 	protected Set<GraphEdge> incomingEdges;
-	protected Set<GraphEdge> outgoingEdges;
+	public Set<GraphEdge> outgoingEdges;
 	
 	public GraphNode(String value, int id) {
 		this.value = value;

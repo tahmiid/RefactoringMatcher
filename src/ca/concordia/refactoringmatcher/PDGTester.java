@@ -16,8 +16,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.refactoringminer.api.Refactoring;
 
 import com.thoughtworks.xstream.XStream;
@@ -38,7 +40,7 @@ public class PDGTester {
 	}
 
 	private static void testFile() throws IOException {   
-		String path = "E:\\Repositories\\RefactoringMatcher\\src\\ca\\concordia\\refactoringmatcher\\TestClass.java";
+		String path = "A:\\RefactoringMatcher\\src\\ca\\concordia\\refactoringmatcher\\TestClass.java";
 		String wholeText = readFile(path,
 				StandardCharsets.UTF_8);
 		Cache.currentFile = path;
@@ -50,8 +52,7 @@ public class PDGTester {
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 
-		compilationUnit.accept(new ASTVisitor() {
-
+		compilationUnit.accept(new ASTVisitor() {			
 			public boolean visit(MethodDeclaration methodDeclaration) {
 				System.out.println(methodDeclaration.toString());
 				MethodObject methodObject = createMethodObject(methodDeclaration);
@@ -65,7 +66,7 @@ public class PDGTester {
 					}
 					serialize(pdg);
 					xml = xstream.toXML(pdg);
-					try (PrintStream out = new PrintStream(new FileOutputStream("xml"))) {
+					try (PrintStream out = new PrintStream(new FileOutputStream("xml.pdg"))) {
 					    out.print(xml);
 					}
 				} catch (IOException e) {

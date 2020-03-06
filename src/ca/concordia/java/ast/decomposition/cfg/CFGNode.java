@@ -118,4 +118,8 @@ public class CFGNode extends GraphNode implements Comparable<CFGNode>, Serializa
 		else
 			return 0;
 	}
+	
+	public String getStatementString()	{
+		return statementString;
+	}
 }
